@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "621874050263",
+    "firebase_url": "https://aimfapp.firebaseio.com",
+    "project_id": "aimfapp",
+    "storage_bucket": "aimfapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621874050263:android:0e3eaaa5a0120585",
+        "android_client_info": {
+          "package_name": "com.aimfapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621874050263-rv8coohl1k6iavehnrgk9m2e4ruhno8s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDupECi7xI6QQmPvrnuxWMHR8dYzmGxtLs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621874050263-rv8coohl1k6iavehnrgk9m2e4ruhno8s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
