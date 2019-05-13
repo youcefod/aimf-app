@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { View, Item, Icon, Input, Button } from "native-base";
-
+import SpinnerButton from "react-native-spinner-button";
+import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
 
 export default class SignUp extends Component {
@@ -10,11 +11,7 @@ export default class SignUp extends Component {
     email: "",
     password: "",
     fullname: "",
-    isNameCorrect: false,
-    isEmailCorrect: false,
-    isPasswordCorrect: false,
-    isRepeatCorrect: false,
-    isCreatingAccount: false
+    buttonSpinner: false
   };
 
   componentDidMount() {
@@ -27,6 +24,15 @@ export default class SignUp extends Component {
 
   _onSignUp = () => {
     const { email, password, fullname } = this.state;
+    if (!email || !password || !fullname) {
+      this.dropdown.alertWithType(
+        "error",
+        "ERROR OCCURED",
+        "Please, fill up all of your credintials!"
+      );
+      return;
+    }
+    this.setState({ buttonSpinner: true });
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -38,11 +44,20 @@ export default class SignUp extends Component {
           .set({
             email: email,
             fullname: fullname
+          })
+          .then(() => {
+            if (this._isMounted) {
+              setTimeout(() => {
+                this.setState({ buttonSpinner: false });
+              }, 2000);
+            }
           });
       })
       .catch(error => {
         if (this._isMounted) {
-          console.log(error);
+          setTimeout(() => {
+            this.setState({ buttonSpinner: false });
+          }, 2000);
         }
       });
   };
@@ -61,7 +76,7 @@ export default class SignUp extends Component {
   };
 
   render() {
-    const { email, password, fullname } = this.state;
+    const { email, password, fullname, buttonSpinner } = this.state;
     const profile = require("../assets/images/profile.png");
 
     return (
@@ -81,15 +96,13 @@ export default class SignUp extends Component {
             placeholder={"Fullname"}
             value={fullname}
           />
-          {fullname.length != 0 && (
-            <Icon
-              name={
-                this._isCorrectFullname(fullname)
-                  ? "checkmark-circle"
-                  : "close-circle"
-              }
-            />
-          )}
+          <Icon
+            name={
+              this._isCorrectFullname(fullname)
+                ? "checkmark-circle"
+                : "close-circle"
+            }
+          />
         </Item>
 
         <Item
@@ -134,15 +147,22 @@ export default class SignUp extends Component {
             }
           />
         </Item>
-        <Button rounded style={styles.nextButton} onPress={this._onSignUp}>
+        <SpinnerButton
+          buttonStyle={styles.signupButton}
+          isLoading={buttonSpinner}
+          onPress={this._onSignUp}
+          indicatorCount={10}
+          spinnerType="SkypeIndicator"
+        >
           <Text style={styles.nextButtonText}>Create Account</Text>
-        </Button>
+        </SpinnerButton>
         <TouchableOpacity
           onPress={() => this.props.navigation.navigate("Login")}
           activeOpacity={0.6}
         >
           <Text>Already have an account? Log In</Text>
         </TouchableOpacity>
+        <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </View>
     );
   }
@@ -150,8 +170,8 @@ export default class SignUp extends Component {
 
 const styles = StyleSheet.create({
   bodyWrapper: {
-    height: 500,
-    marginTop: 50,
+    height: 550,
+    paddingTop: 50,
     alignItems: "center",
     justifyContent: "space-evenly"
   },
@@ -164,11 +184,13 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 15
   },
-  nextButton: {
-    minHeight: 45,
-    alignSelf: "center",
-    minWidth: 200,
-    justifyContent: "center"
+  signupButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 150,
+    borderRadius: 50,
+    backgroundColor: "#5CB85C"
   },
   nextButtonText: {
     fontSize: 18,

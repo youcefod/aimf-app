@@ -18,7 +18,7 @@ const TimelineStack = createStackNavigator({
 });
 
 TimelineStack.navigationOptions = {
-  tabBarLabel: "Timeline",
+  tabBarLabel: "Feed",
   tabBarIcon: ({ focused }) => (
     <Icon
       type="SimpleLineIcons"

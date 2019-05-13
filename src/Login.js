@@ -2,13 +2,12 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { Item, Input } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
-import { w, h } from "./api/Dimensions";
-
+import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
 
 export default class Login extends React.Component {
   _isMounted = false;
-  state = { email: "", password: "", errorMessage: null, buttonSpinner: false };
+  state = { email: "", password: "", buttonSpinner: false };
 
   componentDidMount() {
     this._isMounted = true;
@@ -20,6 +19,14 @@ export default class Login extends React.Component {
 
   handleLogin = () => {
     const { email, password } = this.state;
+    if (!email || !password) {
+      this.dropdown.alertWithType(
+        "error",
+        "ERROR OCCURED",
+        "Please, fill up all of your credintials!"
+      );
+      return;
+    }
     this.setState({ buttonSpinner: true });
     firebase
       .auth()
@@ -34,27 +41,14 @@ export default class Login extends React.Component {
       })
       .catch(error => {
         if (this._isMounted) {
-          setTimeout(() => {
-            this.setState({ buttonSpinner: false });
-            this.setState({ errorMessage: error.message });
-          }, 1500);
-          setTimeout(() => {
-            this.setState({ errorMessage: null });
-          }, 5000);
+          this.setState({ buttonSpinner: false });
+          this.dropdown.alertWithType("error", "LOGIN ERROR", error.message);
         }
       });
   };
 
-  isCorrectEmailAddress = () => {
-    return true;
-  };
-
-  isCorrectPassword = () => {
-    return true;
-  };
-
   render() {
-    const { email, password, errorMessage, buttonSpinner } = this.state;
+    const { email, password, buttonSpinner } = this.state;
     const logo = require("../assets/images/logo_transparent.png");
     return (
       <View style={styles.bodyWrapper}>
@@ -87,24 +81,16 @@ export default class Login extends React.Component {
         >
           <Text style={styles.nextButtonText}>Connect</Text>
         </SpinnerButton>
-        {errorMessage && (
-          <Text
-            style={{ color: "red", textAlign: "center", marginHorizontal: 30 }}
-          >
-            {errorMessage}
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate("SignUp")}
+          style={styles.touchable}
+          activeOpacity={0.6}
+        >
+          <Text style={styles.createAccount}>
+            You don't have an account yet?
           </Text>
-        )}
-        <View style={styles.textContainer}>
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("SignUp")}
-            style={styles.touchable}
-            activeOpacity={0.6}
-          >
-            <Text style={styles.createAccount}>
-              You don't have an account yet?
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
+        <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </View>
     );
   }
@@ -112,19 +98,10 @@ export default class Login extends React.Component {
 
 const styles = StyleSheet.create({
   bodyWrapper: {
-    height: 500,
-    marginTop: 50,
+    height: 550,
+    paddingTop: 50,
     alignItems: "center",
     justifyContent: "space-evenly"
-  },
-  textContainer: {
-    // cz will have 'forget password next to it'
-    width: w(100),
-    flexDirection: "row",
-    marginTop: h(5)
-  },
-  touchable: {
-    flex: 1
   },
   createAccount: {
     textAlign: "center"
