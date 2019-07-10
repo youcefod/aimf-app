@@ -4,6 +4,7 @@ import { View, Item, Icon, Input, Button } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
+//import styles from "./signUp/css";
 
 export default class SignUp extends Component {
   _isMounted = false;
@@ -11,6 +12,11 @@ export default class SignUp extends Component {
     email: "",
     password: "",
     fullname: "",
+    maideName: "",
+    firstname: "",
+    birthDate: "",
+    postCode: "",
+    phoneNumber: "",
     buttonSpinner: false
   };
 
@@ -76,12 +82,10 @@ export default class SignUp extends Component {
   };
 
   render() {
-    const { email, password, fullname, buttonSpinner } = this.state;
-    const profile = require("../assets/images/profile.png");
+    const { email, password, fullname, maideName, firstname, birthDate, postCode, phoneNumber, buttonSpinner } = this.state;
 
     return (
       <View style={styles.bodyWrapper}>
-        <Image style={{ width: 120, height: 120 }} source={profile} />
         <Item
           rounded
           success={this._isCorrectFullname(fullname)}
@@ -93,7 +97,7 @@ export default class SignUp extends Component {
             autoCapitalize="words"
             keyboardType="default"
             onChangeText={fullname => this.setState({ fullname })}
-            placeholder={"Fullname"}
+            placeholder={"Nom"}
             value={fullname}
           />
           <Icon
@@ -104,6 +108,79 @@ export default class SignUp extends Component {
             }
           />
         </Item>
+        <Item
+          rounded
+          success={this._isCorrectFullname(maideName)}
+          error={!this._isCorrectFullname(maideName)}
+          style={styles.inputItem}
+        >
+          <Input
+              style={styles.input}
+              autoCapitalize="words"
+              keyboardType="default"
+              onChangeText={maideName => this.setState({ maideName })}
+              placeholder={"Nom de jeune fille"}
+              value={maideName}
+          />
+          <Icon
+              name={
+                  this._isCorrectFullname(maideName)
+                      ? "checkmark-circle"
+                      : "close-circle"
+              }
+          />
+        </Item>
+
+         <Item
+              rounded
+              success={this._isCorrectFullname(firstname)}
+              error={!this._isCorrectFullname(firstname)}
+              style={styles.inputItem}
+          >
+              <Input
+                  style={styles.input}
+                  autoCapitalize="words"
+                  keyboardType="default"
+                  onChangeText={firstname => this.setState({ firstname })}
+                  placeholder={"Prénom"}
+                  value={firstname}
+              />
+              <Icon
+                  name={
+                      this._isCorrectFullname(firstname)
+                          ? "checkmark-circle"
+                          : "close-circle"
+                  }
+              />
+          </Item>
+
+          <Item
+              rounded
+              style={styles.inputItem}
+          >
+              <Input
+                  style={styles.input}
+                  autoCapitalize="words"
+                  keyboardType="default"
+                  onChangeText={birthDate => this.setState({ birthDate })}
+                  placeholder={"Date de naissance"}
+                  value={birthDate}
+              />
+          </Item>
+
+          <Item
+              rounded
+              style={styles.inputItem}
+          >
+              <Input
+                  style={styles.input}
+                  autoCapitalize="words"
+                  keyboardType="default"
+                  onChangeText={postCode => this.setState({ postCode })}
+                  placeholder={"Code postal"}
+                  value={postCode}
+              />
+          </Item>
 
         <Item
           rounded
@@ -126,7 +203,19 @@ export default class SignUp extends Component {
             }
           />
         </Item>
-
+          <Item
+              rounded
+              style={styles.phoneNumber}
+          >
+              <Input
+                  style={styles.input}
+                  autoCapitalize="words"
+                  keyboardType="default"
+                  onChangeText={phoneNumber => this.setState({ phoneNumber })}
+                  placeholder={"Code postal"}
+                  value={phoneNumber}
+              />
+          </Item>
         <Item
           rounded
           success={this._isCorrectPassword(password)}
@@ -167,33 +256,32 @@ export default class SignUp extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  bodyWrapper: {
-    height: 550,
-    paddingTop: 50,
-    alignItems: "center",
-    justifyContent: "space-evenly"
-  },
-  inputItem: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingHorizontal: 10,
-    width: 300
-  },
-  input: {
-    fontSize: 15
-  },
-  signupButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: 50,
-    width: 150,
-    borderRadius: 50,
-    backgroundColor: "#5CB85C"
-  },
-  nextButtonText: {
-    fontSize: 18,
-    color: "#fff"
-  }
+ const styles = StyleSheet.create({
+    bodyWrapper: {
+        height: 550,
+        paddingTop: 50,
+        alignItems: "center",
+        justifyContent: "space-evenly"
+    },
+    inputItem: {
+        marginLeft: "auto",
+        marginRight: "auto",
+        paddingHorizontal: 10,
+        width: 300
+    },
+    input: {
+        fontSize: 15
+    },
+    signupButton: {
+        justifyContent: "center",
+        alignItems: "center",
+        height: 50,
+        width: 150,
+        borderRadius: 50,
+        backgroundColor: "#5CB85C"
+    },
+    nextButtonText: {
+        fontSize: 18,
+        color: "#fff"
+    }
 });
