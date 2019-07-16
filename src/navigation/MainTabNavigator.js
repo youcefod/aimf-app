@@ -1,16 +1,17 @@
 import React from "react";
 import {
   createStackNavigator,
-  createBottomTabNavigator
+  createBottomTabNavigator,
+  createAppContainer
 } from "react-navigation";
 
 import { Icon } from "native-base";
 
-import TimelineScreen from "./screens/TimelineScreen";
-import PostWorkflowScreen from "./screens/PostWorkflowScreen";
-import YouTubeScreen from "./screens/YouTubeScreen";
-import NotificationsScreen from "./screens/NotificationsScreen";
-import ProfileScreen from "./screens/ProfileScreen";
+import TimelineScreen from "../screens/TimelineScreen";
+import PostWorkflowScreen from "../screens/PostWorkflowScreen";
+import YouTubeScreen from "../screens/YouTubeScreen";
+import NotificationsScreen from "../screens/NotificationsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 // ----------------------------------------------TimelineScreen-----------------------------------------------------
 const TimelineStack = createStackNavigator({
@@ -105,4 +106,4 @@ const bottomTabNavigator = createBottomTabNavigator({
   ProfileStack
 });
 
-export default bottomTabNavigator;
+export default createAppContainer(bottomTabNavigator);

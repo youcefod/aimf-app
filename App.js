@@ -1,22 +1,42 @@
-import { createSwitchNavigator, createAppContainer } from "react-navigation";
+import React, { Component } from "react";
+import { StyleSheet, View, YellowBox } from "react-native";
+import AppNavigator from "./src/navigation/AppNavigator";
+import MainTabNavigator from "./src/navigation/MainTabNavigator";
+import firebase from "react-native-firebase";
 
-// import the different screens
-import Loading from "./src/Loading";
-import SignUp from "./src/SignUp";
-import Login from "./src/Login";
-import MainTabNavigator from "./src/MainTabNavigator";
-
-// create our app's navigation stack
-const App = createSwitchNavigator(
-  {
-    Loading,
-    SignUp,
-    Login,
-    MainTabNavigator
-  },
-  {
-    initialRouteName: "Loading"
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isUserLogged: false
+    };
+    YellowBox.ignoreWarnings([
+      "Warning: Can't perform a React state update on an unmounted"
+    ]);
   }
-);
 
-export default createAppContainer(App);
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
+
+  onAuthStateChanged = user => {
+    this.setState({ isUserLogged: !!user });
+  };
+
+  render() {
+    const { isUserLogged } = this.state;
+    return (
+      <View style={styles.container}>
+        {!isUserLogged && <AppNavigator />}
+        {isUserLogged && <MainTabNavigator />}
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "white"
+  }
+});

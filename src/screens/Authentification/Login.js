@@ -6,6 +6,10 @@ import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
 
 export default class Login extends React.Component {
+  static navigationOptions = {
+    header: null
+  };
+
   _isMounted = false;
   state = { email: "", password: "", buttonSpinner: false };
 
@@ -35,7 +39,7 @@ export default class Login extends React.Component {
         if (this._isMounted) {
           setTimeout(() => {
             this.setState({ buttonSpinner: false });
-            this.props.navigation.navigate("MainTabNavigator");
+            this.props.navigation.navigate("Main");
           }, 2000);
         }
       })
@@ -49,7 +53,7 @@ export default class Login extends React.Component {
 
   render() {
     const { email, password, buttonSpinner } = this.state;
-    const logo = require("../assets/images/logo_transparent.png");
+    const logo = require("../../../assets/images/logo_transparent.png");
     return (
       <View style={styles.bodyWrapper}>
         <Image style={{ width: 120, height: 120 }} source={logo} />
