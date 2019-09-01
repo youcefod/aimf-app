@@ -1,269 +1,324 @@
-import React, { Component } from "react";
-import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { View, Item, Icon, Input, Button } from "native-base";
+import React, {Component} from "react";
+import {Text, StyleSheet, TouchableOpacity, Image, ScrollView} from "react-native";
+import {View, Item, Icon, Input, Button, DatePicker, Label} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
-//import styles from "./signUp/css";
+import {isCorrectPhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode} from "./Utils/Functions";
 
 export default class SignUp extends Component {
-  _isMounted = false;
-  state = {
-    email: "",
-    password: "",
-    fullname: "",
-    maideName: "",
-    firstname: "",
-    birthDate: "",
-    postCode: "",
-    phoneNumber: "",
-    buttonSpinner: false
-  };
+    _isMounted = false;
+    state = {
+        email: "",
+        password: "",
+        confirmPassword: "",
+        fullname: "",
+        maideName: "",
+        firstname: "",
+        birthDate: "",
+        zipCode: "",
+        phoneNumber: "",
+        buttonSpinner: false
+    };
 
-  componentDidMount() {
-    this._isMounted = true;
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  _onSignUp = () => {
-    const { email, password, fullname } = this.state;
-    if (!email || !password || !fullname) {
-      this.dropdown.alertWithType(
-        "error",
-        "ERROR OCCURED",
-        "Please, fill up all of your credintials!"
-      );
-      return;
+    componentDidMount() {
+        this._isMounted = true;
     }
-    this.setState({ buttonSpinner: true });
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(user => {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(user.user.uid)
-          .set({
-            email: email,
-            fullname: fullname
-          })
-          .then(() => {
-            if (this._isMounted) {
-              setTimeout(() => {
-                this.setState({ buttonSpinner: false });
-              }, 2000);
-            }
-          });
-      })
-      .catch(error => {
-        if (this._isMounted) {
-          setTimeout(() => {
-            this.setState({ buttonSpinner: false });
-          }, 2000);
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    _onSignUp = () => {
+        const {email, password, fullname} = this.state;
+        if (!email || !password || !fullname) {
+            this.dropdown.alertWithType(
+                "error",
+                "ERROR OCCURED",
+                "Please, fill up all of your credintials!"
+            );
+            return;
         }
-      });
-  };
+        this.setState({buttonSpinner: true});
+        firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(user => {
+                firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(user.user.uid)
+                    .set({
+                        email: email,
+                        fullname: fullname
+                    })
+                    .then(() => {
+                        if (this._isMounted) {
+                            setTimeout(() => {
+                                this.setState({buttonSpinner: false});
+                            }, 2000);
+                        }
+                    });
+            })
+            .catch(error => {
+                if (this._isMounted) {
+                    setTimeout(() => {
+                        this.setState({buttonSpinner: false});
+                    }, 2000);
+                }
+            });
+    };
 
-  _isCorrectFullname = fullname => {
-    return fullname.match(/^[a-zA-Z]+(\s{0,1}[a-zA-Z ])*$/) ? true : false;
-  };
 
-  _isCorrectEmailAddress = email => {
-    let reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return reg.test(String(email).toLowerCase());
-  };
 
-  _isCorrectPassword = password => {
-    return password.length > 5 ? true : false;
-  };
+    render() {
+        const {email, password, confirmPassword, fullname, maideName, firstname, birthDate, zipCode, phoneNumber, buttonSpinner} = this.state;
 
-  render() {
-    const { email, password, fullname, maideName, firstname, birthDate, postCode, phoneNumber, buttonSpinner } = this.state;
+        return (
 
-    return (
-      <View style={styles.bodyWrapper}>
-        <Item
-          rounded
-          success={this._isCorrectFullname(fullname)}
-          error={!this._isCorrectFullname(fullname)}
-          style={styles.inputItem}
-        >
-          <Input
-            style={styles.input}
-            autoCapitalize="words"
-            keyboardType="default"
-            onChangeText={fullname => this.setState({ fullname })}
-            placeholder={"Nom"}
-            value={fullname}
-          />
-          <Icon
-            name={
-              this._isCorrectFullname(fullname)
-                ? "checkmark-circle"
-                : "close-circle"
-            }
-          />
-        </Item>
-        <Item
-          rounded
-          success={this._isCorrectFullname(maideName)}
-          error={!this._isCorrectFullname(maideName)}
-          style={styles.inputItem}
-        >
-          <Input
-              style={styles.input}
-              autoCapitalize="words"
-              keyboardType="default"
-              onChangeText={maideName => this.setState({ maideName })}
-              placeholder={"Nom de jeune fille"}
-              value={maideName}
-          />
-          <Icon
-              name={
-                  this._isCorrectFullname(maideName)
-                      ? "checkmark-circle"
-                      : "close-circle"
-              }
-          />
-        </Item>
+            <ScrollView
+                centerContent={true}
 
-         <Item
-              rounded
-              success={this._isCorrectFullname(firstname)}
-              error={!this._isCorrectFullname(firstname)}
-              style={styles.inputItem}
-          >
-              <Input
-                  style={styles.input}
-                  autoCapitalize="words"
-                  keyboardType="default"
-                  onChangeText={firstname => this.setState({ firstname })}
-                  placeholder={"Prénom"}
-                  value={firstname}
-              />
-              <Icon
-                  name={
-                      this._isCorrectFullname(firstname)
-                          ? "checkmark-circle"
-                          : "close-circle"
-                  }
-              />
-          </Item>
+            >
+                <Item
+                    rounded
+                    success={isCorrectName(fullname)}
+                    error={!isCorrectName(fullname)}
+                    style={styles.inputItem}
+                    floatingLabel
+                >
+                    <Label>Nom</Label>
+                    <Input
+                        style={styles.input}
+                        autoCapitalize="words"
+                        keyboardType="default"
+                        onChangeText={fullname => this.setState({fullname})}
+                        value={fullname}
+                    />
+                    <Icon
+                        name={
+                            isCorrectName(fullname)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectName(fullname)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
+                <Item
+                    rounded
+                    success={isCorrectName(maideName)}
+                    error={!isCorrectName(maideName)}
+                    style={styles.inputItem}
+                >
+                    <Input
+                        style={styles.input}
+                        autoCapitalize="words"
+                        keyboardType="default"
+                        onChangeText={maideName => this.setState({maideName})}
+                        placeholder={"Nom de jeune fille"}
+                        value={maideName}
+                    />
+                    <Icon
+                        name={
+                            isCorrectName(maideName)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectName(maideName)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
 
-          <Item
-              rounded
-              style={styles.inputItem}
-          >
-              <Input
-                  style={styles.input}
-                  autoCapitalize="words"
-                  keyboardType="default"
-                  onChangeText={birthDate => this.setState({ birthDate })}
-                  placeholder={"Date de naissance"}
-                  value={birthDate}
-              />
-          </Item>
+                <Item
+                    rounded
+                    success={isCorrectName(firstname)}
+                    error={!isCorrectName(firstname)}
+                    style={styles.inputItem}
+                >
+                    <Input
+                        style={styles.input}
+                        autoCapitalize="words"
+                        keyboardType="default"
+                        onChangeText={firstname => this.setState({firstname})}
+                        placeholder={"Prénom"}
+                        value={firstname}
+                    />
+                    <Icon
+                        name={
+                            isCorrectName(firstname)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectName(firstname)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
 
-          <Item
-              rounded
-              style={styles.inputItem}
-          >
-              <Input
-                  style={styles.input}
-                  autoCapitalize="words"
-                  keyboardType="default"
-                  onChangeText={postCode => this.setState({ postCode })}
-                  placeholder={"Code postal"}
-                  value={postCode}
-              />
-          </Item>
+                <Item
+                    rounded
+                    style={styles.inputItem}
+                >
+                    <DatePicker
+                        style={styles.input}
+                        value={birthDate}
+                    />
 
-        <Item
-          rounded
-          success={this._isCorrectEmailAddress(email)}
-          error={!this._isCorrectEmailAddress(email)}
-          style={styles.inputItem}
-        >
-          <Input
-            style={styles.input}
-            keyboardType="email-address"
-            onChangeText={email => this.setState({ email })}
-            placeholder={"Email address"}
-            value={email}
-          />
-          <Icon
-            name={
-              this._isCorrectEmailAddress(email)
-                ? "checkmark-circle"
-                : "close-circle"
-            }
-          />
-        </Item>
-          <Item
-              rounded
-              style={styles.phoneNumber}
-          >
-              <Input
-                  style={styles.input}
-                  autoCapitalize="words"
-                  keyboardType="default"
-                  onChangeText={phoneNumber => this.setState({ phoneNumber })}
-                  placeholder={"Code postal"}
-                  value={phoneNumber}
-              />
-          </Item>
-        <Item
-          rounded
-          success={this._isCorrectPassword(password)}
-          error={!this._isCorrectPassword(password)}
-          style={styles.inputItem}
-        >
-          <Input
-            style={styles.input}
-            onChangeText={password => this.setState({ password })}
-            placeholder={"Password"}
-            value={password}
-          />
-          <Icon
-            name={
-              this._isCorrectPassword(password)
-                ? "checkmark-circle"
-                : "close-circle"
-            }
-          />
-        </Item>
-        <SpinnerButton
-          buttonStyle={styles.signupButton}
-          isLoading={buttonSpinner}
-          onPress={this._onSignUp}
-          indicatorCount={10}
-          spinnerType="SkypeIndicator"
-        >
-          <Text style={styles.nextButtonText}>Create Account</Text>
-        </SpinnerButton>
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate("Login")}
-          activeOpacity={0.6}
-        >
-          <Text>Already have an account? Log In</Text>
-        </TouchableOpacity>
-        <DropdownAlert ref={ref => (this.dropdown = ref)} />
-      </View>
-    );
-  }
+                </Item>
+
+                <Item
+                    rounded
+                    style={styles.inputItem}
+                >
+                    <Input
+                        autoCompleteType={"autoCompleteType"}
+                        style={styles.input}
+                        keyboardType="numeric"
+                        maxLength={5}
+                        onChangeText={zipCode => this.setState({zipCode})}
+                        placeholder={"Code postal"}
+                        value={zipCode}
+                    />
+                    <Icon
+                        name={
+                            isCorrectZipCode(zipCode)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectZipCode(zipCode)
+                            ? styles.green
+                            : styles.red }
+
+                    />
+                </Item>
+
+                <Item
+                    rounded
+                    success={isCorrectEmailAddress(email)}
+                    error={!isCorrectEmailAddress(email)}
+                    style={styles.inputItem}
+                >
+                    <Input
+                        style={styles.input}
+                        keyboardType="email-address"
+                        onChangeText={email => this.setState({email})}
+                        placeholder={"Email address"}
+                        value={email}
+                    />
+                    <Icon
+                        name={
+                            isCorrectEmailAddress(email)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectEmailAddress(email)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
+                <Item
+                    rounded
+                    style={styles.inputItem}
+                >
+                    <Input
+                        style={styles.input}
+                        keyboardType="numeric"
+                        maxLength={10}
+                        onChangeText={phoneNumber => this.setState({phoneNumber})}
+                        placeholder={"Téléphone"}
+                        value={phoneNumber}
+                    />
+                    <Icon
+                        name={
+                            isCorrectPhone(phoneNumber)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectPhone(phoneNumber)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
+                <Item
+                    rounded
+                    success={isCorrectPassword(password)}
+                    error={!isCorrectPassword(password)}
+                    style={styles.inputItem}
+                >
+                    <Input
+                        style={styles.input}
+                        onChangeText={password => this.setState({password})}
+                        placeholder={"Mot de passe"}
+                        value={password}
+                    />
+                    <Icon
+                        name={
+                            isCorrectPassword(password)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectPassword(password)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
+                <Item
+                    rounded
+                    success={isCorrectPassword(confirmPassword)}
+                    error={!isCorrectPassword(confirmPassword)}
+                    style={styles.inputItem}
+                >
+                    <Input
+                        style={styles.input}
+                        onChangeText={confirmPassword => this.setState({confirmPassword})}
+                        placeholder={"Confirmer mot de passe"}
+                        value={confirmPassword}
+                    />
+                    <Icon
+                        name={
+                            isCorrectPassword(confirmPassword)
+                                ? "checkmark-circle"
+                                : "close-circle"
+                        }
+                        style={isCorrectPassword(confirmPassword)
+                            ? styles.green
+                            : styles.red }
+                    />
+                </Item>
+
+                <SpinnerButton
+                    buttonStyle={styles.signupButton}
+                    isLoading={buttonSpinner}
+                    onPress={this._onSignUp}
+                    indicatorCount={10}
+                    spinnerType="SkypeIndicator"
+                >
+                    <Text style={styles.nextButtonText}>Create Account</Text>
+                </SpinnerButton>
+
+                <TouchableOpacity
+                    onPress={() => this.props.navigation.navigate("Login")}
+                    activeOpacity={0.6}
+                    style={styles.loginLink}
+                >
+                    <Text>Already have an account? Log In</Text>
+                </TouchableOpacity>
+                <DropdownAlert ref={ref => (this.dropdown = ref)}/>
+            </ScrollView>
+        );
+    }
 }
- const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     bodyWrapper: {
-        height: 550,
+
         paddingTop: 50,
-        alignItems: "center",
-        justifyContent: "space-evenly"
+        alignItems: "center"
     },
     inputItem: {
+        marginTop: 30,
         marginLeft: "auto",
         marginRight: "auto",
         paddingHorizontal: 10,
@@ -278,10 +333,27 @@ export default class SignUp extends Component {
         height: 50,
         width: 150,
         borderRadius: 50,
-        backgroundColor: "#5CB85C"
+        backgroundColor: "#5CB85C",
+        marginTop: 50,
+        marginLeft: "auto",
+        marginRight: "auto",
     },
     nextButtonText: {
         fontSize: 18,
         color: "#fff"
+    },
+
+    loginLink: {
+        marginTop: 50,
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
+
+    green:  {
+        color : "green"
+    },
+    red:  {
+        color : "red"
     }
+
 });
