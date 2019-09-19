@@ -1,10 +1,12 @@
 import React, {Component} from "react";
 import {Text, StyleSheet, TouchableOpacity, Image, ScrollView} from "react-native";
-import {View, Item, Icon, Input, Button, DatePicker, Label} from "native-base";
+import {Item, Icon, Input, DatePicker, Label} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
 import {isCorrectPhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode} from "./Utils/Functions";
+import {styles} from "./signUp/css";
+import {checkFormValues} from "./signUp/ValidateSignUp";
 
 export default class SignUp extends Component {
     _isMounted = false;
@@ -12,7 +14,7 @@ export default class SignUp extends Component {
         email: "",
         password: "",
         confirmPassword: "",
-        fullname: "",
+        lastName: "",
         maideName: "",
         firstname: "",
         birthDate: "",
@@ -30,16 +32,27 @@ export default class SignUp extends Component {
     }
 
     _onSignUp = () => {
-        const {email, password, fullname} = this.state;
-        if (!email || !password || !fullname) {
+        const {email, password, lastName, firstname} = this.state;
+
+        if (!checkFormValues(this.state)) {
             this.dropdown.alertWithType(
-                "error",
-                "ERROR OCCURED",
+                   "error",
+                  "ERROR OCCURED",
                 "Please, fill up all of your credintials!"
             );
             return;
         }
+        //if (!email || !password || !lastName) {
+        //    this.dropdown.alertWithType(
+         //       "error",
+          //      "ERROR OCCURED",
+            //    "Please, fill up all of your credintials!"
+            //);
+            return;
+        //}
         this.setState({buttonSpinner: true});
+
+
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -50,77 +63,85 @@ export default class SignUp extends Component {
                     .doc(user.user.uid)
                     .set({
                         email: email,
-                        fullname: fullname
+                        lastname: lastName,
                     })
                     .then(() => {
-                        if (this._isMounted) {
-                            setTimeout(() => {
-                                this.setState({buttonSpinner: false});
-                            }, 2000);
-                        }
+                        // if (this._isMounted) {
+                        //     setTimeout(() => {
+                        //         this.setState({buttonSpinner: false});
+                        //     }, 2000);
+                        // }
                     });
             })
             .catch(error => {
-                if (this._isMounted) {
-                    setTimeout(() => {
-                        this.setState({buttonSpinner: false});
-                    }, 2000);
-                }
+                // if (this._isMounted) {
+                //     setTimeout(() => {
+                //         this.setState({buttonSpinner: false});
+                //     }, 2000);
+                // }
             });
     };
 
 
 
     render() {
-        const {email, password, confirmPassword, fullname, maideName, firstname, birthDate, zipCode, phoneNumber, buttonSpinner} = this.state;
+        const {email, password, confirmPassword, lastName, maideName, firstname, birthDate, zipCode, phoneNumber, buttonSpinner} = this.state;
 
         return (
 
             <ScrollView
                 centerContent={true}
-
+                style={styles.scrollView}
             >
+
+                <Label
+                    style={styles.label}
+                >Nom</Label>
                 <Item
                     rounded
-                    success={isCorrectName(fullname)}
-                    error={!isCorrectName(fullname)}
+                    success={isCorrectName(lastName)}
+                    error={lastName.length > 0 && !isCorrectName(lastName)}
                     style={styles.inputItem}
-                    floatingLabel
                 >
-                    <Label>Nom</Label>
+
                     <Input
                         style={styles.input}
                         autoCapitalize="words"
                         keyboardType="default"
-                        onChangeText={fullname => this.setState({fullname})}
-                        value={fullname}
+                        onChangeText={lastName => this.setState({lastName})}
+                        value={lastName}
                     />
-                    <Icon
+                    {lastName.length > 0  ? (<Icon
                         name={
-                            isCorrectName(fullname)
+                            isCorrectName(lastName)
                                 ? "checkmark-circle"
                                 : "close-circle"
                         }
-                        style={isCorrectName(fullname)
+                        style={isCorrectName(lastName)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
+
                 </Item>
+                <Label
+                    style={styles.label}
+                >Nom de jeune fille</Label>
                 <Item
                     rounded
                     success={isCorrectName(maideName)}
-                    error={!isCorrectName(maideName)}
+                    error={maideName.length > 0 && !isCorrectName(maideName)}
                     style={styles.inputItem}
                 >
+
                     <Input
                         style={styles.input}
                         autoCapitalize="words"
                         keyboardType="default"
                         onChangeText={maideName => this.setState({maideName})}
-                        placeholder={"Nom de jeune fille"}
                         value={maideName}
                     />
-                    <Icon
+
+                    {maideName.length > 0  ? (<Icon
                         name={
                             isCorrectName(maideName)
                                 ? "checkmark-circle"
@@ -129,13 +150,15 @@ export default class SignUp extends Component {
                         style={isCorrectName(maideName)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
                 </Item>
-
+                <Label
+                    style={styles.label}
+                >Prénom</Label>
                 <Item
                     rounded
                     success={isCorrectName(firstname)}
-                    error={!isCorrectName(firstname)}
+                    error={firstname.length > 0 && !isCorrectName(firstname)}
                     style={styles.inputItem}
                 >
                     <Input
@@ -143,10 +166,9 @@ export default class SignUp extends Component {
                         autoCapitalize="words"
                         keyboardType="default"
                         onChangeText={firstname => this.setState({firstname})}
-                        placeholder={"Prénom"}
                         value={firstname}
                     />
-                    <Icon
+                    {firstname.length > 0  ? (<Icon
                         name={
                             isCorrectName(firstname)
                                 ? "checkmark-circle"
@@ -155,9 +177,11 @@ export default class SignUp extends Component {
                         style={isCorrectName(firstname)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
                 </Item>
-
+                <Label
+                    style={styles.label}
+                >Date de naissance</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
@@ -168,7 +192,9 @@ export default class SignUp extends Component {
                     />
 
                 </Item>
-
+                <Label
+                    style={styles.label}
+                >Code postal</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
@@ -179,10 +205,9 @@ export default class SignUp extends Component {
                         keyboardType="numeric"
                         maxLength={5}
                         onChangeText={zipCode => this.setState({zipCode})}
-                        placeholder={"Code postal"}
                         value={zipCode}
                     />
-                    <Icon
+                    {zipCode.length > 0  ? (<Icon
                         name={
                             isCorrectZipCode(zipCode)
                                 ? "checkmark-circle"
@@ -191,24 +216,24 @@ export default class SignUp extends Component {
                         style={isCorrectZipCode(zipCode)
                             ? styles.green
                             : styles.red }
-
-                    />
+                    />) : null}
                 </Item>
-
+                <Label
+                    style={styles.label}
+                >Email</Label>
                 <Item
                     rounded
                     success={isCorrectEmailAddress(email)}
-                    error={!isCorrectEmailAddress(email)}
+                    error={email.length > 0 && !isCorrectEmailAddress(email)}
                     style={styles.inputItem}
                 >
                     <Input
                         style={styles.input}
                         keyboardType="email-address"
                         onChangeText={email => this.setState({email})}
-                        placeholder={"Email address"}
                         value={email}
                     />
-                    <Icon
+                    {email.length > 0  ? (<Icon
                         name={
                             isCorrectEmailAddress(email)
                                 ? "checkmark-circle"
@@ -217,8 +242,11 @@ export default class SignUp extends Component {
                         style={isCorrectEmailAddress(email)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
                 </Item>
+                <Label
+                    style={styles.label}
+                >Téléphone</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
@@ -228,10 +256,9 @@ export default class SignUp extends Component {
                         keyboardType="numeric"
                         maxLength={10}
                         onChangeText={phoneNumber => this.setState({phoneNumber})}
-                        placeholder={"Téléphone"}
                         value={phoneNumber}
                     />
-                    <Icon
+                    {phoneNumber.length > 0  ? (<Icon
                         name={
                             isCorrectPhone(phoneNumber)
                                 ? "checkmark-circle"
@@ -240,21 +267,23 @@ export default class SignUp extends Component {
                         style={isCorrectPhone(phoneNumber)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
                 </Item>
+                <Label
+                    style={styles.label}
+                >Mot de passe</Label>
                 <Item
                     rounded
                     success={isCorrectPassword(password)}
-                    error={!isCorrectPassword(password)}
+                    error={password.length > 0 && !isCorrectPassword(password)}
                     style={styles.inputItem}
                 >
                     <Input
                         style={styles.input}
                         onChangeText={password => this.setState({password})}
-                        placeholder={"Mot de passe"}
                         value={password}
                     />
-                    <Icon
+                    {password.length > 0  ? (<Icon
                         name={
                             isCorrectPassword(password)
                                 ? "checkmark-circle"
@@ -263,21 +292,23 @@ export default class SignUp extends Component {
                         style={isCorrectPassword(password)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
                 </Item>
+                <Label
+                    style={styles.label}
+                >Confirmer mot de passe</Label>
                 <Item
                     rounded
                     success={isCorrectPassword(confirmPassword)}
-                    error={!isCorrectPassword(confirmPassword)}
+                    error={confirmPassword.length > 0 && !isCorrectPassword(confirmPassword)}
                     style={styles.inputItem}
                 >
                     <Input
                         style={styles.input}
                         onChangeText={confirmPassword => this.setState({confirmPassword})}
-                        placeholder={"Confirmer mot de passe"}
                         value={confirmPassword}
                     />
-                    <Icon
+                    {confirmPassword.length > 0  ? (<Icon
                         name={
                             isCorrectPassword(confirmPassword)
                                 ? "checkmark-circle"
@@ -286,7 +317,7 @@ export default class SignUp extends Component {
                         style={isCorrectPassword(confirmPassword)
                             ? styles.green
                             : styles.red }
-                    />
+                    />) : null}
                 </Item>
 
                 <SpinnerButton
@@ -311,49 +342,3 @@ export default class SignUp extends Component {
         );
     }
 }
-const styles = StyleSheet.create({
-    bodyWrapper: {
-
-        paddingTop: 50,
-        alignItems: "center"
-    },
-    inputItem: {
-        marginTop: 30,
-        marginLeft: "auto",
-        marginRight: "auto",
-        paddingHorizontal: 10,
-        width: 300
-    },
-    input: {
-        fontSize: 15
-    },
-    signupButton: {
-        justifyContent: "center",
-        alignItems: "center",
-        height: 50,
-        width: 150,
-        borderRadius: 50,
-        backgroundColor: "#5CB85C",
-        marginTop: 50,
-        marginLeft: "auto",
-        marginRight: "auto",
-    },
-    nextButtonText: {
-        fontSize: 18,
-        color: "#fff"
-    },
-
-    loginLink: {
-        marginTop: 50,
-        marginLeft: "auto",
-        marginRight: "auto",
-    },
-
-    green:  {
-        color : "green"
-    },
-    red:  {
-        color : "red"
-    }
-
-});
