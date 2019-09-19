@@ -14,8 +14,8 @@ export default class SignUp extends Component {
         email: "",
         password: "",
         confirmPassword: "",
-        lastName: "",
-        maideName: "",
+        lastname: "",
+        maidename: "",
         firstname: "",
         birthDate: "",
         zipCode: "",
@@ -32,25 +32,26 @@ export default class SignUp extends Component {
     }
 
     _onSignUp = () => {
-        const {email, password, lastName, firstname} = this.state;
+        const {email, password, lastname, maidename, firstname, birthDate, zipCode, phoneNumber} = this.state;
 
-        if (!checkFormValues(this.state)) {
+        const error = checkFormValues(this.state);
+        if (error) {
             this.dropdown.alertWithType(
-                   "error",
-                  "ERROR OCCURED",
-                "Please, fill up all of your credintials!"
+                "error",
+                "ERREUR",
+                error
             );
             return;
         }
-        //if (!email || !password || !lastName) {
+        //if (!email || !password || !lastname) {
         //    this.dropdown.alertWithType(
-         //       "error",
-          //      "ERROR OCCURED",
-            //    "Please, fill up all of your credintials!"
-            //);
-            return;
+        //       "error",
+        //      "ERROR OCCURED",
+        //    "Please, fill up all of your credintials!"
+        //);
+        // return;
         //}
-        this.setState({buttonSpinner: true});
+        // this.setState({buttonSpinner: true});
 
 
         firebase
@@ -63,29 +64,40 @@ export default class SignUp extends Component {
                     .doc(user.user.uid)
                     .set({
                         email: email,
-                        lastname: lastName,
+                        lastname: lastname,
+                        maidename: maidename,
+                        firstname: firstname,
+                        birthDate: birthDate,
+                        zipCode: zipCode,
+                        phoneNumber: phoneNumber,
                     })
                     .then(() => {
-                        // if (this._isMounted) {
-                        //     setTimeout(() => {
-                        //         this.setState({buttonSpinner: false});
-                        //     }, 2000);
-                        // }
+                        this.dropdown.alertWithType(
+                            "success",
+                            "success",
+                            "success"
+                        );
+
+                        if (this._isMounted) {
+                            setTimeout(() => {
+                                // this.setState({buttonSpinner: false});
+                            }, 2000);
+                        }
                     });
             })
             .catch(error => {
-                // if (this._isMounted) {
-                //     setTimeout(() => {
-                //         this.setState({buttonSpinner: false});
-                //     }, 2000);
-                // }
+                this.dropdown.alertWithType(
+                    "error",
+                    "ERROR OCCURED",
+                    "catch"
+                );
             });
     };
 
 
 
     render() {
-        const {email, password, confirmPassword, lastName, maideName, firstname, birthDate, zipCode, phoneNumber, buttonSpinner} = this.state;
+        const {email, password, confirmPassword, lastname, maidename, firstname, birthDate, zipCode, phoneNumber, buttonSpinner} = this.state;
 
         return (
 
@@ -99,8 +111,8 @@ export default class SignUp extends Component {
                 >Nom</Label>
                 <Item
                     rounded
-                    success={isCorrectName(lastName)}
-                    error={lastName.length > 0 && !isCorrectName(lastName)}
+                    success={isCorrectName(lastname)}
+                    error={lastname.length > 0 && !isCorrectName(lastname)}
                     style={styles.inputItem}
                 >
 
@@ -108,16 +120,16 @@ export default class SignUp extends Component {
                         style={styles.input}
                         autoCapitalize="words"
                         keyboardType="default"
-                        onChangeText={lastName => this.setState({lastName})}
-                        value={lastName}
+                        onChangeText={lastname => this.setState({lastname})}
+                        value={lastname}
                     />
-                    {lastName.length > 0  ? (<Icon
+                    {lastname.length > 0  ? (<Icon
                         name={
-                            isCorrectName(lastName)
+                            isCorrectName(lastname)
                                 ? "checkmark-circle"
                                 : "close-circle"
                         }
-                        style={isCorrectName(lastName)
+                        style={isCorrectName(lastname)
                             ? styles.green
                             : styles.red }
                     />) : null}
@@ -128,8 +140,8 @@ export default class SignUp extends Component {
                 >Nom de jeune fille</Label>
                 <Item
                     rounded
-                    success={isCorrectName(maideName)}
-                    error={maideName.length > 0 && !isCorrectName(maideName)}
+                    success={isCorrectName(maidename)}
+                    error={maidename.length > 0 && !isCorrectName(maidename)}
                     style={styles.inputItem}
                 >
 
@@ -137,17 +149,17 @@ export default class SignUp extends Component {
                         style={styles.input}
                         autoCapitalize="words"
                         keyboardType="default"
-                        onChangeText={maideName => this.setState({maideName})}
-                        value={maideName}
+                        onChangeText={maidename => this.setState({maidename})}
+                        value={maidename}
                     />
 
-                    {maideName.length > 0  ? (<Icon
+                    {maidename.length > 0  ? (<Icon
                         name={
-                            isCorrectName(maideName)
+                            isCorrectName(maidename)
                                 ? "checkmark-circle"
                                 : "close-circle"
                         }
-                        style={isCorrectName(maideName)
+                        style={isCorrectName(maidename)
                             ? styles.green
                             : styles.red }
                     />) : null}
@@ -327,7 +339,7 @@ export default class SignUp extends Component {
                     indicatorCount={10}
                     spinnerType="SkypeIndicator"
                 >
-                    <Text style={styles.nextButtonText}>Create Account</Text>
+                    <Text style={styles.nextButtonText}>Continuer</Text>
                 </SpinnerButton>
 
                 <TouchableOpacity
@@ -335,7 +347,7 @@ export default class SignUp extends Component {
                     activeOpacity={0.6}
                     style={styles.loginLink}
                 >
-                    <Text>Already have an account? Log In</Text>
+                    <Text>Vous êtes déjà inscrit? Cliquez ici</Text>
                 </TouchableOpacity>
                 <DropdownAlert ref={ref => (this.dropdown = ref)}/>
             </ScrollView>
