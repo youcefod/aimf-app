@@ -1,11 +1,11 @@
 
 export const isCorrectName = name => {
-    return name.match(/^[a-zA-Z]+(\s{0,1}[a-zA-Z ])*$/) ? true : false;
+    return !name.trim() || name.trim().match(/^[a-zA-Z]+(\s{0,1}[a-zA-Z ])*$/) ? true : false;
 };
 
 export const isCorrectEmailAddress = email => {
     let reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return reg.test(String(email).toLowerCase());
+    return reg.test(String(email.trim()).toLowerCase());
 };
 
 export const isCorrectPassword = password => {
@@ -18,4 +18,11 @@ export const isCorrectZipCode = zipCode => {
 
 export const isCorrectPhone = phone => {
     return phone.match(/^0[1-9][1-9]{8}$/) ? true : false;
+};
+
+
+export const getFrDate = date => {
+    return date.getDate().toString().padStart(2, "0") + '/' + date.getMonth().toString().padStart(2, "0") +
+        '/' + birthDate.getFullYear()
+        ;
 };

@@ -26,7 +26,6 @@ export const checkFormValues = values => {
         !isCorrectName(values.firstname) ||
         !isCorrectName(values.maidename) ||
         !isCorrectPhone(values.phoneNumber) ||
-        !isCorrectPhone(values.phoneNumber) ||
         !isCorrectZipCode(values.zipCode) ||
         !isCorrectPassword(values.password)||
         !isCorrectPassword(values.confirmPassword)

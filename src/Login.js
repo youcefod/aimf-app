@@ -87,7 +87,7 @@ export default class Login extends React.Component {
           activeOpacity={0.6}
         >
           <Text style={styles.createAccount}>
-            You don't have an account yet?
+            Vous n'avez pas encore un compte?
           </Text>
         </TouchableOpacity>
         <DropdownAlert ref={ref => (this.dropdown = ref)} />

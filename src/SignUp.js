@@ -1,27 +1,32 @@
 import React, {Component} from "react";
 import {Text, StyleSheet, TouchableOpacity, Image, ScrollView} from "react-native";
-import {Item, Icon, Input, DatePicker, Label} from "native-base";
+import {Item, Icon, Input, Label, DatePicker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
-import {isCorrectPhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode} from "./Utils/Functions";
+import {isCorrectPhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode, getFrDate} from "./Utils/Functions";
 import {styles} from "./signUp/css";
 import {checkFormValues} from "./signUp/ValidateSignUp";
 
 export default class SignUp extends Component {
-    _isMounted = false;
-    state = {
-        email: "",
-        password: "",
-        confirmPassword: "",
-        lastname: "",
-        maidename: "",
-        firstname: "",
-        birthDate: "",
-        zipCode: "",
-        phoneNumber: "",
-        buttonSpinner: false
-    };
+
+    constructor(props) {
+        super(props);
+        _isMounted = false;
+        this.state = {
+            email: "",
+            password: "",
+            confirmPassword: "",
+            lastname: "",
+            maidename: "",
+            firstname: "",
+            birthDate: new Date(),
+            zipCode: "",
+            phoneNumber: "",
+            buttonSpinner: false
+        };
+        this.setDate = this.setDate.bind(this);
+    }
 
     componentDidMount() {
         this._isMounted = true;
@@ -29,6 +34,10 @@ export default class SignUp extends Component {
 
     componentWillUnmount() {
         this._isMounted = false;
+    }
+
+    setDate(newDate) {
+        this.setState({ birthDate: newDate });
     }
 
     _onSignUp = () => {
@@ -43,17 +52,6 @@ export default class SignUp extends Component {
             );
             return;
         }
-        //if (!email || !password || !lastname) {
-        //    this.dropdown.alertWithType(
-        //       "error",
-        //      "ERROR OCCURED",
-        //    "Please, fill up all of your credintials!"
-        //);
-        // return;
-        //}
-        // this.setState({buttonSpinner: true});
-
-
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -67,7 +65,7 @@ export default class SignUp extends Component {
                         lastname: lastname,
                         maidename: maidename,
                         firstname: firstname,
-                        birthDate: birthDate,
+                        birthDate: getFrDate(birthDate),
                         zipCode: zipCode,
                         phoneNumber: phoneNumber,
                     })
@@ -88,16 +86,17 @@ export default class SignUp extends Component {
             .catch(error => {
                 this.dropdown.alertWithType(
                     "error",
-                    "ERROR OCCURED",
-                    "catch"
+                    "Erreur",
+                    "Une erreur est survenue, merci de réessayer ultirieurement"
                 );
             });
+        return;
     };
 
 
 
     render() {
-        const {email, password, confirmPassword, lastname, maidename, firstname, birthDate, zipCode, phoneNumber, buttonSpinner} = this.state;
+        const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner} = this.state;
 
         return (
 
@@ -111,7 +110,7 @@ export default class SignUp extends Component {
                 >Nom</Label>
                 <Item
                     rounded
-                    success={isCorrectName(lastname)}
+                    success={lastname && isCorrectName(lastname)}
                     error={lastname.length > 0 && !isCorrectName(lastname)}
                     style={styles.inputItem}
                 >
@@ -169,7 +168,7 @@ export default class SignUp extends Component {
                 >Prénom</Label>
                 <Item
                     rounded
-                    success={isCorrectName(firstname)}
+                    success={firstname && isCorrectName(firstname)}
                     error={firstname.length > 0 && !isCorrectName(firstname)}
                     style={styles.inputItem}
                 >
@@ -199,10 +198,17 @@ export default class SignUp extends Component {
                     style={styles.inputItem}
                 >
                     <DatePicker
-                        style={styles.input}
-                        value={birthDate}
+                        defaultDate={new Date()}
+                        minimumDate={new Date(1900, 1, 1)}
+                        maximumDate={new Date()}
+                        modalTransparent={false}
+                        animationType={"fade"}
+                        androidMode={"default"}
+                        placeHolderText="Séléctionner une date"
+                        textStyle={{ color: "green" }}
+                        placeHolderTextStyle={{ color: "#d3d3d3" }}
+                        onDateChange={this.setDate}
                     />
-
                 </Item>
                 <Label
                     style={styles.label}
