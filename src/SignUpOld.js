@@ -1,6 +1,5 @@
 import React, {Component, useState, useEffect } from "react";
-import {Text, StyleSheet, TouchableOpacity, Image, ScrollView, Animated, Easing, ActivityIndicator, Button, Modal, View, Alert
-} from "react-native";
+import {Text, StyleSheet, TouchableOpacity, Image, ScrollView, Animated, Easing} from "react-native";
 import {Item, Icon, Input, Label, DatePicker, Picker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
@@ -8,9 +7,7 @@ import firebase from "react-native-firebase";
 import {isCorrectMobilePhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode, getFrDate} from "./Utils/Functions";
 import {styles} from "./signUp/css";
 import {checkFormValues} from "./signUp/ValidateSignUp";
-import Loader from './Components/Loader';
-import ErrorModal from "./Components/ErrorModal";
-export default class SignUp extends Component {
+export default class SignUpOld extends Component {
 
     constructor(props) {
         super(props);
@@ -27,14 +24,9 @@ export default class SignUp extends Component {
             zipCode: "",
             phoneNumber: "",
             buttonSpinner: false,
-            spinValue: new Animated.Value(0),
-            loading: false,
-            modal: false,
-            modalVisible: false,
-            errorMessage: '',
+            spinValue: new Animated.Value(0)
         };
         this.setDate = this.setDate.bind(this);
-        this.setModalVisible = this.setModalVisible.bind(this);
     }
 
     componentDidMount() {
@@ -55,34 +47,20 @@ export default class SignUp extends Component {
         this.setState({ birthDate: newDate });
     }
 
-    shwoLoading(value: boolean) {
-        this.setState({
-            loading: value
-        });
-    }
 
-    setModalVisible(visible) {
-        this.setState({modalVisible: visible});
-    }
 
     _onSignUp = () => {
         const {email, password, lastname, maidename, firstname, birthDate, zipCode, phoneNumber} = this.state;
 
         const error = checkFormValues(this.state);
         if (error) {
-
-            this.setState({errorMessage: error});
-            this.setModalVisible(true);
-            // this.dropdown.alertWithType(
-            //     "error",
-            //     "ERREUR",
-            //     error
-            // );
-
+            this.dropdown.alertWithType(
+                "error",
+                "ERREUR",
+                error
+            );
             return;
         }
-
-        this.shwoLoading(true);
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -110,62 +88,76 @@ export default class SignUp extends Component {
 
                         if (this._isMounted) {
                             setTimeout(() => {
-                                this.shwoLoading(false)
+                                // this.setState({buttonSpinner: false});
                             }, 2000);
                         }
                     });
             })
             .catch(error => {
-
-                if (this._isMounted) {
-                    setTimeout(() => {
-
-                        this.dropdown.alertWithType(
-                            "error",
-                            "Erreur",
-                            "Une erreur est survenue, merci de réessayer ultirieurement"
-                        );
-
-                        this.shwoLoading(false)
-                    }, 2000);
-                }
-
+                this.dropdown.alertWithType(
+                    "error",
+                    "Erreur",
+                    "Une erreur est survenue, merci de réessayer ultirieurement"
+                );
             });
         return;
     };
 
+    loading = () => {
+
+       Animated.loop(
+            Animated.timing(this.state.spinValue, {
+                toValue: 1,
+                duration: 1000,
+                delay: 1000,
+                easing: Easing.linear,
+                useNativeDriver: true
+            })
+        ).start();
+    }
+
     render() {
+
+
+        this.loading();
+        // Second interpolate beginning and end values (in this case 0 and 1)
+        const spin = this.state.spinValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['0deg', '360deg']
+        });
 
         const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner} = this.state;
 
+        const logo = require("../assets/images/logo_transparent.png");
         return (
-            <>
-                <ScrollView
+
+            <ScrollView
                 centerContent={true}
                 style={styles.scrollView}
             >
+
                 <Label
                     style={styles.label}
-                >Genre*</Label>
+                >Genre</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
                 >
-                    <Picker
-                        mode="dropdown"
-                        iosHeader="Select your SIM"
-                        iosIcon={<Icon name="arrow-down" />}
-                        style={{ width: undefined }}
-                        selectedValue={this.state.kind}
-                        onValueChange={this.setKind.bind(this)}
-                    >
-                        <Picker.Item label="Home" value="homme" />
-                        <Picker.Item label="Femme" value="femme" />
-                    </Picker>
+                <Picker
+                    mode="dropdown"
+                    iosHeader="Select your SIM"
+                    iosIcon={<Icon name="arrow-down" />}
+                    style={{ width: undefined }}
+                    selectedValue={this.state.kind}
+                    onValueChange={this.setKind.bind(this)}
+                >
+                    <Picker.Item label="Home" value="homme" />
+                    <Picker.Item label="Femme" value="femme" />
+                </Picker>
                 </Item>
                 <Label
                     style={styles.label}
-                >Nom*</Label>
+                >Nom</Label>
                 <Item
                     rounded
                     success={lastname && isCorrectName(lastname)}
@@ -223,7 +215,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Prénom*</Label>
+                >Prénom</Label>
                 <Item
                     rounded
                     success={firstname && isCorrectName(firstname)}
@@ -250,7 +242,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Date de naissance*</Label>
+                >Date de naissance</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
@@ -272,7 +264,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Code postal*</Label>
+                >Code postal</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
@@ -298,7 +290,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Email*</Label>
+                >Email</Label>
                 <Item
                     rounded
                     success={isCorrectEmailAddress(email)}
@@ -324,7 +316,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Mobile*</Label>
+                >Mobile</Label>
                 <Item
                     rounded
                     style={styles.inputItem}
@@ -349,7 +341,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Mot de passe*</Label>
+                >Mot de passe</Label>
                 <Item
                     rounded
                     success={isCorrectPassword(password)}
@@ -374,7 +366,7 @@ export default class SignUp extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Confirmer mot de passe*</Label>
+                >Confirmer mot de passe</Label>
                 <Item
                     rounded
                     success={isCorrectPassword(confirmPassword)}
@@ -398,8 +390,10 @@ export default class SignUp extends Component {
                     />) : null}
                 </Item>
 
-                {this.state.loading ? (<Loader loading={this.state.loading} />) : null}
-
+                <Animated.Image
+                    style={{transform: [{rotate: spin}], width: 60, height: 60, position: 'relative', lef: 'auto', right: 'auto'}}
+                    source={logo}
+                />
                 <SpinnerButton
                     buttonStyle={styles.signupButton}
                     isLoading={buttonSpinner}
@@ -419,9 +413,6 @@ export default class SignUp extends Component {
                 </TouchableOpacity>
                 <DropdownAlert ref={ref => (this.dropdown = ref)}/>
             </ScrollView>
-                <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible} message={this.state.errorMessage}/>
-            </>
-
         );
     }
 }

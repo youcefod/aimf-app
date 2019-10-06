@@ -16,13 +16,13 @@ export const isCorrectZipCode = zipCode => {
     return zipCode.match(/^[0-9]{5}$/) ? true : false;
 };
 
-export const isCorrectPhone = phone => {
-    return phone.match(/^0[1-9][1-9]{8}$/) ? true : false;
+export const isCorrectMobilePhone = phone => {
+    return phone.match(/^0(6|7)[1-9]{8}$/) ? true : false;
 };
 
 
 export const getFrDate = date => {
     return date.getDate().toString().padStart(2, "0") + '/' + date.getMonth().toString().padStart(2, "0") +
-        '/' + birthDate.getFullYear()
+        '/' + date.getFullYear()
         ;
 };

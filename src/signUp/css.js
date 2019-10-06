@@ -2,8 +2,12 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     scrollView: {
+        paddingTop: 40
+    },
 
-        paddingTop: 40,
+    logo: {
+      width:60,
+      height: 60,
     },
     inputItem: {
         marginBottom: 15,
