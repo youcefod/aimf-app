@@ -1,4 +1,4 @@
-import {isCorrectPhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode} from "../Utils/Functions";
+import {isCorrectMobilePhone, isCorrectName, isCorrectEmailAddress, isCorrectPassword, isCorrectZipCode} from "../Utils/Functions";
 
 export const checkFormValues = values => {
 
@@ -20,12 +20,18 @@ export const checkFormValues = values => {
     if (!values.email) {
         return 'Veuillez renseigner votre email';
     }
+    if (!values.question1) {
+        return 'Veuillez renseigner la réponse à la première question';
+    }
+    if (!values.question2) {
+        return 'Veuillez renseigner la réponse à la deuxième question';
+    }
 
     if (!isCorrectEmailAddress(values.email) ||
         !isCorrectName(values.lastname) ||
         !isCorrectName(values.firstname) ||
         !isCorrectName(values.maidename) ||
-        !isCorrectPhone(values.phoneNumber) ||
+        !isCorrectMobilePhone(values.phoneNumber) ||
         !isCorrectZipCode(values.zipCode) ||
         !isCorrectPassword(values.password)||
         !isCorrectPassword(values.confirmPassword)

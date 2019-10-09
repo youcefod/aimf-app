@@ -1,6 +1,5 @@
 import React, {Component, useState, useEffect } from "react";
-import {Text, StyleSheet, TouchableOpacity, Image, ScrollView, Animated, Easing, ActivityIndicator, Button, Modal, View, Alert
-} from "react-native";
+import {Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Easing, ActivityIndicator, ImageBackground } from "react-native";
 import {Item, Icon, Input, Label, DatePicker, Picker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
@@ -26,6 +25,8 @@ export default class SignUp extends Component {
             birthDate: new Date(),
             zipCode: "",
             phoneNumber: "",
+            question1: "",
+            question2: "",
             buttonSpinner: false,
             spinValue: new Animated.Value(0),
             loading: false,
@@ -66,19 +67,13 @@ export default class SignUp extends Component {
     }
 
     _onSignUp = () => {
-        const {email, password, lastname, maidename, firstname, birthDate, zipCode, phoneNumber} = this.state;
+        const {email, password, lastname, maidename, firstname, birthDate, zipCode, phoneNumber, question1, question2} = this.state;
 
         const error = checkFormValues(this.state);
         if (error) {
 
             this.setState({errorMessage: error});
             this.setModalVisible(true);
-            // this.dropdown.alertWithType(
-            //     "error",
-            //     "ERREUR",
-            //     error
-            // );
-
             return;
         }
 
@@ -100,6 +95,9 @@ export default class SignUp extends Component {
                         birthDate: getFrDate(birthDate),
                         zipCode: zipCode,
                         phoneNumber: phoneNumber,
+                        question1: question1,
+                        question2: question2,
+                        isActive: false,
                     })
                     .then(() => {
                         this.dropdown.alertWithType(
@@ -136,14 +134,14 @@ export default class SignUp extends Component {
 
     render() {
 
-        const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner} = this.state;
+        const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, question1, question2} = this.state;
 
+        const ScrollViewOpacity = this.state.modalVisible ? 0.6 : 1;
         return (
             <>
                 <ScrollView
                 centerContent={true}
-                style={styles.scrollView}
-            >
+                style={{ paddingTop: 40, opacity: ScrollViewOpacity, backgroundColor: '#f3aa2329'}}>
                 <Label
                     style={styles.label}
                 >Genre*</Label>
@@ -168,14 +166,14 @@ export default class SignUp extends Component {
                 >Nom*</Label>
                 <Item
                     rounded
-                    success={lastname && isCorrectName(lastname)}
+                    success={lastname.length > 0 && isCorrectName(lastname)}
                     error={lastname.length > 0 && !isCorrectName(lastname)}
                     style={styles.inputItem}
                 >
 
                     <Input
                         style={styles.input}
-                        autoCapitalize="words"
+                        autoCapitalize="characters"
                         keyboardType="default"
                         onChangeText={lastname => this.setState({lastname})}
                         value={lastname}
@@ -204,7 +202,7 @@ export default class SignUp extends Component {
 
                     <Input
                         style={styles.input}
-                        autoCapitalize="words"
+                        autoCapitalize="characters"
                         keyboardType="default"
                         onChangeText={maidename => this.setState({maidename})}
                         value={maidename}
@@ -226,7 +224,7 @@ export default class SignUp extends Component {
                 >Prénom*</Label>
                 <Item
                     rounded
-                    success={firstname && isCorrectName(firstname)}
+                    success={firstname.length > 0 && isCorrectName(firstname)}
                     error={firstname.length > 0 && !isCorrectName(firstname)}
                     style={styles.inputItem}
                 >
@@ -262,12 +260,13 @@ export default class SignUp extends Component {
                         modalTransparent={false}
                         locale={"fr"}
                         formatChosenDate={(date)=> {return getFrDate(date);} }
-                        androidMode={"calendar"}
+                        androidMode={"spinner"}
                         animationType={"slide"}
                         placeHolderText="Séléctionner une date"
                         textStyle={{ color: "#000" }}
                         placeHolderTextStyle={{ color: "#d3d3d3" }}
                         onDateChange={this.setDate}
+                        customStyles={styles.datePicker}
                     />
                 </Item>
                 <Label
@@ -278,7 +277,6 @@ export default class SignUp extends Component {
                     style={styles.inputItem}
                 >
                     <Input
-                        autoCompleteType={"autoCompleteType"}
                         style={styles.input}
                         keyboardType="numeric"
                         maxLength={5}
@@ -348,16 +346,50 @@ export default class SignUp extends Component {
                     />) : null}
                 </Item>
                 <Label
+                style={styles.label}
+                >Question1*: </Label>
+                <Item
+                    rounded
+                    style={styles.inputItem}
+                >
+
+                    <Input
+                        style={styles.input}
+                        autoCapitalize="sentences"
+                        keyboardType="default"
+                        onChangeText={question1 => this.setState({question1})}
+                        value={question1}
+                    />
+                </Item>
+                <Label
+                    style={styles.label}
+                >Question2*: </Label>
+                <Item
+                    rounded
+                    style={styles.inputItem}
+                >
+
+                    <Input
+                        style={styles.input}
+                        autoCapitalize="sentences"
+                        keyboardType="default"
+                        onChangeText={question2 => this.setState({question2})}
+                        value={question2}
+                    />
+                </Item>
+                <Label
                     style={styles.label}
                 >Mot de passe*</Label>
                 <Item
                     rounded
                     success={isCorrectPassword(password)}
-                    error={password.length > 0 && !isCorrectPassword(password)}
+                    error={password.length > 0 && (!isCorrectPassword(password) || password != confirmPassword)}
                     style={styles.inputItem}
                 >
                     <Input
+                        secureTextEntry={true}
                         style={styles.input}
+                        keyboardType="visible-password"
                         onChangeText={password => this.setState({password})}
                         value={password}
                     />
@@ -378,11 +410,12 @@ export default class SignUp extends Component {
                 <Item
                     rounded
                     success={isCorrectPassword(confirmPassword)}
-                    error={confirmPassword.length > 0 && !isCorrectPassword(confirmPassword)}
+                    error={confirmPassword.length > 0 && (!isCorrectPassword(confirmPassword) || password != confirmPassword)}
                     style={styles.inputItem}
                 >
                     <Input
                         style={styles.input}
+                        keyboardType="visible-password"
                         onChangeText={confirmPassword => this.setState({confirmPassword})}
                         value={confirmPassword}
                     />
@@ -397,9 +430,14 @@ export default class SignUp extends Component {
                             : styles.red }
                     />) : null}
                 </Item>
+                {this.state.loading ? (
+                    <Item style={{marginLeft: "auto",
+                        marginRight: "auto", position: "relative",
+                        width: 50, marginTop: -80}}>
+                    <Loader  />
+                        </Item>
 
-                {this.state.loading ? (<Loader loading={this.state.loading} />) : null}
-
+                        ) : null}
                 <SpinnerButton
                     buttonStyle={styles.signupButton}
                     isLoading={buttonSpinner}
@@ -418,8 +456,12 @@ export default class SignUp extends Component {
                     <Text>Vous êtes déjà inscrit? Cliquez ici</Text>
                 </TouchableOpacity>
                 <DropdownAlert ref={ref => (this.dropdown = ref)}/>
+
+                    <ImageBackground  style={{width: '100%', height: '100%'}}>
+                        <Text>Inside</Text>
+                    </ImageBackground>
             </ScrollView>
-                <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible} message={this.state.errorMessage}/>
+            <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible} message={this.state.errorMessage}/>
             </>
 
         );

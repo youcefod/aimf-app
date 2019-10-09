@@ -1,10 +1,6 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    scrollView: {
-        paddingTop: 40
-    },
-
     logo: {
       width:60,
       height: 60,
@@ -18,6 +14,7 @@ export const styles = StyleSheet.create({
         width: 300,
         borderRadius: 10,
         height:45,
+        backgroundColor:"#FFF"
     },
     label: {
         fontWeight: "bold",
@@ -37,7 +34,7 @@ export const styles = StyleSheet.create({
         width: 150,
         borderRadius: 50,
         backgroundColor: "#5CB85C",
-        marginTop: 35,
+        marginTop: 65,
         marginLeft: "auto",
         marginRight: "auto",
     },
@@ -58,6 +55,9 @@ export const styles = StyleSheet.create({
     },
     red:  {
         color : "red"
-    }
+    },
 
+    datePicker: {
+        color: "#f3aa2329"
+    }
 });

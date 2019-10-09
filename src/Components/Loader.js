@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Modal, Text, TouchableHighlight, View, Alert, Animated, Easing} from 'react-native';
+import {Modal, Text, TouchableHighlight, View, Alert, Animated, Easing, Item} from 'react-native';
 
 export default class Loader extends Component {
 
@@ -15,7 +15,7 @@ export default class Loader extends Component {
         Animated.loop(
             Animated.timing(this.state.spinValue, {
                 toValue: 1,
-                duration: 600,
+                duration: 800,
                 delay: 0,
                 easing: Easing.linear,
                 useNativeDriver: true
@@ -30,12 +30,11 @@ export default class Loader extends Component {
             inputRange: [0, 1],
             outputRange: ['0deg', '360deg']
         });
-        const logo = require("../../assets/images/logo_transparent.png");
+        const logo = require("../../assets/images/loader_logo.png");
 
         return (
-
             <Animated.Image
-                style={{transform: [{rotate: spin}], width: 60, height: 60, position: 'absolute',  marginTop: 500, marginLeft: 150}}
+                style={{transform: [{rotate: spin}], width: 43, height: 60}}
                 source={logo}
             />
         );

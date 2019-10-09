@@ -22,7 +22,7 @@ export const isCorrectMobilePhone = phone => {
 
 
 export const getFrDate = date => {
-    return date.getDate().toString().padStart(2, "0") + '/' + date.getMonth().toString().padStart(2, "0") +
+    return date.getDate().toString().padStart(2, "0") + '/' + ((parseInt(date.getMonth().toString()) + 1) + '') .padStart(2, "0") +
         '/' + date.getFullYear()
         ;
 };
