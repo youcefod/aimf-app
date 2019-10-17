@@ -25,8 +25,8 @@ export default class SignUp extends Component {
             birthDate: new Date(),
             zipCode: "",
             phoneNumber: "",
-            question1: "",
-            question2: "",
+            response1: "",
+            response2: "",
             buttonSpinner: false,
             spinValue: new Animated.Value(0),
             loading: false,
@@ -67,7 +67,7 @@ export default class SignUp extends Component {
     }
 
     _onSignUp = () => {
-        const {email, password, lastname, maidename, firstname, birthDate, zipCode, phoneNumber, question1, question2} = this.state;
+        const {email, password, lastname, maidename, firstname, birthDate, zipCode, phoneNumber, response1, response2} = this.state;
 
         const error = checkFormValues(this.state);
         if (error) {
@@ -95,9 +95,9 @@ export default class SignUp extends Component {
                         birthDate: getFrDate(birthDate),
                         zipCode: zipCode,
                         phoneNumber: phoneNumber,
-                        question1: question1,
-                        question2: question2,
-                        isActive: false,
+                        response1: response1,
+                        response2: response2,
+                        isAuthorized: false,
                     })
                     .then(() => {
                         this.dropdown.alertWithType(
@@ -134,7 +134,7 @@ export default class SignUp extends Component {
 
     render() {
 
-        const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, question1, question2} = this.state;
+        const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, response1, response2} = this.state;
 
         const ScrollViewOpacity = this.state.modalVisible ? 0.6 : 1;
         return (
@@ -357,8 +357,8 @@ export default class SignUp extends Component {
                         style={styles.input}
                         autoCapitalize="sentences"
                         keyboardType="default"
-                        onChangeText={question1 => this.setState({question1})}
-                        value={question1}
+                        onChangeText={response1 => this.setState({response1})}
+                        value={response1}
                     />
                 </Item>
                 <Label
@@ -373,8 +373,8 @@ export default class SignUp extends Component {
                         style={styles.input}
                         autoCapitalize="sentences"
                         keyboardType="default"
-                        onChangeText={question2 => this.setState({question2})}
-                        value={question2}
+                        onChangeText={response2 => this.setState({response2})}
+                        value={response2}
                     />
                 </Item>
                 <Label
@@ -389,7 +389,6 @@ export default class SignUp extends Component {
                     <Input
                         secureTextEntry={true}
                         style={styles.input}
-                        keyboardType="visible-password"
                         onChangeText={password => this.setState({password})}
                         value={password}
                     />
@@ -415,7 +414,7 @@ export default class SignUp extends Component {
                 >
                     <Input
                         style={styles.input}
-                        keyboardType="visible-password"
+                        secureTextEntry={true}
                         onChangeText={confirmPassword => this.setState({confirmPassword})}
                         value={confirmPassword}
                     />

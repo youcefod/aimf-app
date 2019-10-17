@@ -4,6 +4,7 @@ import {
   createBottomTabNavigator
 } from "react-navigation";
 
+import firebase from "react-native-firebase";
 import { Icon } from "native-base";
 
 import TimelineScreen from "./screens/TimelineScreen";
@@ -97,12 +98,18 @@ ProfileStack.navigationOptions = {
   )
 };
 
-const bottomTabNavigator = createBottomTabNavigator({
+const currentUser = firebase.auth().currentUser;
+
+const bottomTabNavigator = currentUser && currentUser._user.isAuthorized
+    ?  createBottomTabNavigator({
   TimelineStack,
   PostWorkflowStack,
   YouTubeStack,
   NotificationsStack,
   ProfileStack
-});
+}) :
+    createBottomTabNavigator({
+        ProfileStack
+    });
 
 export default bottomTabNavigator;

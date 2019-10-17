@@ -65,8 +65,8 @@ export default class Login extends React.Component {
         </Item>
         <Item rounded style={styles.inputItem}>
           <Input
+            secureTextEntry={true}
             style={styles.input}
-            keyboardType="visible-password"
             onChangeText={password => this.setState({ password })}
             placeholder={"Password"}
             value={password}
