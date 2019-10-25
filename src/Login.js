@@ -35,7 +35,6 @@ export default class Login extends React.Component {
         if (this._isMounted) {
           setTimeout(() => {
             this.setState({ buttonSpinner: false });
-            this.props.navigation.navigate("MainTabNavigator");
           }, 2000);
         }
       })

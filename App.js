@@ -4,7 +4,7 @@ import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import Loading from "./src/Loading";
 import SignUp from "./src/SignUp";
 import Login from "./src/Login";
-import MainTabNavigator from "./src/MainTabNavigator";
+import {bottomActiveUserTabNavigator, bottomNotActiveUserTabNavigator} from "./src/MainTabNavigator";
 
 // create our app's navigation stack
 const App = createSwitchNavigator(
@@ -12,7 +12,8 @@ const App = createSwitchNavigator(
     Loading,
     SignUp,
     Login,
-    MainTabNavigator
+    bottomActiveUserTabNavigator,
+    bottomNotActiveUserTabNavigator
   },
   {
     initialRouteName: "Loading"

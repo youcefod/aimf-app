@@ -98,18 +98,16 @@ ProfileStack.navigationOptions = {
   )
 };
 
-const currentUser = firebase.auth().currentUser;
-
-const bottomTabNavigator = currentUser && currentUser._user.isAuthorized
-    ?  createBottomTabNavigator({
+export const bottomActiveUserTabNavigator =
+    createBottomTabNavigator({
   TimelineStack,
   PostWorkflowStack,
   YouTubeStack,
   NotificationsStack,
   ProfileStack
-}) :
+});
+
+export const bottomNotActiveUserTabNavigator =
     createBottomTabNavigator({
         ProfileStack
     });
-
-export default bottomTabNavigator;
