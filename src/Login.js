@@ -1,14 +1,19 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View, Image, Animated} from "react-native";
 import { Item, Input } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
+import ErrorModal from "./Components/ErrorModal";
+import {CREDENTIALS_EMPTY_ERROR} from "./Utils/Constants";
 
 export default class Login extends React.Component {
-  _isMounted = false;
-  state = { email: "", password: "", buttonSpinner: false };
-
+  constructor(props) {
+    super(props);
+    _isMounted = false;
+    this.state = { email: "", password: "", buttonSpinner: false, modalVisible: false, errorMessage: '' };
+    this.setModalVisible = this.setModalVisible.bind(this);
+  }
   componentDidMount() {
     this._isMounted = true;
   }
@@ -17,14 +22,15 @@ export default class Login extends React.Component {
     this._isMounted = false;
   }
 
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
   handleLogin = () => {
     const { email, password } = this.state;
     if (!email || !password) {
-      this.dropdown.alertWithType(
-        "error",
-        "ERROR OCCURED",
-        "Please, fill up all of your credintials!"
-      );
+      this.setState({errorMessage: CREDENTIALS_EMPTY_ERROR});
+      this.setModalVisible(true);
       return;
     }
     this.setState({ buttonSpinner: true });
@@ -33,15 +39,14 @@ export default class Login extends React.Component {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         if (this._isMounted) {
-          setTimeout(() => {
-            this.setState({ buttonSpinner: false });
-          }, 2000);
+          this.setState({ buttonSpinner: false });
         }
       })
       .catch(error => {
         if (this._isMounted) {
           this.setState({ buttonSpinner: false });
-          this.dropdown.alertWithType("error", "LOGIN ERROR", error.message);
+          this.setState({errorMessage: error.message});
+          this.setModalVisible(true);
         }
       });
   };
@@ -50,6 +55,7 @@ export default class Login extends React.Component {
     const { email, password, buttonSpinner } = this.state;
     const logo = require("../assets/images/logo_transparent.png");
     return (
+      <>
       <View style={styles.bodyWrapper}>
         <Image style={{ width: 120, height: 120 }} source={logo} />
 
@@ -91,6 +97,9 @@ export default class Login extends React.Component {
         </TouchableOpacity>
         <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </View>
+        <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible}
+    message={this.state.errorMessage}/>
+    </>
     );
   }
 }
