@@ -16,6 +16,7 @@ import {styles} from "./signUp/css";
 import Loader from './Components/Loader';
 import ErrorModal from "./Components/ErrorModal";
 import {EMAIL_EXIST_ERROR, SERVER_ERROR} from "./Utils/Constants";
+import {checkFormValues} from "./signUp/ValidateSignUp";
 
 export default class SignUp extends Component {
 
