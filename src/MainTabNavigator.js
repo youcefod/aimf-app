@@ -4,7 +4,6 @@ import {
   createBottomTabNavigator
 } from "react-navigation";
 
-import firebase from "react-native-firebase";
 import { Icon } from "native-base";
 
 import TimelineScreen from "./screens/TimelineScreen";
