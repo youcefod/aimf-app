@@ -77,6 +77,7 @@
 		F341263D019048B7A1616AE4 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C37BE5AD6E224008B369C10B /* Zocial.ttf */; };
 		34694B17EFF44836A64777FD /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE3FB449EC604B10BD42A72C /* libRNVectorIcons.a */; };
 		BB72A09BF7D044FDB8CB5281 /* libRNVectorIcons-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721370FF1E8040E5BFB44478 /* libRNVectorIcons-tvOS.a */; };
+		7B6D9EC57D8349DC8754BBC4 /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9BA3EF0BD5BE45B7B40A68FC /* icomoon.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -425,6 +426,10 @@
 		FE1598D3639840D386DF0774 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; name = "RNVectorIcons.xcodeproj"; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		DE3FB449EC604B10BD42A72C /* libRNVectorIcons.a */ = {isa = PBXFileReference; name = "libRNVectorIcons.a"; path = "libRNVectorIcons.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		721370FF1E8040E5BFB44478 /* libRNVectorIcons-tvOS.a */ = {isa = PBXFileReference; name = "libRNVectorIcons-tvOS.a"; path = "libRNVectorIcons-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		9BA3EF0BD5BE45B7B40A68FC /* icomoon.ttf */ = {isa = PBXFileReference; name = "icomoon.ttf"; path = "../assets/fonts/icomoon.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4DDD047C538E49B09ED8D6F4 /* Fontisto.ttf */ = {isa = PBXFileReference; name = "Fontisto.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1821521D34454866B08550D7 /* icomoon2.ttf */ = {isa = PBXFileReference; name = "icomoon2.ttf"; path = "../assets/fonts/icomoon2.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		35B43E2A649F42BC8A11912F /* icomoon3.ttf */ = {isa = PBXFileReference; name = "icomoon3.ttf"; path = "../assets/fonts/icomoon3.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -734,6 +739,10 @@
 				DF15FC94FDDA4EB1A6114183 /* rubicon-icon-font.ttf */,
 				F1CE22225A024CB4AF286077 /* SimpleLineIcons.ttf */,
 				C37BE5AD6E224008B369C10B /* Zocial.ttf */,
+				9BA3EF0BD5BE45B7B40A68FC /* icomoon.ttf */,
+				4DDD047C538E49B09ED8D6F4 /* Fontisto.ttf */,
+				1821521D34454866B08550D7 /* icomoon2.ttf */,
+				35B43E2A649F42BC8A11912F /* icomoon3.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1218,6 +1227,10 @@
 				DA202AEF773547B4B31BF93D /* rubicon-icon-font.ttf in Resources */,
 				72FA7C9AFCF745EDBFFEC260 /* SimpleLineIcons.ttf in Resources */,
 				F341263D019048B7A1616AE4 /* Zocial.ttf in Resources */,
+				7B6D9EC57D8349DC8754BBC4 /* icomoon.ttf in Resources */,
+				B92BC4A9953F4A2F93CCF1BF /* Fontisto.ttf in Resources */,
+				177E4F701A564F4AA52D9725 /* icomoon2.ttf in Resources */,
+				5E14B4D2765D4D44B848B256 /* icomoon3.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

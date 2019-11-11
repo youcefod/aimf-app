@@ -4,28 +4,26 @@ import {
   createBottomTabNavigator
 } from "react-navigation";
 
-import { Icon } from "native-base";
+import { Icon  } from "native-base";
+import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
+import icoMoonConfig from '../config/icons/selection.json';
 
-import TimelineScreen from "./screens/TimelineScreen";
+import HomeScreen from "./screens/HomeScreen";
 import PostWorkflowScreen from "./screens/PostWorkflowScreen";
 import YouTubeScreen from "./screens/YouTubeScreen";
-import NotificationsScreen from "./screens/NotificationsScreen";
+import KoranScreen from "./screens/KoranScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-
-// ----------------------------------------------TimelineScreen-----------------------------------------------------
-const TimelineStack = createStackNavigator({
-  Timeline: TimelineScreen
+import AdminScreen from "./screens/AdminScreen";
+const CustomIcon = createIconSetFromIcoMoon(icoMoonConfig);
+// ----------------------------------------------HomeScreen-----------------------------------------------------
+const HomeStack = createStackNavigator({
+  Timeline: HomeScreen
 });
 
-TimelineStack.navigationOptions = {
-  tabBarLabel: "Feed",
+HomeStack.navigationOptions = {
+  tabBarLabel: "Accueil",
   tabBarIcon: ({ focused }) => (
-    <Icon
-      type="SimpleLineIcons"
-      name="feed"
-      style={{ fontSize: 20, marginBottom: -3 }}
-      color={focused ? "#2f95dc" : "#ccc"}
-    />
+      <CustomIcon name="minaret" size={25} color={"#000"}/>
   )
 };
 
@@ -63,20 +61,15 @@ YouTubeStack.navigationOptions = {
   )
 };
 
-// ----------------------------------------------NotificationsScreen-----------------------------------------------------
-const NotificationsStack = createStackNavigator({
-  Notifications: NotificationsScreen
+// ----------------------------------------------KoranScreen-----------------------------------------------------
+const KoranStack = createStackNavigator({
+  Koran: KoranScreen
 });
 
-NotificationsStack.navigationOptions = {
-  tabBarLabel: "Notifications",
+KoranStack.navigationOptions = {
+  tabBarLabel: "Coran",
   tabBarIcon: ({ focused }) => (
-    <Icon
-      type="EvilIcons"
-      name="bell"
-      style={{ fontSize: 35, marginBottom: -3 }}
-      color={focused ? "#2f95dc" : "#ccc"}
-    />
+      <CustomIcon name="coran" size={25} color={"#000"}/>
   )
 };
 
@@ -97,11 +90,29 @@ ProfileStack.navigationOptions = {
   )
 };
 
+// ----------------------------------------------AdminScreen-----------------------------------------------------
+const AdminStack = createStackNavigator({
+  Admin: AdminScreen
+});
+
+AdminStack.navigationOptions = {
+  tabBarLabel: "Admin",
+  tabBarIcon: ({ focused }) => (
+      <Icon
+          type="FontAwesome5"
+          name="user-check"
+          color={focused ? "#2f95dc" : "#ccc"}
+          style={{ marginBottom: -3, fontSize: 18 }}
+      />
+  )
+};
+
 const bottomTabNavigator = createBottomTabNavigator({
-  TimelineStack,
-  PostWorkflowStack,
+  HomeStack,
+  KoranStack,
   YouTubeStack,
-  NotificationsStack,
+  PostWorkflowStack,
+  AdminStack,
   ProfileStack
 });
 
