@@ -111,11 +111,17 @@ export const bottomActiveUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
   YouTubeStack,
+  ProfileStack
+});
+
+export const bottomAdminUserTabNavigator = createBottomTabNavigator({
+  HomeStack,
+  KoranStack,
+  YouTubeStack,
   PostWorkflowStack,
   AdminStack,
   ProfileStack
 });
-
 export const bottomNotActiveUserTabNavigator =
     createBottomTabNavigator({
         ProfileStack

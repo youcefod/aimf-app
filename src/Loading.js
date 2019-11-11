@@ -10,7 +10,8 @@ export default class Loading extends Component {
               .doc(user._user.uid)
               .get()
               .then(doc => {
-                  this.props.navigation.navigate(doc.data().isAuthorized ? 'bottomActiveUserTabNavigator' : 'bottomNotActiveUserTabNavigator');
+                  const navigation = doc.data().isAuthorized ? 'bottomActiveUserTabNavigator' : 'bottomNotActiveUserTabNavigator';
+                  this.props.navigation.navigate(doc.data().isAdmin ? 'bottomAdminUserTabNavigator' : navigation);
               });
       }
       else {
