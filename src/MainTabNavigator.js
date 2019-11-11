@@ -107,7 +107,7 @@ AdminStack.navigationOptions = {
   )
 };
 
-const bottomTabNavigator = createBottomTabNavigator({
+export const bottomActiveUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
   YouTubeStack,
@@ -116,4 +116,7 @@ const bottomTabNavigator = createBottomTabNavigator({
   ProfileStack
 });
 
-export default bottomTabNavigator;
+export const bottomNotActiveUserTabNavigator =
+    createBottomTabNavigator({
+        ProfileStack
+    });
