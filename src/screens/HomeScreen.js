@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import FeedCard from "../Components/FeedCard";
 import {Container, Content} from "native-base";
 import firebase from "react-native-firebase";
@@ -18,11 +18,12 @@ class HomeScreen extends Component {
 
       firebase
         .firestore()
-        .collection("annonce")
-        // .where('enable', '==', 'true')
-        .orderBy('date', 'desc')
+        .collection("annonces")
+        // .where('enable', '==', true)
+        .orderBy('date')
+        .limit(5)
         .get()
-        .then(function (annonces) {
+        .then(annonces => {
         const data = [];
         annonces.forEach(function (doc) {
           data.push(doc.data()) ;
@@ -38,7 +39,7 @@ class HomeScreen extends Component {
                     return <FeedCard
                         key={index}
                         title={annonce.title}
-                        date={getFrDate(annonce.date.toDate())}
+                        date={getFrDate(new Date())}
                         text={annonce.text}
                         backgroundColor={this.isNewAnnonce(annonce) ? "#ffffff" : "#b3b3b3"}
                         dateColor={this.isNewAnnonce(annonce) ? "#000000" : "#ffffff"}
@@ -49,6 +50,17 @@ class HomeScreen extends Component {
       return null;
   }
 
+  scroll = () => {
+      console.log('###Scroll###Scroll###Scroll###Scroll###Scroll###Scroll###Scroll###Scroll###Scroll###');
+        const annonces = that.state.annonces;
+
+      annonces.push({
+         title: "test test",
+         text: "test test  test  test  test  test  test  test  test  test  test  test  test ",
+      });
+      this.setState({annonces: data});
+  }
+
   isNewAnnonce =(annonce) => {
       const now = new Date();
       const today = new Date(now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate());
@@ -56,13 +68,16 @@ class HomeScreen extends Component {
   }
   render() {
     return (
-        <View style={{ flex: 1 }}>
+        <ScrollView
+            onScrollEndDrag={this.scroll}
+            nestedScrollEnabled={true}
+            >
             <Container>
             <Content>
                 {this.showAnnonces()}
             </Content>
             </Container>
-    </View>);
+    </ScrollView>);
 
   }
 }

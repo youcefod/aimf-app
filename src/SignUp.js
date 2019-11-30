@@ -127,7 +127,8 @@ export default class SignUp extends Component {
         firebase
             .firestore()
             .collection('users')
-            .where('email', '==', this.state.email.trim().toLowerCase()).get()
+            .where('email', '==', this.state.email.trim().toLowerCase())
+            .get()
             .then(user => {
                 if (user.empty) {
                     this.save();
