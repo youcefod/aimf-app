@@ -16,7 +16,6 @@ class HomeScreen extends Component {
             loading: true,
             annonces: [],
             page: 1,
-            error: null,
             refreshing: false
         };
     }
@@ -31,7 +30,7 @@ class HomeScreen extends Component {
         firebase
             .firestore()
             .collection("annonces")
-            // .where('enable', '==', true)
+            .where('enable', '==', true)
             .orderBy('date', 'desc')
             .limit(5)
             .get()
@@ -47,7 +46,7 @@ class HomeScreen extends Component {
                 that.setState({
                     annonces: that.state.page === 1 ? data : [...that.state.annonces, ...data],
                     loading: false,
-                    refrloadAnnonceseshing: false});
+                    refreshing: false});
                             }, 2000);
 
             });
@@ -111,7 +110,8 @@ class HomeScreen extends Component {
     };
     isNewAnnonce =(annonce) => {
         const now = new Date();
-        const today = new Date(now.getFullYear() + '-' +  ((parseInt(now.getMonth().toString()) + 1) + '') .padStart(2, "0") + '-' +  now.getDate().toString().padStart(2, "0") + 'T00:00:00');
+        const today = new Date(now.getFullYear() + '-' +  ((parseInt(now.getMonth().toString()) + 1) + '').
+        padStart(2, "0") + '-' +  now.getDate().toString().padStart(2, "0") + 'T00:00:00');
         return annonce.date.toDate() >= today;
     }
     renderItem = item => {
@@ -120,7 +120,7 @@ class HomeScreen extends Component {
                 title={item.title}
                 date={getFrDate(item.date.toDate())}
                 text={item.text}
-                backgroundColor={this.isNewAnnonce(item) ? "#ffffff" : "#b3b3b3"}
+                backgroundColor={this.isNewAnnonce(item) ? "#ffffff" : "#dadada"}
                 dateColor={this.isNewAnnonce(item) ? "#000000" : "#ffffff"}
             />
         );
@@ -133,7 +133,6 @@ class HomeScreen extends Component {
                     renderItem={({ item }) => this.renderItem(item)}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={this.renderSeparator}
-                    ListHeaderComponent={this.renderHeader}
                     ListFooterComponent={this.renderFooter}
                     onRefresh={this.handleRefresh}
                     refreshing={this.state.refreshing}
