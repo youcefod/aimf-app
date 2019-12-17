@@ -10,7 +10,7 @@ export default class FeedCard extends Component {
                         <Thumbnail source={logo} />
                         <Body>
                             <Text>{this.props.title}</Text>
-                            <Text note style={{color: this.props.dateColor}}>{this.props.date}</Text>
+                            <Text note>{this.props.date}</Text>
                         </Body>
                     </Left>
                 </CardItem>
@@ -20,14 +20,6 @@ export default class FeedCard extends Component {
                             {this.props.text}
                         </Text>
                     </Body>
-                </CardItem>
-                <CardItem style={{backgroundColor: this.props.backgroundColor}}>
-                    <Left>
-                        <Button transparent textStyle={{color: '#87838B'}}>
-                            <Icon name="logo-github" />
-                            <Text>1,926</Text>
-                        </Button>
-                    </Left>
                 </CardItem>
             </Card>
         );

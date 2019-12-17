@@ -21,8 +21,8 @@ export const isCorrectMobilePhone = phone => {
 };
 
 
-export const getFrDate = date => {
+export const getFrDate = (date, time = false) => {
     return date.getDate().toString().padStart(2, "0") + '/' + ((parseInt(date.getMonth().toString()) + 1) + '') .padStart(2, "0") +
-        '/' + date.getFullYear()
+        '/' + date.getFullYear() + (time ? ' ' + date.getHours() + ':' + date.getMinutes() + ':' +date.getSeconds() : '')
         ;
 };

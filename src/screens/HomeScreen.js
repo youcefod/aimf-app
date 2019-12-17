@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { View, FlatList, ActivityIndicator, SafeAreaView } from "react-native";
-import { SearchBar } from "react-native-elements";
 import {getFrDate} from "../Utils/Functions";
 import FeedCard from "../Components/FeedCard";
 import firebase from "react-native-firebase";
@@ -16,6 +15,7 @@ class HomeScreen extends Component {
             loading: true,
             annonces: [],
             page: 1,
+            lastVisible: null,
             refreshing: false
         };
     }
@@ -25,17 +25,29 @@ class HomeScreen extends Component {
     }
 
     loadAnnonces = () => {
+
+        console.log('#######loadAnnonces#########');
+
         this.setState({ loading: true });
         const that = this;
-        firebase
+        let query = firebase
             .firestore()
             .collection("annonces")
             .where('enable', '==', true)
-            .orderBy('date', 'desc')
+            .orderBy('date', 'desc');
+
+        if (that.state.lastVisible) {
+            console.log(this.state.lastVisible.id);
+            query = query.startAfter(that.state.lastVisible);
+        }
+
+        query
             .limit(5)
             .get()
             .then(annonces => {
-
+                if (annonces.docs.length > 0) {
+                    that.setState({lastVisible : annonces.docs[annonces.docs.length-1]});
+                }
                 setTimeout(() => {
                     const data = [];
                     annonces.forEach(function (doc) {
@@ -49,6 +61,9 @@ class HomeScreen extends Component {
                     refreshing: false});
                             }, 2000);
 
+            })
+            .catch(error => {
+                this.setState({ error, loading: false, refreshing: false });
             });
 
     };
@@ -57,7 +72,8 @@ class HomeScreen extends Component {
         this.setState(
             {
                 page: 1,
-                refreshing: true
+                refreshing: true,
+                lastVisible: null
             },
             () => {
                 this.loadAnnonces();
@@ -66,6 +82,7 @@ class HomeScreen extends Component {
     };
 
     handleLoadMore = () => {
+        console.log('#######handleLoadMore#########');
         this.setState(
             {
                 page: this.state.page + 1
@@ -87,10 +104,6 @@ class HomeScreen extends Component {
                 }}
             />
         );
-    };
-
-    renderHeader = () => {
-        return <SearchBar placeholder="Type Here..." lightTheme round />;
     };
 
     renderFooter = () => {
@@ -118,10 +131,9 @@ class HomeScreen extends Component {
         return (
             <FeedCard
                 title={item.title}
-                date={getFrDate(item.date.toDate())}
+                date={getFrDate(item.date.toDate(), true)}
                 text={item.text}
                 backgroundColor={this.isNewAnnonce(item) ? "#ffffff" : "#dadada"}
-                dateColor={this.isNewAnnonce(item) ? "#000000" : "#ffffff"}
             />
         );
     }
