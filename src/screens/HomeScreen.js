@@ -1,6 +1,5 @@
-import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator, SafeAreaView } from "react-native";
-import { SearchBar } from "react-native-elements";
+import React, {Component} from "react";
+import {View, FlatList, ActivityIndicator, SafeAreaView} from "react-native";
 import {getFrDate} from "../Utils/Functions";
 import FeedCard from "../Components/FeedCard";
 import firebase from "react-native-firebase";
@@ -14,66 +13,86 @@ class HomeScreen extends Component {
 
         this.state = {
             loading: true,
-            annonces: [],
+            announcements: [],
             page: 1,
-            refreshing: false
+            lastVisible: null,
+            refreshing: false,
+            handleMore: false,
         };
     }
 
     componentDidMount() {
-        this.loadAnnonces();
+        this.loadAnnouncements();
     }
 
-    loadAnnonces = () => {
-        this.setState({ loading: true });
-        const that = this;
-        firebase
+    loadAnnouncements = () => {
+        this.setState({loading: true});
+        const thisComponent = this;
+        let query = firebase
             .firestore()
-            .collection("annonces")
+            .collection("announcements")
             .where('enable', '==', true)
-            .orderBy('date', 'desc')
+            .orderBy('date', 'desc');
+
+        if (thisComponent.state.lastVisible) {
+            query = query.startAfter(thisComponent.state.lastVisible);
+        }
+        query
             .limit(5)
             .get()
-            .then(annonces => {
-
+            .then(announcements => {
+                if (announcements.docs.length > 0) {
+                    thisComponent.setState({lastVisible: announcements.docs[announcements.docs.length - 1]});
+                }
                 setTimeout(() => {
                     const data = [];
-                    annonces.forEach(function (doc) {
+                    announcements.forEach(function (doc) {
                         const row = doc.data();
                         row.id = doc.id;
-                        data.push(row) ;
+                        data.push(row);
                     });
-                that.setState({
-                    annonces: that.state.page === 1 ? data : [...that.state.annonces, ...data],
-                    loading: false,
-                    refreshing: false});
-                            }, 2000);
+                    thisComponent.setState({
+                        announcements: thisComponent.state.page === 1 ? data : [...thisComponent.state.announcements, ...data],
+                        loading: false,
+                        refreshing: false,
+                        handleMore: false,
+                    });
+                }, 2000);
 
+            })
+            .catch(error => {
+                thisComponent.setState({error, loading: false, refreshing: false, handleMore: false,});
             });
 
     };
 
     handleRefresh = () => {
-        this.setState(
-            {
-                page: 1,
-                refreshing: true
-            },
-            () => {
-                this.loadAnnonces();
-            }
-        );
+        if (!this.state.handleMore && !this.state.loading) {
+            this.setState(
+                {
+                    page: 1,
+                    refreshing: true,
+                    lastVisible: null
+                },
+                () => {
+                    this.loadAnnouncements();
+                }
+            );
+        }
     };
 
     handleLoadMore = () => {
-        this.setState(
-            {
-                page: this.state.page + 1
-            },
-            () => {
-                this.loadAnnonces();
-            }
-        );
+        if (!this.state.refreshing && !this.state.loading) {
+            this.setState(
+                {
+                    page: this.state.page + 1,
+                    handleMore: true,
+                },
+                () => {
+                    this.loadAnnouncements();
+                }
+            );
+        }
     };
 
     renderSeparator = () => {
@@ -89,10 +108,6 @@ class HomeScreen extends Component {
         );
     };
 
-    renderHeader = () => {
-        return <SearchBar placeholder="Type Here..." lightTheme round />;
-    };
-
     renderFooter = () => {
         if (!this.state.loading) return null;
         return (
@@ -104,33 +119,31 @@ class HomeScreen extends Component {
                     borderColor: "#CED0CE"
                 }}
             >
-                <ActivityIndicator animating size="large" />
+                <ActivityIndicator animating size="large"/>
             </View>
         );
     };
-    isNewAnnonce =(annonce) => {
+    isNewAnnouncement = (announcement) => {
         const now = new Date();
-        const today = new Date(now.getFullYear() + '-' +  ((parseInt(now.getMonth().toString()) + 1) + '').
-        padStart(2, "0") + '-' +  now.getDate().toString().padStart(2, "0") + 'T00:00:00');
-        return annonce.date.toDate() >= today;
+        const today = new Date(now.getFullYear() + '-' + ((parseInt(now.getMonth().toString()) + 1) + '').padStart(2, "0") + '-' + now.getDate().toString().padStart(2, "0") + 'T00:00:00');
+        return announcement.date.toDate() >= today;
     }
     renderItem = item => {
         return (
             <FeedCard
                 title={item.title}
-                date={getFrDate(item.date.toDate())}
+                date={getFrDate(item.date.toDate(), true)}
                 text={item.text}
-                backgroundColor={this.isNewAnnonce(item) ? "#ffffff" : "#dadada"}
-                dateColor={this.isNewAnnonce(item) ? "#000000" : "#ffffff"}
+                backgroundColor={this.isNewAnnouncement(item) ? "#ffffff" : "#dadada"}
             />
         );
     }
     render() {
         return (
-            <SafeAreaView >
+            <SafeAreaView>
                 <FlatList
-                    data={this.state.annonces}
-                    renderItem={({ item }) => this.renderItem(item)}
+                    data={this.state.announcements}
+                    renderItem={({item}) => this.renderItem(item)}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     ListFooterComponent={this.renderFooter}
