@@ -13,7 +13,7 @@ class HomeScreen extends Component {
 
         this.state = {
             loading: true,
-            annonces: [],
+            announcements: [],
             page: 1,
             lastVisible: null,
             refreshing: false
@@ -21,42 +21,38 @@ class HomeScreen extends Component {
     }
 
     componentDidMount() {
-        this.loadAnnonces();
+        this.loadAnnouncements();
     }
 
-    loadAnnonces = () => {
-
-        console.log('#######loadAnnonces#########');
-
+    loadAnnouncements = () => {
         this.setState({ loading: true });
         const that = this;
         let query = firebase
             .firestore()
-            .collection("annonces")
+            .collection("announcements")
             .where('enable', '==', true)
             .orderBy('date', 'desc');
 
         if (that.state.lastVisible) {
-            console.log(this.state.lastVisible.id);
             query = query.startAfter(that.state.lastVisible);
         }
 
         query
             .limit(5)
             .get()
-            .then(annonces => {
-                if (annonces.docs.length > 0) {
-                    that.setState({lastVisible : annonces.docs[annonces.docs.length-1]});
+            .then(announcements => {
+                if (announcements.docs.length > 0) {
+                    that.setState({lastVisible : announcements.docs[announcements.docs.length-1]});
                 }
                 setTimeout(() => {
                     const data = [];
-                    annonces.forEach(function (doc) {
+                    announcements.forEach(function (doc) {
                         const row = doc.data();
                         row.id = doc.id;
                         data.push(row) ;
                     });
                 that.setState({
-                    annonces: that.state.page === 1 ? data : [...that.state.annonces, ...data],
+                    announcements: that.state.page === 1 ? data : [...that.state.announcements, ...data],
                     loading: false,
                     refreshing: false});
                             }, 2000);
@@ -76,19 +72,18 @@ class HomeScreen extends Component {
                 lastVisible: null
             },
             () => {
-                this.loadAnnonces();
+                this.loadAnnouncements();
             }
         );
     };
 
     handleLoadMore = () => {
-        console.log('#######handleLoadMore#########');
         this.setState(
             {
                 page: this.state.page + 1
             },
             () => {
-                this.loadAnnonces();
+                this.loadAnnouncements();
             }
         );
     };
@@ -121,11 +116,11 @@ class HomeScreen extends Component {
             </View>
         );
     };
-    isNewAnnonce =(annonce) => {
+    isNewAnnouncement =(announcement) => {
         const now = new Date();
         const today = new Date(now.getFullYear() + '-' +  ((parseInt(now.getMonth().toString()) + 1) + '').
         padStart(2, "0") + '-' +  now.getDate().toString().padStart(2, "0") + 'T00:00:00');
-        return annonce.date.toDate() >= today;
+        return announcement.date.toDate() >= today;
     }
     renderItem = item => {
         return (
@@ -133,7 +128,7 @@ class HomeScreen extends Component {
                 title={item.title}
                 date={getFrDate(item.date.toDate(), true)}
                 text={item.text}
-                backgroundColor={this.isNewAnnonce(item) ? "#ffffff" : "#dadada"}
+                backgroundColor={this.isNewAnnouncement(item) ? "#ffffff" : "#dadada"}
             />
         );
     }
@@ -141,7 +136,7 @@ class HomeScreen extends Component {
         return (
             <SafeAreaView >
                 <FlatList
-                    data={this.state.annonces}
+                    data={this.state.announcements}
                     renderItem={({ item }) => this.renderItem(item)}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={this.renderSeparator}

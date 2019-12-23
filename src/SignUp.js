@@ -327,7 +327,6 @@ export default class SignUp extends Component {
                             keyboardType="email-address"
                             onChangeText={email => this.setState({email})}
                             onBlur={() => function () {
-                                console.log('========On blur====== ');
                             }}
                             value={email}
                         />
