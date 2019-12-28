@@ -27,14 +27,14 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         paddingLeft:10,
     },
-    signupButton: {
+    registerButton: {
         justifyContent: "center",
         alignItems: "center",
         height: 50,
         width: 150,
-        borderRadius: 50,
-        backgroundColor: "#5CB85C",
-        marginTop: 65,
+        borderRadius: 10,
+        backgroundColor: "#cc9871",
+        marginTop: 35,
         marginLeft: "auto",
         marginRight: "auto",
     },

@@ -3,10 +3,13 @@ import {isCorrectMobilePhone, isCorrectName, isCorrectEmailAddress, isCorrectPas
 export const checkFormValues = values => {
 
     if (!values.lastname) {
-        return 'Veuillez renseigner votre nome';
+        return 'Veuillez renseigner votre nom';
+    }
+    if (!values.brother) {
+        return 'Veuillez renseigner le nom de votre père';
     }
     if (!values.firstname) {
-        return 'Veuillez renseigner votre prenome';
+        return 'Veuillez renseigner votre prenom';
     }
     if (!values.birthDate) {
         return 'Veuillez renseigner votre date de naissance';

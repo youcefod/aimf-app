@@ -1,8 +1,18 @@
 import React, {Component} from "react";
-import {Text, TouchableOpacity, ScrollView, Animated, ImageBackground} from "react-native";
+import {
+    Text,
+    TouchableOpacity,
+    ScrollView,
+    Animated,
+    ImageBackground,
+    TouchableWithoutFeedback,
+    View,
+    Image
+} from "react-native";
 import {Item, Icon, Input, Label, DatePicker, Picker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
+import { RadioButtons, SegmentedControls  } from 'react-native-radio-buttons'
 import firebase from "react-native-firebase";
 import {
     isCorrectMobilePhone,
@@ -29,6 +39,7 @@ export default class SignUp extends Component {
             password: "",
             confirmPassword: "",
             lastname: "",
+            brother: "",
             maidename: "",
             firstname: "",
             birthDate: new Date(),
@@ -42,6 +53,7 @@ export default class SignUp extends Component {
             modal: false,
             modalVisible: false,
             errorMessage: '',
+            selectedOption: null,
         };
         this.setDate = this.setDate.bind(this);
         this.setModalVisible = this.setModalVisible.bind(this);
@@ -76,7 +88,7 @@ export default class SignUp extends Component {
     }
 
     save = () => {
-        const {email, password, lastname, maidename, firstname, kind, birthDate, zipCode, phoneNumber, response1, response2} = this.state;
+        const {email, password, lastname, brother, maidename, firstname, kind, birthDate, zipCode, phoneNumber, response1, response2} = this.state;
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -89,6 +101,7 @@ export default class SignUp extends Component {
                         kind: kind,
                         email: email.trim().toLowerCase(),
                         lastname: lastname.trim(),
+                        brother: brother.trim(),
                         maidename: maidename.trim().toLowerCase(),
                         firstname: firstname.trim().toLowerCase(),
                         birthDate: getFrDate(birthDate),
@@ -117,11 +130,11 @@ export default class SignUp extends Component {
 
     _onSignUp = () => {
         const error = checkFormValues(this.state);
-        if (error) {
-            this.setState({errorMessage: error});
-            this.setModalVisible(true);
-            return;
-        }
+        // if (error) {
+        //     this.setState({errorMessage: error});
+        //     this.setModalVisible(true);
+        //     return;
+        // }
 
         this.shwoLoading(true);
         firebase
@@ -148,16 +161,66 @@ export default class SignUp extends Component {
         return;
     };
 
+
+    setSelectedOption = (selectedOption) =>{
+        this.setState({
+            selectedOption
+        });
+    }
+
+    renderOption = (option, selected, onSelect, index) => {
+        const margin = option === 'men_selected' ?  50 : 0;
+        const icon = option ===  'men_selected' ?  require('../assets/images/men.png') : require('../assets/images/men_selected.png');
+        return ( <TouchableWithoutFeedback onPress={onSelect} key={index}>
+                <Image style={{ width: 60, height: 60,  marginLeft: margin }} source={icon} />
+            </TouchableWithoutFeedback>
+        );
+    }
+
+    renderContainer = (optionNodes) => {
+        return <View style={{flexDirection: 'row', justifyContent: 'center'}}>{optionNodes}</View>;
+    }
     render() {
 
-        const {email, password, confirmPassword, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, response1, response2} = this.state;
+        const {email, password, confirmPassword, brother, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, response1, response2} = this.state;
 
         const ScrollViewOpacity = this.state.modalVisible ? 0.6 : 1;
+
+        const options = [
+            "men",
+            "men_selected"
+        ];
         return (
             <>
                 <ScrollView
                     centerContent={true}
                     style={{paddingTop: 40, opacity: ScrollViewOpacity, backgroundColor: '#f3aa2329'}}>
+
+
+                    <Label
+                        style={styles.label}>Je suis *</Label>
+                    <RadioButtons
+                        options={ options }
+                        onSelection={ this.setSelectedOption.bind(this) }
+                        selectedOption={this.state.selectedOption }
+                        renderOption={ this.renderOption }
+                        renderContainer={ this.renderContainer }
+                    />
+                    <Text>Selected option: {this.state.selectedOption || 'none'}</Text>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     <Label
                         style={styles.label}
                     >Genre*</Label>
@@ -235,6 +298,37 @@ export default class SignUp extends Component {
                                 : styles.red}
                         />) : null}
                     </Item>
+
+                    <Label
+                        style={styles.label}
+                    >Fils de*</Label>
+                    <Item
+                        rounded
+                        success={brother.length > 0 && isCorrectName(brother)}
+                        error={brother.length > 0 && !isCorrectName(brother)}
+                        style={styles.inputItem}
+                    >
+
+                        <Input
+                            style={styles.input}
+                            autoCapitalize="characters"
+                            keyboardType="default"
+                            onChangeText={brother => this.setState({brother})}
+                            value={brother}
+                        />
+                        {brother.length > 0 ? (<Icon
+                            name={
+                                isCorrectName(brother)
+                                    ? "checkmark-circle"
+                                    : "close-circle"
+                            }
+                            style={isCorrectName(brother)
+                                ? styles.green
+                                : styles.red}
+                        />) : null}
+
+                    </Item>
+
                     <Label
                         style={styles.label}
                     >Prénom*</Label>
@@ -326,7 +420,6 @@ export default class SignUp extends Component {
                             keyboardType="email-address"
                             onChangeText={email => this.setState({email})}
                             onBlur={() => function () {
-                                console.log('========On blur====== ');
                             }}
                             value={email}
                         />
@@ -343,7 +436,7 @@ export default class SignUp extends Component {
                     </Item>
                     <Label
                         style={styles.label}
-                    >Mobile*</Label>
+                    >téléphone*</Label>
                     <Item
                         rounded
                         style={styles.inputItem}
@@ -461,7 +554,7 @@ export default class SignUp extends Component {
 
                     ) : null}
                     <SpinnerButton
-                        buttonStyle={styles.signupButton}
+                        buttonStyle={styles.registerButton}
                         isLoading={buttonSpinner}
                         onPress={this._onSignUp}
                         indicatorCount={10}
