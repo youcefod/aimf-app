@@ -38,6 +38,13 @@ export const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
     },
+
+    refreshButton: {
+        height: 20,
+        width: 20,
+        backgroundColor: "#FFF",
+        borderRadius: 80,
+    },
     nextButtonText: {
         fontSize: 18,
         color: "#fff"

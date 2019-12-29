@@ -2,6 +2,9 @@ import {isCorrectMobilePhone, isCorrectName, isCorrectEmailAddress, isCorrectPas
 
 export const checkFormValues = values => {
 
+    if (!values.kind) {
+        return 'Veuillez renseigner votre sexe';
+    }
     if (!values.lastname) {
         return 'Veuillez renseigner votre nom';
     }
@@ -46,6 +49,7 @@ export const checkFormValues = values => {
     if (values.password != values.confirmPassword) {
         return 'Les deux mots de passe doivent êtres identiques';
     }
+
 
     return null;
 }

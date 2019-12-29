@@ -12,7 +12,7 @@ import {
 import {Item, Icon, Input, Label, DatePicker, Picker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
-import { RadioButtons, SegmentedControls  } from 'react-native-radio-buttons'
+import { RadioButtons } from 'react-native-radio-buttons'
 import firebase from "react-native-firebase";
 import {
     isCorrectMobilePhone,
@@ -27,6 +27,7 @@ import Loader from './Components/Loader';
 import ErrorModal from "./Components/ErrorModal";
 import {EMAIL_EXIST_ERROR, SERVER_ERROR} from "./Utils/Constants";
 import {checkFormValues} from "./signUp/ValidateSignUp";
+import {getQuestions, getRandomQuestion} from "./signUp/Functions";
 
 export default class SignUp extends Component {
 
@@ -34,7 +35,7 @@ export default class SignUp extends Component {
         super(props);
         _isMounted = false;
         this.state = {
-            kind: "homme",
+            kind: null,
             email: "",
             password: "",
             confirmPassword: "",
@@ -53,24 +54,23 @@ export default class SignUp extends Component {
             modal: false,
             modalVisible: false,
             errorMessage: '',
-            selectedOption: null,
+            questions1: [],
+            questions2: [],
+            question1: "",
+            question2: "",
         };
         this.setDate = this.setDate.bind(this);
         this.setModalVisible = this.setModalVisible.bind(this);
+        this.setQuestions = this.setQuestions.bind(this);
     }
 
     componentDidMount() {
         this._isMounted = true;
+        getQuestions(this.setQuestions);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-    }
-
-    setKind(value: string) {
-        this.setState({
-            kind: value
-        });
     }
 
     setDate(newDate) {
@@ -85,6 +85,57 @@ export default class SignUp extends Component {
 
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
+    }
+
+    setKind = (kind) =>{
+        this.setState({
+            kind
+        });
+    }
+
+    setQuestions = (questions, index) =>{
+        if (index === 1) {
+            this.setState({
+                questions1: questions,
+                question1: getRandomQuestion(questions)
+            });
+        } else {
+            this.setState({
+                questions2: questions,
+                question2: getRandomQuestion(questions)
+            });
+        }
+    }
+
+    setQuestion1 = () => {
+        this.setState({
+            question1: getRandomQuestion(this.state.questions1)
+        });
+    }
+
+    setQuestion2 = () => {
+        this.setState({
+            question2: getRandomQuestion(this.state.questions2)
+        });
+    }
+    getKinIcon = (option, selected) => {
+        if (option === 'men') {
+            return selected ? require('../assets/images/men_selected.png') : require('../assets/images/men.png');
+        }
+        return selected ? require('../assets/images/women_selected.png') : require('../assets/images/women.png');
+    }
+
+    renderKindOption = (option, selected, onSelect, index) => {
+        const marginLeft = option === 'women' ?  50 : 0;
+        const icon = this.getKinIcon(option, selected);
+        return (<TouchableWithoutFeedback onPress={onSelect} key={index}>
+                <Image style={{ width: 60, height: 60,  marginLeft: marginLeft }} source={icon} />
+            </TouchableWithoutFeedback>
+        );
+    }
+
+    renderKindContainer = (optionNodes) => {
+        return <View style={{flexDirection: 'row', justifyContent: 'center'}}>{optionNodes}</View>;
     }
 
     save = () => {
@@ -161,85 +212,23 @@ export default class SignUp extends Component {
         return;
     };
 
-
-    setSelectedOption = (selectedOption) =>{
-        this.setState({
-            selectedOption
-        });
-    }
-
-    renderOption = (option, selected, onSelect, index) => {
-        const margin = option === 'men_selected' ?  50 : 0;
-        const icon = option ===  'men_selected' ?  require('../assets/images/men.png') : require('../assets/images/men_selected.png');
-        return ( <TouchableWithoutFeedback onPress={onSelect} key={index}>
-                <Image style={{ width: 60, height: 60,  marginLeft: margin }} source={icon} />
-            </TouchableWithoutFeedback>
-        );
-    }
-
-    renderContainer = (optionNodes) => {
-        return <View style={{flexDirection: 'row', justifyContent: 'center'}}>{optionNodes}</View>;
-    }
     render() {
-
         const {email, password, confirmPassword, brother, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, response1, response2} = this.state;
-
         const ScrollViewOpacity = this.state.modalVisible ? 0.6 : 1;
-
-        const options = [
-            "men",
-            "men_selected"
-        ];
         return (
             <>
                 <ScrollView
                     centerContent={true}
                     style={{paddingTop: 40, opacity: ScrollViewOpacity, backgroundColor: '#f3aa2329'}}>
-
-
                     <Label
                         style={styles.label}>Je suis *</Label>
                     <RadioButtons
-                        options={ options }
-                        onSelection={ this.setSelectedOption.bind(this) }
-                        selectedOption={this.state.selectedOption }
-                        renderOption={ this.renderOption }
-                        renderContainer={ this.renderContainer }
+                        options={["men", "women"]}
+                        onSelection={this.setKind.bind(this)}
+                        selectedOption={this.state.kind }
+                        renderOption={ this.renderKindOption }
+                        renderContainer={ this.renderKindContainer }
                     />
-                    <Text>Selected option: {this.state.selectedOption || 'none'}</Text>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <Label
-                        style={styles.label}
-                    >Genre*</Label>
-                    <Item
-                        rounded
-                        style={styles.inputItem}
-                    >
-                        <Picker
-                            mode="dropdown"
-                            iosHeader="Select your SIM"
-                            iosIcon={<Icon name="arrow-down"/>}
-                            style={{width: undefined}}
-                            selectedValue={this.state.kind}
-                            onValueChange={this.setKind.bind(this)}
-                        >
-                            <Picker.Item label="Home" value="homme"/>
-                            <Picker.Item label="Femme" value="femme"/>
-                        </Picker>
-                    </Item>
                     <Label
                         style={styles.label}
                     >Nom*</Label>
@@ -459,9 +448,35 @@ export default class SignUp extends Component {
                                 : styles.red}
                         />) : null}
                     </Item>
-                    <Label
-                        style={styles.label}
-                    >Question1*: </Label>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: 300, marginLeft: "auto",
+                        marginRight: "auto"}}>
+                        <Label
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: 14,
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                width: 280,
+                            }}
+                        >{this.state.question1} *</Label>
+                        <SpinnerButton
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: 14,
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                width: 280,
+                            }}
+                            buttonStyle={styles.refreshButton}
+                            onPress={this.setQuestion1}
+                            indicatorCount={10}
+                            spinnerType="SkypeIndicator"
+                        >
+                            <Icon
+                                style={{color: "#d3d3d3", fontSize: 14}}
+                                name="sync"/>
+                        </SpinnerButton>
+                    </View>
                     <Item
                         rounded
                         style={styles.inputItem}
@@ -475,9 +490,31 @@ export default class SignUp extends Component {
                             value={response1}
                         />
                     </Item>
-                    <Label
-                        style={styles.label}
-                    >Question2*: </Label>
+
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: 300, marginLeft: "auto",
+                        marginRight: "auto"}}>
+                        <Label
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: 14,
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                width: 280,
+                            }}
+                        >{this.state.question2} *
+                        </Label>
+                        <SpinnerButton
+                            buttonStyle={styles.refreshButton}
+                            onPress={this.setQuestion2}
+                            indicatorCount={10}
+                            spinnerType="SkypeIndicator"
+                        >
+                            <Icon
+                                style={{color: "#d3d3d3", fontSize: 14}}
+                                name="sync"/>
+                        </SpinnerButton>
+
+                    </View>
                     <Item
                         rounded
                         style={styles.inputItem}
