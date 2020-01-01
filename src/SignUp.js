@@ -7,7 +7,8 @@ import {
     ImageBackground,
     TouchableWithoutFeedback,
     View,
-    Image
+    Image,
+    ActivityIndicator
 } from "react-native";
 import {Item, Icon, Input, Label, DatePicker, Picker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
@@ -27,7 +28,7 @@ import Loader from './Components/Loader';
 import ErrorModal from "./Components/ErrorModal";
 import {EMAIL_EXIST_ERROR, SERVER_ERROR} from "./Utils/Constants";
 import {checkFormValues} from "./signUp/ValidateSignUp";
-import {getQuestions, getRandomQuestion} from "./signUp/Functions";
+import {getQuestions, getRandomQuestionIndex} from "./signUp/Functions";
 
 export default class SignUp extends Component {
 
@@ -56,8 +57,8 @@ export default class SignUp extends Component {
             errorMessage: '',
             questions1: [],
             questions2: [],
-            question1: "",
-            question2: "",
+            questionIndex1: null,
+            questionIndex2: null,
         };
         this.setDate = this.setDate.bind(this);
         this.setModalVisible = this.setModalVisible.bind(this);
@@ -66,6 +67,7 @@ export default class SignUp extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+        this.shwoLoading(true);
         getQuestions(this.setQuestions);
     }
 
@@ -97,27 +99,30 @@ export default class SignUp extends Component {
         if (index === 1) {
             this.setState({
                 questions1: questions,
-                question1: getRandomQuestion(questions)
+                questionIndex1: getRandomQuestionIndex(questions)
             });
         } else {
             this.setState({
                 questions2: questions,
-                question2: getRandomQuestion(questions)
+                questionIndex2: getRandomQuestionIndex(questions)
             });
         }
     }
 
-    setQuestion1 = () => {
+    setQuestionIndex1 = () => {
+        const questions = this.state.questions1;
         this.setState({
-            question1: getRandomQuestion(this.state.questions1)
+            questionIndex1: getRandomQuestionIndex(questions, this.state.questionIndex1)
         });
     }
 
-    setQuestion2 = () => {
+    setQuestionIndex2 = () => {
+        const questions = this.state.questions2;
         this.setState({
-            question2: getRandomQuestion(this.state.questions2)
+            questionIndex2: getRandomQuestionIndex(questions, this.state.questionIndex2)
         });
     }
+
     getKinIcon = (option, selected) => {
         if (option === 'men') {
             return selected ? require('../assets/images/men_selected.png') : require('../assets/images/men.png');
@@ -213,9 +218,14 @@ export default class SignUp extends Component {
     };
 
     render() {
+        console.log('##############Render##############"');
+        console.log(this.state.questionIndex1);
+        console.log(this.state.questions1);
+        console.log(this.state.questions1[this.state.questionIndex1]);
         const {email, password, confirmPassword, brother, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, response1, response2} = this.state;
         const ScrollViewOpacity = this.state.modalVisible ? 0.6 : 1;
         return (
+            this.state.questions1 &&  this.state.questions1.length > 0?
             <>
                 <ScrollView
                     centerContent={true}
@@ -458,7 +468,7 @@ export default class SignUp extends Component {
                                 marginRight: "auto",
                                 width: 280,
                             }}
-                        >{this.state.question1} *</Label>
+                        >{this.state.questions1[this.state.questionIndex1]}*</Label>
                         <SpinnerButton
                             style={{
                                 fontWeight: "bold",
@@ -468,7 +478,7 @@ export default class SignUp extends Component {
                                 width: 280,
                             }}
                             buttonStyle={styles.refreshButton}
-                            onPress={this.setQuestion1}
+                            onPress={this.setQuestionIndex1}
                             indicatorCount={10}
                             spinnerType="SkypeIndicator"
                         >
@@ -501,11 +511,10 @@ export default class SignUp extends Component {
                                 marginRight: "auto",
                                 width: 280,
                             }}
-                        >{this.state.question2} *
-                        </Label>
+                        >{this.state.questions2[this.state.questionIndex2]}*</Label>
                         <SpinnerButton
                             buttonStyle={styles.refreshButton}
-                            onPress={this.setQuestion2}
+                            onPress={this.setQuestionIndex2}
                             indicatorCount={10}
                             spinnerType="SkypeIndicator"
                         >
@@ -616,7 +625,15 @@ export default class SignUp extends Component {
                 <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible}
                             message={this.state.errorMessage}/>
             </>
-
-        );
+            :
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <Text>Chargement</Text>
+                    <ActivityIndicator size="large" />
+                </View>
+            );
     }
 }
