@@ -10,13 +10,13 @@ import {
     Image,
     ActivityIndicator
 } from "react-native";
-import {Item, Icon, Input, Label, DatePicker, Picker} from "native-base";
+import {Item, Icon, Input, Label, DatePicker} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
-import { RadioButtons } from 'react-native-radio-buttons'
+import { RadioButtons, SegmentedControls } from 'react-native-radio-buttons'
 import firebase from "react-native-firebase";
 import {
-    isCorrectMobilePhone,
+    isCorrectPhoneNumber,
     isCorrectName,
     isCorrectEmailAddress,
     isCorrectPassword,
@@ -37,6 +37,7 @@ export default class SignUp extends Component {
         _isMounted = false;
         this.state = {
             kind: null,
+            conjugalSituation: null,
             email: "",
             password: "",
             confirmPassword: "",
@@ -67,7 +68,6 @@ export default class SignUp extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        this.shwoLoading(true);
         getQuestions(this.setQuestions);
     }
 
@@ -95,31 +95,35 @@ export default class SignUp extends Component {
         });
     }
 
+    setConjugalSituation = (option) =>{
+        this.setState({
+            conjugalSituation: option
+        });
+    }
+
     setQuestions = (questions, index) =>{
         if (index === 1) {
             this.setState({
                 questions1: questions,
-                questionIndex1: getRandomQuestionIndex(questions)
+                questionIndex1: getRandomQuestionIndex()
             });
         } else {
             this.setState({
                 questions2: questions,
-                questionIndex2: getRandomQuestionIndex(questions)
+                questionIndex2: getRandomQuestionIndex()
             });
         }
     }
 
     setQuestionIndex1 = () => {
-        const questions = this.state.questions1;
         this.setState({
-            questionIndex1: getRandomQuestionIndex(questions, this.state.questionIndex1)
+            questionIndex1: getRandomQuestionIndex(this.state.questionIndex1)
         });
     }
 
     setQuestionIndex2 = () => {
-        const questions = this.state.questions2;
         this.setState({
-            questionIndex2: getRandomQuestionIndex(questions, this.state.questionIndex2)
+            questionIndex2: getRandomQuestionIndex(this.state.questionIndex2)
         });
     }
 
@@ -144,7 +148,7 @@ export default class SignUp extends Component {
     }
 
     save = () => {
-        const {email, password, lastname, brother, maidename, firstname, kind, birthDate, zipCode, phoneNumber, response1, response2} = this.state;
+        const {email, password, lastname, brother, maidename, firstname, kind, conjugalSituation, birthDate, zipCode, phoneNumber, response1, response2, questions1, questions2, questionIndex1, questionIndex2} = this.state;
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -155,6 +159,7 @@ export default class SignUp extends Component {
                     .doc(user.user.uid)
                     .set({
                         kind: kind,
+                        conjugalSituation: conjugalSituation,
                         email: email.trim().toLowerCase(),
                         lastname: lastname.trim(),
                         brother: brother.trim(),
@@ -163,6 +168,8 @@ export default class SignUp extends Component {
                         birthDate: getFrDate(birthDate),
                         zipCode: zipCode,
                         phoneNumber: phoneNumber,
+                        question1: questions1[questionIndex1],
+                        question2: questions2[questionIndex2],
                         response1: response1.trim().toLowerCase(),
                         response2: response2.trim().toLowerCase(),
                         isAuthorized: false,
@@ -186,11 +193,11 @@ export default class SignUp extends Component {
 
     _onSignUp = () => {
         const error = checkFormValues(this.state);
-        // if (error) {
-        //     this.setState({errorMessage: error});
-        //     this.setModalVisible(true);
-        //     return;
-        // }
+        if (error) {
+            this.setState({errorMessage: error});
+            this.setModalVisible(true);
+            return;
+        }
 
         this.shwoLoading(true);
         firebase
@@ -218,12 +225,10 @@ export default class SignUp extends Component {
     };
 
     render() {
-        console.log('##############Render##############"');
-        console.log(this.state.questionIndex1);
-        console.log(this.state.questions1);
-        console.log(this.state.questions1[this.state.questionIndex1]);
         const {email, password, confirmPassword, brother, lastname, maidename, firstname, zipCode, phoneNumber, buttonSpinner, response1, response2} = this.state;
         const ScrollViewOpacity = this.state.modalVisible ? 0.6 : 1;
+        const conjugalSituationOptions = ["Marié", "Célibataire"];
+
         return (
             this.state.questions1 &&  this.state.questions1.length > 0?
             <>
@@ -357,6 +362,16 @@ export default class SignUp extends Component {
                     </Item>
                     <Label
                         style={styles.label}
+                    >Situation conjugale*</Label>
+                    <SegmentedControls
+                        containerStyle={{width: 300, marginLeft: "auto", marginRight: "auto", marginBottom: 15}}
+                        tint={'#CC9871'}
+                        options={conjugalSituationOptions}
+                        onSelection={this.setConjugalSituation.bind(this)}
+                        selectedOption={this.state.conjugalSituation}
+                    />
+                    <Label
+                        style={styles.label}
                     >Date de naissance*</Label>
                     <Item
                         rounded
@@ -449,11 +464,11 @@ export default class SignUp extends Component {
                         />
                         {phoneNumber.length > 0 ? (<Icon
                             name={
-                                isCorrectMobilePhone(phoneNumber)
+                                isCorrectPhoneNumber(phoneNumber)
                                     ? "checkmark-circle"
                                     : "close-circle"
                             }
-                            style={isCorrectMobilePhone(phoneNumber)
+                            style={isCorrectPhoneNumber(phoneNumber)
                                 ? styles.green
                                 : styles.red}
                         />) : null}

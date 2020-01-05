@@ -17,12 +17,10 @@ export const getQuestions = (setQuestions) => {
         });
 }
 
-export const getRandomQuestionIndex = (questions, excludeIndex = -1) => {
-    // console.log('########### Debug #############');
-    // console.log(questions);
+export const getRandomQuestionIndex = (excludeIndex = -1) => {
+    const questionIndex = [0, 1, 2, 3, 4];
     if (excludeIndex > -1 ) {
-        questions.splice(excludeIndex, 1);
+        questionIndex.splice(questionIndex.indexOf(excludeIndex), 1);
     }
-    const index = Math.floor(Math.random() * questions.length);
-    return index;
+    return questionIndex[Math.floor(Math.random() * questionIndex.length)];
 }

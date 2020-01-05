@@ -16,8 +16,8 @@ export const isCorrectZipCode = zipCode => {
     return zipCode.match(/^[0-9]{5}$/) ? true : false;
 };
 
-export const isCorrectMobilePhone = phone => {
-    return phone.match(/^0(6|7)[1-9]{8}$/) ? true : false;
+export const isCorrectPhoneNumber = phone => {
+    return phone.match(/^0[1-9][0-9]{8}$/) ? true : false;
 };
 
 
