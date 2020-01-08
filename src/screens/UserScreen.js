@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View } from "react-native";
 
-class YouTubeScreen extends Component {
+class UserScreen extends Component {
   static navigationOptions = {
     header: null
   };
@@ -10,7 +10,7 @@ class YouTubeScreen extends Component {
     this.state = {};
   }
   render() {
-    return <View style={{ flex: 1, backgroundColor: "#e84118" }} />;
+    return <View style={{ flex: 1, backgroundColor: "#1434f1" }} />;
   }
 }
-export default YouTubeScreen;
+export default UserScreen;
