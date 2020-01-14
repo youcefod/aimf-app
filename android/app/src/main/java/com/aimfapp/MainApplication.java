@@ -14,6 +14,8 @@ import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
   // GestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +36,9 @@ public class MainApplication extends Application implements ReactApplication {
           new RNFirebaseAuthPackage(),
           new RNFirebaseFirestorePackage(),
             // GestureHandler
-          new RNGestureHandlerPackage()
+          new RNGestureHandlerPackage(),
+
+          new ReactNativePushNotificationPackage()
       );
     }
 
