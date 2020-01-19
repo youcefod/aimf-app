@@ -162,8 +162,13 @@ dependencies {
     implementation "com.google.firebase:firebase-core:16.0.8"
     implementation "com.google.firebase:firebase-auth:16.2.1"
     implementation "com.google.firebase:firebase-firestore:18.2.0"
-    implementation "com.google.android.gms:play-services-gcm:8.1.0"
-    implementation "com.google.android.gms:play-services-maps:17.0.0"
+
+     compile "com.google.android.gms:play-services-gcm:16.1.0"
+     compile "com.google.firebase:firebase-messaging:17.6.0"
+        compile (project(':react-native-push-notification')) {
+            exclude group: "com.google.android.gms", module: "play-services-gcm"
+            exclude group: "com.google.firebase", module: "firebase-messaging"
+        }
 }
 
 // Run this once to be able to run the application with BUCK

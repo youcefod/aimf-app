@@ -21,10 +21,8 @@ export default class PostScreen extends React.Component {
           modalVisible: false,
           errorMessage: ''
       };
-
       this.setModalVisible = this.setModalVisible.bind(this);
   }
-
     componentDidMount() {
       if (!this._isMounted) {
         this.setDraftAnnouncement();
@@ -74,10 +72,11 @@ export default class PostScreen extends React.Component {
                     text: text,
                     title: title.trim(),
                     date: new Date(),
-                    usder: '/users/' + firebase.auth().currentUser.uid
+                    user: '/users/' + firebase.auth().currentUser.uid
                 })
                 .then(() => {
                     if (this._isMounted) {
+                        this.notif.localNotif();
                         this.setState({sendSpinner: false});
                         this.setState({title: '', text: ''});
                         this.savePost(false);
@@ -105,7 +104,7 @@ export default class PostScreen extends React.Component {
                     text: text,
                     title: title.trim(),
                     date: new Date(),
-                    usder: '/users/' + firebase.auth().currentUser.uid
+                    user: '/users/' + firebase.auth().currentUser.uid
                 })
                 .then(() => {
                     if (this._isMounted) {

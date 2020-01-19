@@ -11,11 +11,11 @@ import com.facebook.soloader.SoLoader;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
   // GestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +38,9 @@ public class MainApplication extends Application implements ReactApplication {
             // GestureHandler
           new RNGestureHandlerPackage(),
 
-          new ReactNativePushNotificationPackage()
+          new ReactNativePushNotificationPackage(),
+
+          new RNFirebaseMessagingPackage()
       );
     }
 
