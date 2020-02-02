@@ -1,5 +1,5 @@
 import React, {Component } from "react";
-import {Text, ActivityIndicator, Modal, TouchableHighlight, View} from "react-native";
+import {Text, Modal, TouchableHighlight, View} from "react-native";
 import {Icon} from "native-base";
 
 export default class ErrorModal extends Component {
