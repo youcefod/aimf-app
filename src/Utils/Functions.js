@@ -1,6 +1,5 @@
-
 export const isCorrectName = name => {
-    return !name.trim() || name.trim().match(/^[a-zA-Z]+(\s{0,1}[a-zA-Z ])*$/) ? true : false;
+    return !!(!name.trim() || name.trim().match(/^[a-zA-Z]+(\s{0,1}[a-zA-Z ])*$/));
 };
 
 export const isCorrectEmailAddress = email => {
@@ -16,13 +15,18 @@ export const isCorrectZipCode = zipCode => {
     return zipCode.match(/^[0-9]{5}$/) ? true : false;
 };
 
-export const isCorrectMobilePhone = phone => {
-    return phone.match(/^0(6|7)[1-9]{8}$/) ? true : false;
+export const isCorrectPhoneNumber = phone => {
+    return phone.match(/^0[1-9][0-9]{8}$/) ? true : false;
 };
 
 
 export const getFrDate = date => {
-    return date.getDate().toString().padStart(2, "0") + '/' + ((parseInt(date.getMonth().toString()) + 1) + '') .padStart(2, "0") +
+    return date.getDate().toString().padStart(2, "0") + '/' + ((parseInt(date.getMonth().toString()) + 1) + '').padStart(2, "0") +
         '/' + date.getFullYear()
         ;
 };
+
+export const getDateFromFr = frDate => {
+    const date = frDate.split('/');
+    return new Date(date[2] + '-' + date[1] + '-' + date[0]);
+}

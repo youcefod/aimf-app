@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet, Text, TouchableOpacity, View, Image, Animated} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View, Image} from "react-native";
 import { Item, Input } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
@@ -64,7 +64,7 @@ export default class Login extends React.Component {
             style={styles.input}
             keyboardType="email-address"
             onChangeText={email => this.setState({ email })}
-            placeholder={"Email address"}
+            placeholder={"Adresse email"}
             value={email}
           />
         </Item>
@@ -73,7 +73,7 @@ export default class Login extends React.Component {
             secureTextEntry={true}
             style={styles.input}
             onChangeText={password => this.setState({ password })}
-            placeholder={"Password"}
+            placeholder={"Mot de passe"}
             value={password}
           />
         </Item>
@@ -84,7 +84,7 @@ export default class Login extends React.Component {
           indicatorCount={10}
           spinnerType="SkypeIndicator"
         >
-          <Text style={styles.nextButtonText}>Connect</Text>
+          <Text style={styles.nextButtonText}>Connexion</Text>
         </SpinnerButton>
         <TouchableOpacity
           onPress={() => this.props.navigation.navigate("SignUp")}
@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
     marginRight: "auto",
     paddingHorizontal: 10,
-    width: 300
+    width: 300,
+    borderRadius: 10,
   },
   input: {
     fontSize: 15
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 50,
     width: 150,
-    borderRadius: 50,
+    borderRadius: 10,
     backgroundColor: "#5CB85C"
   },
   nextButtonText: {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Modal, Text, TouchableHighlight, View, Alert, Animated, Easing, Item} from 'react-native';
+import {Modal, Animated, Easing, Text, ActivityIndicator, View} from 'react-native';
 
 export default class Loader extends Component {
 
@@ -33,10 +33,23 @@ export default class Loader extends Component {
         const logo = require("../../assets/images/loader_logo.png");
 
         return (
-            <Animated.Image
-                style={{transform: [{rotate: spin}], width: 43, height: 60}}
-                source={logo}
-            />
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.props.visible}>
+                {/*<Animated.Image*/}
+                {/*    style={{transform: [{rotate: spin}], width: 43, height: 60, marginLeft: 150, marginTop: 150}}*/}
+                {/*    source={logo}*/}
+                {/*/>*/}
+
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <ActivityIndicator size="large"/>
+                </View>
+            </Modal>
         );
     }
 }
