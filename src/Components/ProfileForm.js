@@ -19,7 +19,7 @@ import {
 } from "../Utils/Functions";
 import {styles} from "./ProfileForm/css";
 import Loader from '../Components/Loader';
-import {CREATE_ACTION, MARRIED, SHOW_ACTION, SINGLE, UPDATE_ACTION} from "../Utils/Constants";
+import {CREATE_ACTION, MARRIED, MEN_KIND, SHOW_ACTION, SINGLE, UPDATE_ACTION, WOMEN_KIND} from "../Utils/Constants";
 import {getRandomQuestionIndex} from "./ProfileForm/Functions";
 import ActionsButton from './ProfileForm/ActionsButton'
 import ChildrenInformation from "./ProfileForm/ChildrenInformation";
@@ -73,23 +73,23 @@ export default class ProfileForm extends Component {
     }
 
     getKinIcon = (option, selected) => {
-        if (option === 'men') {
+        if (option === MEN_KIND) {
             return selected ? require('../../assets/images/men_selected.png') : require('../../assets/images/men.png');
         }
         return selected ? require('../../assets/images/women_selected.png') : require('../../assets/images/women.png');
     }
 
     renderKindOption = (option, selected, onSelect, index) => {
-        const marginLeft = option === 'women' ? 50 : 0;
+        const marginLeft = option === WOMEN_KIND ? 50 : 0;
         const icon = this.getKinIcon(option, selected);
         return (<TouchableWithoutFeedback onPress={onSelect} key={index}>
-                <Image style={{width: 60, height: 60, marginLeft: marginLeft}} source={icon}/>
+                <Image style={{width: 60, height: 60}} source={icon}/>
             </TouchableWithoutFeedback>
         );
     }
 
     renderKindContainer = (optionNodes) => {
-        return <View style={{flexDirection: 'row', justifyContent: 'center'}}>{optionNodes}</View>;
+        return <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>{optionNodes}</View>;
     }
 
     renderQuestionsBloc() {

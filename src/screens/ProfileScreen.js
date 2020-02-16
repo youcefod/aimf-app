@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import firebase from "react-native-firebase";
 import ShowProfile from "./ProfileScreen/ShowProfile";
 import ProfileForm from "../Components/ProfileForm";
-import {getFrDate, getDateFromFr} from "../Utils/Functions";
+import {getFrDate, getDateFromFr, getFullName} from "../Utils/Functions";
 import {SHOW_ACTION, UPDATE_ACTION} from "../Utils/Constants";
 import {checkFormValues} from "../Components/ProfileForm/Validate";
 import {ActivityIndicator, Text, View} from "react-native";
@@ -184,11 +184,9 @@ class ProfileScreen extends Component {
         } = this.state;
 
         if (this.state.email) {
-            const fullName = this.state.lastname.toUpperCase() + ' ' + this.state.firstname.charAt(0).toUpperCase() +
-                this.state.firstname.slice(1).toLowerCase();
             return (
                 this.state.action === SHOW_ACTION ?
-                    <ShowProfile kind={this.state.kind} fullName={fullName}
+                    <ShowProfile kind={this.state.kind} fullName={getFullName(this.state)}
                                  updateAction={this.updateAction.bind(this)}/> :
                     <>
                         <ProfileForm

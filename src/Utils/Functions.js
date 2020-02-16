@@ -30,3 +30,8 @@ export const getDateFromFr = frDate => {
     const date = frDate.split('/');
     return new Date(date[2] + '-' + date[1] + '-' + date[0]);
 }
+
+export const getFullName = ({lastname, firstname}) => {
+    return lastname.toUpperCase() + ' ' + firstname.charAt(0).toUpperCase() +
+        firstname.slice(1).toLowerCase();
+}
