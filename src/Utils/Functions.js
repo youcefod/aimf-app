@@ -20,9 +20,9 @@ export const isCorrectPhoneNumber = phone => {
 };
 
 
-export const getFrDate = date => {
-    return date.getDate().toString().padStart(2, "0") + '/' + ((parseInt(date.getMonth().toString()) + 1) + '').padStart(2, "0") +
-        '/' + date.getFullYear()
+export const getFrDate = (date, time = false) => {
+    return date.getDate().toString().padStart(2, "0") + '/' + ((parseInt(date.getMonth().toString()) + 1) + '') .padStart(2, "0") +
+        '/' + date.getFullYear() + (time ? ' ' + date.getHours() + ':' + date.getMinutes() + ':' +date.getSeconds() : '')
         ;
 };
 

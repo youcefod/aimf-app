@@ -9,7 +9,7 @@ import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
 import icoMoonConfig from '../config/icons/selection.json';
 
 import HomeScreen from "./screens/HomeScreen";
-import PostWorkflowScreen from "./screens/PostWorkflowScreen";
+import PostScreen from "./screens/PostScreen";
 import KoranScreen from "./screens/KoranScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import UserScreen from "./screens/UserScreen";
@@ -41,7 +41,7 @@ disableHomeStack.navigationOptions = {
 
 // ----------------------------------------------PostWorkflowScreen-----------------------------------------------------
 const PostWorkflowStack = createStackNavigator({
-  PostWorkflow: PostWorkflowScreen
+  PostWorkflow: PostScreen
 });
 
 PostWorkflowStack.navigationOptions = {
