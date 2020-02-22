@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator, SafeAreaView } from "react-native";
+import React, {Component} from "react";
+import {View, FlatList, ActivityIndicator, SafeAreaView} from "react-native";
 import {getFrDate} from "../Utils/Functions";
 import FeedCard from "../Components/FeedCard";
 import firebase from "react-native-firebase";
@@ -16,7 +16,8 @@ class HomeScreen extends Component {
             announcements: [],
             page: 1,
             lastVisible: null,
-            refreshing: false
+            refreshing: false,
+            handleMore: false,
         };
     }
 
@@ -25,67 +26,73 @@ class HomeScreen extends Component {
     }
 
     loadAnnouncements = () => {
-        this.setState({ loading: true });
-        const that = this;
+        this.setState({loading: true});
+        const thisComponent = this;
         let query = firebase
             .firestore()
             .collection("announcements")
             .where('enable', '==', true)
             .orderBy('date', 'desc');
 
-        if (that.state.lastVisible) {
-            query = query.startAfter(that.state.lastVisible);
+        if (thisComponent.state.lastVisible) {
+            query = query.startAfter(thisComponent.state.lastVisible);
         }
-
         query
             .limit(5)
             .get()
             .then(announcements => {
                 if (announcements.docs.length > 0) {
-                    that.setState({lastVisible : announcements.docs[announcements.docs.length-1]});
+                    thisComponent.setState({lastVisible: announcements.docs[announcements.docs.length - 1]});
                 }
                 setTimeout(() => {
                     const data = [];
                     announcements.forEach(function (doc) {
                         const row = doc.data();
                         row.id = doc.id;
-                        data.push(row) ;
+                        data.push(row);
                     });
-                that.setState({
-                    announcements: that.state.page === 1 ? data : [...that.state.announcements, ...data],
-                    loading: false,
-                    refreshing: false});
-                            }, 2000);
+                    thisComponent.setState({
+                        announcements: thisComponent.state.page === 1 ? data : [...thisComponent.state.announcements, ...data],
+                        loading: false,
+                        refreshing: false,
+                        handleMore: false,
+                    });
+                }, 2000);
 
             })
             .catch(error => {
-                this.setState({ error, loading: false, refreshing: false });
+                thisComponent.setState({error, loading: false, refreshing: false, handleMore: false,});
             });
 
     };
 
     handleRefresh = () => {
-        this.setState(
-            {
-                page: 1,
-                refreshing: true,
-                lastVisible: null
-            },
-            () => {
-                this.loadAnnouncements();
-            }
-        );
+        if (!this.state.handleMore && !this.state.loading) {
+            this.setState(
+                {
+                    page: 1,
+                    refreshing: true,
+                    lastVisible: null
+                },
+                () => {
+                    this.loadAnnouncements();
+                }
+            );
+        }
     };
 
     handleLoadMore = () => {
-        this.setState(
-            {
-                page: this.state.page + 1
-            },
-            () => {
-                this.loadAnnouncements();
-            }
-        );
+        if (!this.state.refreshing && !this.state.loading) {
+            this.setState(
+                {
+                    page: this.state.page + 1,
+                    handleMore: true,
+                },
+                () => {
+                    this.loadAnnouncements();
+                }
+            );
+        }
     };
 
     renderSeparator = () => {
@@ -112,14 +119,13 @@ class HomeScreen extends Component {
                     borderColor: "#CED0CE"
                 }}
             >
-                <ActivityIndicator animating size="large" />
+                <ActivityIndicator animating size="large"/>
             </View>
         );
     };
-    isNewAnnouncement =(announcement) => {
+    isNewAnnouncement = (announcement) => {
         const now = new Date();
-        const today = new Date(now.getFullYear() + '-' +  ((parseInt(now.getMonth().toString()) + 1) + '').
-        padStart(2, "0") + '-' +  now.getDate().toString().padStart(2, "0") + 'T00:00:00');
+        const today = new Date(now.getFullYear() + '-' + ((parseInt(now.getMonth().toString()) + 1) + '').padStart(2, "0") + '-' + now.getDate().toString().padStart(2, "0") + 'T00:00:00');
         return announcement.date.toDate() >= today;
     }
     renderItem = item => {
@@ -134,10 +140,10 @@ class HomeScreen extends Component {
     }
     render() {
         return (
-            <SafeAreaView >
+            <SafeAreaView>
                 <FlatList
                     data={this.state.announcements}
-                    renderItem={({ item }) => this.renderItem(item)}
+                    renderItem={({item}) => this.renderItem(item)}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     ListFooterComponent={this.renderFooter}

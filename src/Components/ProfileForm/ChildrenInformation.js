@@ -34,7 +34,7 @@ export default class ChildrenInformation extends Component {
                 </Item>
                 <Label
                     style={styles.label}
-                >Niveau scolaire du {SCHOOL_LEVELS[index]} enfant</Label>
+                >Niveau scolaire du {CHILDREN_YEAR_LABEL[index]} enfant</Label>
                 <Item
                     rounded
                     style={{...styles.inputItem, height: 60, padding: 5}}

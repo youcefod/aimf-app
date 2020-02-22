@@ -1,9 +1,11 @@
 import React, {Component} from "react";
 import {View, FlatList, ActivityIndicator, SafeAreaView} from "react-native";
+import {connect} from "react-redux";
 import UserCard from "./UserScreen/UserCard";
 import firebase from "react-native-firebase";
 import {LIST_ACTION, SHOW_ACTION} from "../Utils/Constants";
 import ShowUser from "./UserScreen/ShowUser";
+import {getUsers} from "../store/reducers/userRedux";
 
 class UserScreen extends Component {
     static navigationOptions = {
@@ -22,78 +24,24 @@ class UserScreen extends Component {
             opacity: 1,
             action: LIST_ACTION,
             userData: [],
+            handleMore: false,
         };
     }
 
     componentDidMount() {
-
-        this.loadUsers();
+        this.props.getUsers([], 1);
     }
 
-    loadUsers = () => {
-        this.setState({loading: true});
-        const that = this;
-        const currentUser = firebase.auth().currentUser;
-        let query = firebase
-            .firestore()
-            .collection("users")
-            .orderBy('lastname', 'asc')
-        ;
-
-        if (that.state.lastVisible) {
-            query = query.startAfter(that.state.lastVisible);
-        }
-
-        query
-            .limit(5)
-            .get()
-            .then(users => {
-                if (users.docs.length > 0) {
-                    that.setState({lastVisible: users.docs[users.docs.length - 1]});
-                }
-                setTimeout(() => {
-                    const data = [];
-                    users.forEach(function (doc) {
-                        if (currentUser.uid !== doc.id) {
-                            data.push({...doc.data(), id: doc.id});
-                        }
-                    });
-                    that.setState({
-                        users: that.state.page === 1 ? data : [...that.state.users, ...data],
-                        loading: false,
-                        refreshing: false
-                    });
-                }, 500);
-
-            })
-            .catch(error => {
-                this.setState({error, loading: false, refreshing: false});
-            });
-
-    };
-
     handleRefresh = () => {
-        this.setState(
-            {
-                page: 1,
-                refreshing: true,
-                lastVisible: null
-            },
-            () => {
-                this.loadUsers();
-            }
-        );
+        if (!this.props.refreshing && !this.props.handleMore && !this.props.loading) {
+            this.props.getUsers([], 1, true);
+        }
     };
 
     handleLoadMore = () => {
-        this.setState(
-            {
-                page: this.state.page + 1
-            },
-            () => {
-                this.loadUsers();
-            }
-        );
+        if (!this.props.refreshing && !this.props.handleMore && !this.props.loading)  {
+            this.props.getUsers(this.props.users, this.props.page + 1, false, true);
+        }
     };
 
     renderSeparator = () => {
@@ -110,7 +58,7 @@ class UserScreen extends Component {
     };
 
     renderFooter = () => {
-        if (!this.state.loading) return null;
+        if (!this.props.loading) return null;
         return (
             <View
                 style={{
@@ -151,16 +99,17 @@ class UserScreen extends Component {
 
     render() {
         return this.state.action === SHOW_ACTION ?
-            (<ShowUser data={this.state.userData} updateCard={this.updateCard.bind(this)} updateState={this.setState.bind(this)}/>) :
+            (<ShowUser data={this.state.userData} updateCard={this.updateCard.bind(this)}
+                       updateState={this.setState.bind(this)}/>) :
             (<SafeAreaView style={{opacity: this.state.opacity}}>
                 <FlatList
-                    data={this.state.users}
+                    data={this.props.users}
                     renderItem={({item}) => this.renderItem(item)}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     ListFooterComponent={this.renderFooter}
                     onRefresh={this.handleRefresh}
-                    refreshing={this.state.refreshing}
+                    refreshing={this.props.refreshing}
                     onEndReached={this.handleLoadMore}
                     onEndReachedThreshold={1}
                 />
@@ -169,4 +118,30 @@ class UserScreen extends Component {
     }
 }
 
-export default UserScreen;
+const mapStateToProps = state => {
+    const {
+        users,
+        loading,
+        refreshing,
+        handleMore,
+        page,
+    } = state.userStore;
+    return {
+        users,
+        loading,
+        refreshing,
+        handleMore,
+        page,
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        getUsers: (users, page, refreshing = false, handleMore = false) => dispatch(getUsers(users, page, refreshing, handleMore)),
+    };
+};
+
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps)(UserScreen);

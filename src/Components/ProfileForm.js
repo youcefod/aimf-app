@@ -6,7 +6,7 @@ import {
     View,
     Image
 } from "react-native";
-import {Item, Icon, Input, Label, DatePicker, Text} from "native-base";
+import {Item, Icon, Input, Label, DatePicker, Text, Button} from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import {RadioButtons, SegmentedControls} from 'react-native-radio-buttons'
 import {
@@ -80,7 +80,6 @@ export default class ProfileForm extends Component {
     }
 
     renderKindOption = (option, selected, onSelect, index) => {
-        const marginLeft = option === WOMEN_KIND ? 50 : 0;
         const icon = this.getKinIcon(option, selected);
         return (<TouchableWithoutFeedback onPress={onSelect} key={index}>
                 <Image style={{width: 60, height: 60}} source={icon}/>
@@ -205,17 +204,19 @@ export default class ProfileForm extends Component {
                     centerContent={true}
                     style={{paddingTop: 20, opacity: this.props.scrollViewOpacity, backgroundColor: '#f3aa2329'}}>
                     <View>
-                        <Text style={{marginLeft: 20, marginBottom: 20}}>
-                            <Icon name="md-arrow-back" type="Ionicons"
-                                  onPress={() => {
-                                      this.props.action === UPDATE_ACTION ?
-                                          this.props.updateState({
-                                              ...this.props.initData,
-                                              action: SHOW_ACTION
-                                          }) : this.props.navigation.navigate("Login");
-                                  }}
-                            />
-                        </Text>
+                        <Button
+                            transparent
+                            onPress={() => {
+                                this.props.action === UPDATE_ACTION ?
+                                    this.props.updateState({
+                                        ...this.props.initData,
+                                        action: SHOW_ACTION
+                                    }) : this.props.navigation.navigate("Login");
+                            }}
+                            style={{borderRadius: 30}}
+                        >
+                            <Icon style={{color: "#000"}} name="md-arrow-back" type="Ionicons"/>
+                        </Button>
                     </View>
                     <Label
                         style={styles.label}>Je suis *</Label>
@@ -359,7 +360,7 @@ export default class ProfileForm extends Component {
                     />
                     <RenderInput
                         checkFunction={isCorrectPassword}
-                        label="Confirmer nouveau mot de passe"
+                        label="Confirmer mot de passe"
                         error={confirmPassword.length > 0 && (!isCorrectPassword(confirmPassword) || newPassword != confirmPassword)}
                         secureTextEntry
                         onChange={confirmPassword => this.props.updateState({confirmPassword})}

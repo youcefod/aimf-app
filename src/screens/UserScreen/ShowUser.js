@@ -1,9 +1,9 @@
 import React, {Component} from "react";
-import {LIST_ACTION, MARRIED, WOMEN_KIND} from "../../Utils/Constants";
+import {LIST_ACTION, MARRIED, SHOW_ACTION, UPDATE_ACTION, WOMEN_KIND} from "../../Utils/Constants";
 import SettingsSwitch from "../../Components/switch";
 import InformationsModal from "../../Components/InformationsModal";
 import {ScrollView, View} from "react-native";
-import {Icon, Text, Thumbnail} from "native-base";
+import {Button, Icon, Text, Thumbnail} from "native-base";
 import firebase from "react-native-firebase";
 import SpinnerButton from "react-native-spinner-button";
 
@@ -170,24 +170,25 @@ class ShowUser extends Component {
 
     render() {
         let logo = require("../../../assets/images/men.png");
-        if (this.props.data.kind == WOMEN_KIND) {
+        if (this.props.data.kind === WOMEN_KIND) {
             logo = require("../../../assets/images/women.png");
         }
         return (
             <ScrollView
                 centerContent={true}
                 style={{paddingTop: 20, paddingBottom: 14, paddingRight: 14, opacity: this.state.scrollViewOpacity}}>
-
                 <View>
-                    <Text style={{marginLeft: 20, marginBottom: 20}}>
-                        <Icon name="md-arrow-back" type="Ionicons"
-                              onPress={() => {
-                                  this.props.updateState({
-                                      action: LIST_ACTION
-                                  });
-                              }}
-                        />
-                    </Text>
+                    <Button
+                        transparent
+                        onPress={() => {
+                            this.props.updateState({
+                                action: LIST_ACTION
+                            });
+                        }}
+                        style={{borderRadius: 30, marginLeft: 20, marginBottom: 20}}
+                    >
+                        <Icon style={{color: "#000"}} name="md-arrow-back" type="Ionicons"/>
+                    </Button>
                 </View>
                 <Thumbnail source={logo} style={{marginBottom: 14}}/>
                 {this.renderInformation()}

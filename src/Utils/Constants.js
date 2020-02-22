@@ -15,4 +15,4 @@ export const SCHOOL_LEVELS = ['Maternelle', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', 'S
 export const DEFAULT_SCHOOL_LEVEL = 'Maternelle';
 
 export const MEN_KIND = 'men';
-export const WOMEN_KIND = 'men';
+export const WOMEN_KIND = 'women';
