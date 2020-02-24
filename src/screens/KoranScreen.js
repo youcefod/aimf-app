@@ -1,16 +1,54 @@
-import React, { Component } from "react";
-import { View } from "react-native";
+import React, {Component} from "react";
+import {View, FlatList, Button} from "react-native";
 
-class KoranScreen extends Component {
-  static navigationOptions = {
-    header: null
-  };
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  render() {
-    return <View style={{ flex: 1, backgroundColor: "#f1c40f" }} />;
-  }
-}
-export default KoranScreen;
+import {
+    createStackNavigator,
+    createMaterialTopTabNavigator,
+    createAppContainer,
+} from 'react-navigation';
+
+import CreateKhatma from "./koran/CreateKhatma";
+import CreateTakharoubt from "./koran/CreateTakharoubt";
+import PickUpTakharoubt from "./koran/PickUpTakharoubt";
+
+const TabScreen = createMaterialTopTabNavigator(
+    {
+        CreateKhatma: {screen: CreateKhatma},
+        CreateTakharoubt: {screen: CreateTakharoubt},
+        PickUpTakharoubt: {screen: PickUpTakharoubt},
+    },
+    {
+        tabBarPosition: 'top',
+        swipeEnabled: true,
+        animationEnabled: true,
+        tabBarOptions: {
+            activeTintColor: '#FFFFFF',
+            inactiveTintColor: '#F8F8F8',
+            style: {
+                backgroundColor: '#633689',
+            },
+            labelStyle: {
+                textAlign: 'center',
+            },
+            indicatorStyle: {
+                borderBottomColor: '#87B56A',
+                borderBottomWidth: 2,
+            },
+        },
+    }
+);
+
+const KoranScreen = createStackNavigator({
+    TabScreen: {
+        screen: TabScreen,
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#633689',
+            },
+            headerTintColor: '#FFFFFF',
+            title: 'Coran',
+        },
+    },
+});
+
+export default createAppContainer(KoranScreen);
