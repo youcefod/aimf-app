@@ -22,14 +22,14 @@ export default class SignUp extends Component {
         super(props);
         _isMounted = false;
         this.state = {
-            kind: null,
+            gender: null,
             conjugalSituation: null,
             email: "",
             newPassword: "",
             confirmPassword: "",
             lastname: "",
-            brother: "",
-            maidename: "",
+            father: "",
+            middlename: "",
             firstname: "",
             birthDate: new Date(),
             zipCode: "",
@@ -76,7 +76,7 @@ export default class SignUp extends Component {
         }
     }
     save = () => {
-        const {email, newPassword, lastname, brother, maidename, firstname, kind, conjugalSituation, birthDate, zipCode, phoneNumber, response1, response2, question1, question2} = this.state;
+        const {email, newPassword, lastname, father, middlename, firstname, gender, conjugalSituation, birthDate, zipCode, phoneNumber, response1, response2, question1, question2} = this.state;
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, newPassword)
@@ -86,12 +86,12 @@ export default class SignUp extends Component {
                     .collection("users")
                     .doc(user.user.uid)
                     .set({
-                        kind: kind,
+                        gender: gender,
                         conjugalSituation: conjugalSituation,
                         email: email.trim().toLowerCase(),
                         lastname: lastname.trim(),
-                        brother: brother.trim(),
-                        maidename: maidename.trim().toLowerCase(),
+                        father: father.trim(),
+                        middlename: middlename.trim().toLowerCase(),
                         firstname: firstname.trim().toLowerCase(),
                         birthDate: getFrDate(birthDate),
                         zipCode: zipCode,
@@ -156,9 +156,9 @@ export default class SignUp extends Component {
             email,
             newPassword,
             confirmPassword,
-            brother,
+            father,
             lastname,
-            maidename,
+            middlename,
             firstname,
             conjugalSituation,
             zipCode,
@@ -170,7 +170,7 @@ export default class SignUp extends Component {
             questions2,
             question1,
             question2,
-            kind,
+            gender,
         } = this.state;
         return (
             questions1 && questions1.length > 0 ?

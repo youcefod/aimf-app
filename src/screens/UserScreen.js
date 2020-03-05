@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {View, FlatList, ActivityIndicator, SafeAreaView} from "react-native";
 import {connect} from "react-redux";
 import UserCard from "./UserScreen/UserCard";
-import firebase from "react-native-firebase";
 import {LIST_ACTION, SHOW_ACTION} from "../Utils/Constants";
 import ShowUser from "./UserScreen/ShowUser";
 import {getUsers} from "../store/reducers/userRedux";
