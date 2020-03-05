@@ -9,13 +9,13 @@ import {CREATE_ACTION, MARRIED, UPDATE_ACTION} from "../../Utils/Constants";
 
 export const checkFormValues = values => {
 
-    if (!values.kind) {
+    if (!values.gender) {
         return 'Veuillez renseigner votre sexe';
     }
     if (!values.lastname) {
         return 'Veuillez renseigner votre nom';
     }
-    if (!values.brother) {
+    if (!values.father) {
         return 'Veuillez renseigner le nom de votre père';
     }
     if (!values.firstname) {
@@ -56,7 +56,7 @@ export const checkFormValues = values => {
     if (!isCorrectEmailAddress(values.email) ||
         !isCorrectName(values.lastname) ||
         !isCorrectName(values.firstname) ||
-        !isCorrectName(values.maidename) ||
+        !isCorrectName(values.middlename) ||
         !values.action === UPDATE_ACTION && isCorrectName(values.fonction) ||
         !isCorrectPhoneNumber(values.phoneNumber) ||
         !isCorrectZipCode(values.zipCode) ||

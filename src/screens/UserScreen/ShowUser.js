@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {LIST_ACTION, MARRIED, SHOW_ACTION, UPDATE_ACTION, WOMEN_KIND} from "../../Utils/Constants";
+import {LIST_ACTION, MARRIED, WOMEN_GENDER} from "../../Utils/Constants";
 import SettingsSwitch from "../../Components/switch";
 import InformationsModal from "../../Components/InformationsModal";
 import {ScrollView, View} from "react-native";
@@ -170,7 +170,7 @@ class ShowUser extends Component {
 
     render() {
         let logo = require("../../../assets/images/men.png");
-        if (this.props.data.kind === WOMEN_KIND) {
+        if (this.props.data.gender === WOMEN_GENDER) {
             logo = require("../../../assets/images/women.png");
         }
         return (

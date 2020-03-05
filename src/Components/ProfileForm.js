@@ -19,7 +19,7 @@ import {
 } from "../Utils/Functions";
 import {styles} from "./ProfileForm/css";
 import Loader from '../Components/Loader';
-import {CREATE_ACTION, MARRIED, MEN_KIND, SHOW_ACTION, SINGLE, UPDATE_ACTION, WOMEN_KIND} from "../Utils/Constants";
+import {CREATE_ACTION, MARRIED, MEN_GENDER, SHOW_ACTION, SINGLE, UPDATE_ACTION, WOMEN_GENDER} from "../Utils/Constants";
 import {getRandomQuestionIndex} from "./ProfileForm/Functions";
 import ActionsButton from './ProfileForm/ActionsButton'
 import ChildrenInformation from "./ProfileForm/ChildrenInformation";
@@ -73,13 +73,13 @@ export default class ProfileForm extends Component {
     }
 
     getKinIcon = (option, selected) => {
-        if (option === MEN_KIND) {
+        if (option === MEN_GENDER) {
             return selected ? require('../../assets/images/men_selected.png') : require('../../assets/images/men.png');
         }
         return selected ? require('../../assets/images/women_selected.png') : require('../../assets/images/women.png');
     }
 
-    renderKindOption = (option, selected, onSelect, index) => {
+    renderGenderOption = (option, selected, onSelect, index) => {
         const icon = this.getKinIcon(option, selected);
         return (<TouchableWithoutFeedback onPress={onSelect} key={index}>
                 <Image style={{width: 60, height: 60}} source={icon}/>
@@ -87,7 +87,7 @@ export default class ProfileForm extends Component {
         );
     }
 
-    renderKindContainer = (optionNodes) => {
+    renderGenderContainer = (optionNodes) => {
         return <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>{optionNodes}</View>;
     }
 
@@ -185,7 +185,7 @@ export default class ProfileForm extends Component {
             currentPassword,
             newPassword,
             confirmPassword,
-            brother,
+            father,
             firstname,
             zipCode,
             phoneNumber,
@@ -195,7 +195,7 @@ export default class ProfileForm extends Component {
             schoolLevels,
             fonction,
             birthDate,
-            kind,
+            gender,
         } = this.props.data;
         const conjugalSituationOptions = [MARRIED, SINGLE];
         return (
@@ -222,10 +222,10 @@ export default class ProfileForm extends Component {
                         style={styles.label}>Je suis *</Label>
                     <RadioButtons
                         options={["men", "women"]}
-                        onSelection={kind => this.props.updateState({kind})}
-                        selectedOption={kind}
-                        renderOption={this.renderKindOption}
-                        renderContainer={this.renderKindContainer}
+                        onSelection={gender => this.props.updateState({gender})}
+                        selectedOption={gender}
+                        renderOption={this.renderGenderOption}
+                        renderContainer={this.renderGenderContainer}
                     />
                     <RenderInput
                         checkFunction={isCorrectName}
@@ -237,16 +237,16 @@ export default class ProfileForm extends Component {
                     <RenderInput
                         checkFunction={isCorrectName}
                         label="Nom de jeune fille"
-                        onChange={maidename => this.props.updateState({maidename})}
+                        onChange={middlename => this.props.updateState({middlename})}
                         required={false}
-                        value={maidename}
+                        value={middlename}
                     />
                     <RenderInput
                         checkFunction={isCorrectName}
                         label="Fils de"
-                        onChange={brother => this.props.updateState({brother})}
+                        onChange={father => this.props.updateState({father})}
                         required
-                        value={brother}
+                        value={father}
                     />
                     <RenderInput
                         checkFunction={isCorrectName}

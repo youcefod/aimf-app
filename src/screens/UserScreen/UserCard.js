@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Card, CardItem, Thumbnail, Text, Icon, Left, Right, Body} from 'native-base';
-import {WOMEN_KIND} from "../../Utils/Constants";
+import {WOMEN_GENDER} from "../../Utils/Constants";
 import {getFullName} from "../../Utils/Functions";
 import {View} from "react-native";
 
@@ -19,7 +19,7 @@ export default class UserCard extends Component {
 
     render() {
         let logo = require("../../../assets/images/men.png");
-        if (this.props.data.kind == WOMEN_KIND) {
+        if (this.props.data.gender == WOMEN_GENDER) {
             logo = require("../../../assets/images/women.png");
         }
 

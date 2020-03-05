@@ -16,9 +16,9 @@ class ShowProfile extends Component {
 
     render() {
         let icon = null;
-        if (this.props.kind === 'men') {
+        if (this.props.gender === 'men') {
             icon = require('../../../assets/images/men.png');
-        } else if (this.props.kind === 'women') {
+        } else if (this.props.gender === 'women') {
 
             icon = require('../../../assets/images/women.png');
         }

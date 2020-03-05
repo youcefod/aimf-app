@@ -17,15 +17,15 @@ class ProfileScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            kind: null,
+            gender: null,
             conjugalSituation: null,
             email: "",
             currentPassword: "",
             newPassword: "",
             confirmPassword: "",
             lastname: "",
-            brother: "",
-            maidename: "",
+            father: "",
+            middlename: "",
             firstname: "",
             birthDate: new Date(),
             zipCode: "",
@@ -99,10 +99,10 @@ class ProfileScreen extends Component {
         this.setState({loading: true});
         const {
             lastname,
-            brother,
-            maidename,
+            father,
+            middlename,
             firstname,
-            kind,
+            gender,
             conjugalSituation,
             birthDate,
             zipCode,
@@ -125,12 +125,12 @@ class ProfileScreen extends Component {
             .collection("users")
             .doc(this.state.currentUser.uid)
             .set({
-                kind: kind,
+                gender: gender,
                 conjugalSituation: conjugalSituation,
                 email: email.trim().toLowerCase(),
                 lastname: lastname.trim(),
-                brother: brother.trim(),
-                maidename: maidename.trim().toLowerCase(),
+                father: father.trim(),
+                middlename: middlename.trim().toLowerCase(),
                 firstname: firstname.trim().toLowerCase(),
                 birthDate: getFrDate(birthDate),
                 zipCode: zipCode,
@@ -163,15 +163,15 @@ class ProfileScreen extends Component {
 
     render() {
         const data = {
-            kind,
+            gender,
             conjugalSituation,
             email,
             currentPassword,
             newPassword,
             confirmPassword,
             lastname,
-            brother,
-            maidename,
+            father,
+            middlename,
             firstname,
             birthDate,
             zipCode,
@@ -186,7 +186,7 @@ class ProfileScreen extends Component {
         if (this.state.email) {
             return (
                 this.state.action === SHOW_ACTION ?
-                    <ShowProfile kind={this.state.kind} fullName={getFullName(this.state)}
+                    <ShowProfile gender={this.state.gender} fullName={getFullName(this.state)}
                                  updateAction={this.updateAction.bind(this)}/> :
                     <>
                         <ProfileForm
