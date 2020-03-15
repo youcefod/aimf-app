@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import {View, FlatList, ActivityIndicator, SafeAreaView} from "react-native";
 import {connect} from "react-redux";
-import UserCard from "./UserScreen/UserCard";
+import BookCard from "./LibraryScreen/BookCard";
 import {LIST_ACTION, SHOW_ACTION} from "../Utils/Constants";
-import ShowUser from "./UserScreen/ShowUser";
-import {getUsers} from "../store/reducers/userRedux";
+import ShowBook from "./LibraryScreen/ShowBook";
+import {getBooks} from "../store/reducers/bookRedux";
+import {Icon, Input, Item} from "native-base";
 
-class UserScreen extends Component {
+class LibraryScreen extends Component {
     static navigationOptions = {
         header: null
     };
@@ -15,31 +16,27 @@ class UserScreen extends Component {
         super(props);
 
         this.state = {
-            loading: true,
-            users: [],
-            page: 1,
-            lastVisible: null,
-            refreshing: false,
+            books: [],
             opacity: 1,
             action: LIST_ACTION,
-            userData: [],
-            handleMore: false,
+            bookData: [],
+            searchValue: '',
         };
     }
 
     componentDidMount() {
-        this.props.getUsers([], 1);
+        this.props.getBooks([], 1);
     }
 
     handleRefresh = () => {
         if (!this.props.refreshing && !this.props.handleMore && !this.props.loading) {
-            this.props.getUsers([], 1, true);
+            this.props.getBooks([], 1, this.state.searchValue, true);
         }
     };
 
     handleLoadMore = () => {
-        if (!this.props.refreshing && !this.props.handleMore && !this.props.loading)  {
-            this.props.getUsers(this.props.users, this.props.page + 1, false, true);
+        if (!this.props.refreshing && !this.props.handleMore && !this.props.loading) {
+            this.props.getBooks(this.props.books, this.props.page + 1, this.state.searchValue, false, true);
         }
     };
 
@@ -57,7 +54,7 @@ class UserScreen extends Component {
     };
 
     renderFooter = () => {
-        if (!this.props.loading) return null;
+        if (!this.props.loading || this.props.books.length < 5) return null;
         return (
             <View
                 style={{
@@ -72,37 +69,71 @@ class UserScreen extends Component {
         );
     };
 
-    showUser = data => {
-        this.setState({userData: data, action: SHOW_ACTION});
+    showBook = data => {
+        this.setState({bookData: data, action: SHOW_ACTION});
     }
 
     updateCard = data => {
-        const users = this.state.users.map(user => {
-            if (user.id == data.id) {
+        const books = this.state.books.map(book => {
+            if (book.id == data.id) {
                 return data;
             }
-            return user;
+            return book;
         });
 
-        this.setState({users: users});
+        this.setState({books: books});
     }
     renderItem = item => {
         return (
-            <UserCard
+            <BookCard
                 data={item}
-                showUser={this.showUser.bind(this)}
+                showBook={this.showBook.bind(this)}
                 backgroundColor="#ffffff"
             />
         );
-    }
+    };
+
+    search = () => {
+        this.handleRefresh();
+    };
 
     render() {
         return this.state.action === SHOW_ACTION ?
-            (<ShowUser data={this.state.userData} updateCard={this.updateCard.bind(this)}
+            (<ShowBook data={this.state.bookData} updateCard={this.updateCard.bind(this)}
                        updateState={this.setState.bind(this)}/>) :
             (<SafeAreaView style={{opacity: this.state.opacity}}>
+                <Item
+                    rounded
+                    style={{
+                        margin: 10,
+                        marginLeft: 15,
+                        paddingHorizontal: 10,
+                        paddingLeft: 5,
+                        borderRadius: 5,
+                        height: 40,
+                        backgroundColor: "#FFF",
+                        fontSize: 12,
+                    }}
+                >
+                    <Icon
+                        type="AntDesign"
+                        name="search1"
+                    />
+                    <Input
+                        onChangeText={value => this.setState({searchValue: value})}
+                        onBlur={this.search}
+                        style={{
+                            fontSize: 15,
+                            paddingLeft: 10
+                        }}
+                        keyboardType='default'
+                        placeholder="Rechercher"
+                        value={this.state.searchValue}
+                    />
+                </Item>
                 <FlatList
-                    data={this.props.users}
+                    ListHeaderComponent={this.renderHeader}
+                    data={this.props.books}
                     renderItem={({item}) => this.renderItem(item)}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={this.renderSeparator}
@@ -119,14 +150,14 @@ class UserScreen extends Component {
 
 const mapStateToProps = state => {
     const {
-        users,
+        books,
         loading,
         refreshing,
         handleMore,
         page,
-    } = state.userStore;
+    } = state.bookStore;
     return {
-        users,
+        books,
         loading,
         refreshing,
         handleMore,
@@ -136,11 +167,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getUsers: (users, page, refreshing = false, handleMore = false) => dispatch(getUsers(users, page, refreshing, handleMore)),
+        getBooks: (books, page, searchValue, refreshing = false, handleMore = false) => dispatch(getBooks(books, page, searchValue, refreshing, handleMore)),
     };
 };
 
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps)(UserScreen);
+    mapDispatchToProps)(LibraryScreen);

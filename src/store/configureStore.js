@@ -1,6 +1,7 @@
 import { AsyncStorage } from 'react-native';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux'
 import {userReducer} from "./reducers/userRedux";
+import {bookReducer} from "./reducers/bookRedux";
 import { persistStore, persistReducer } from "redux-persist";
 import thunk from "redux-thunk";
 
@@ -11,6 +12,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     userStore: userReducer,
+    bookStore: bookReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
