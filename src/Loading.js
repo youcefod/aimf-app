@@ -5,7 +5,18 @@ import firebase from "react-native-firebase";
 export default class Loading extends Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? "MainTabNavigator" : "Login");
+      if (user) {
+          firebase.firestore().collection("users")
+              .doc(user._user.uid)
+              .get()
+              .then(doc => {
+                  const navigation = doc.data().isAuthorized ? 'bottomActiveUserTabNavigator' : 'bottomUnActiveUserTabNavigator';
+                  this.props.navigation.navigate(doc.data().isAdmin ? 'bottomAdminUserTabNavigator' : navigation);
+              });
+      }
+      else {
+        this.props.navigation.navigate('Login');
+      }
     });
   }
   render() {

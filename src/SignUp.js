@@ -1,199 +1,202 @@
-import React, { Component } from "react";
-import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { View, Item, Icon, Input, Button } from "native-base";
-import SpinnerButton from "react-native-spinner-button";
-import DropdownAlert from "react-native-dropdownalert";
+import React, {Component} from "react";
+import {
+    Text,
+    Animated,
+    View,
+    ActivityIndicator
+} from "react-native";
 import firebase from "react-native-firebase";
+import {
+    getFrDate
+} from "./Utils/Functions";
+import Loader from './Components/Loader';
+import ErrorModal from "./Components/ErrorModal";
+import {CREATE_ACTION, EMAIL_EXIST_ERROR, SERVER_ERROR} from "./Utils/Constants";
+import {checkFormValues} from "./Components/ProfileForm/Validate";
+import {getQuestions, getRandomQuestionIndex} from "./Components/ProfileForm/Functions";
+import ProfileForm from "./Components/ProfileForm";
 
 export default class SignUp extends Component {
-  _isMounted = false;
-  state = {
-    email: "",
-    password: "",
-    fullname: "",
-    buttonSpinner: false
-  };
 
-  componentDidMount() {
-    this._isMounted = true;
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  _onSignUp = () => {
-    const { email, password, fullname } = this.state;
-    if (!email || !password || !fullname) {
-      this.dropdown.alertWithType(
-        "error",
-        "ERROR OCCURED",
-        "Please, fill up all of your credintials!"
-      );
-      return;
+    constructor(props) {
+        super(props);
+        _isMounted = false;
+        this.state = {
+            gender: null,
+            conjugalSituation: null,
+            email: "",
+            newPassword: "",
+            confirmPassword: "",
+            lastname: "",
+            father: "",
+            middlename: "",
+            firstname: "",
+            birthDate: new Date(),
+            zipCode: "",
+            phoneNumber: "",
+            response1: "",
+            response2: "",
+            buttonSpinner: false,
+            spinValue: new Animated.Value(0),
+            loading: false,
+            modal: false,
+            modalVisible: false,
+            errorMessage: '',
+            questions1: [],
+            questions2: [],
+            question1: "",
+            question2: "",
+        };
     }
-    this.setState({ buttonSpinner: true });
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(user => {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(user.user.uid)
-          .set({
-            email: email,
-            fullname: fullname
-          })
-          .then(() => {
-            if (this._isMounted) {
-              setTimeout(() => {
-                this.setState({ buttonSpinner: false });
-              }, 2000);
-            }
-          });
-      })
-      .catch(error => {
-        if (this._isMounted) {
-          setTimeout(() => {
-            this.setState({ buttonSpinner: false });
-          }, 2000);
+
+    componentDidMount() {
+        this._isMounted = true;
+        getQuestions(this.setQuestions.bind(this));
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    setModalVisible(visible) {
+        this.setState({modalVisible: visible});
+    }
+
+    setQuestions = (questions, index) => {
+        if (index === 1) {
+            this.setState({
+                questions1: questions,
+                question1: questions[getRandomQuestionIndex()],
+            });
+        } else {
+            this.setState({
+                questions2: questions,
+                question2: questions[getRandomQuestionIndex()]
+            });
         }
-      });
-  };
+    }
+    save = () => {
+        const {email, newPassword, lastname, father, middlename, firstname, gender, conjugalSituation, birthDate, zipCode, phoneNumber, response1, response2, question1, question2} = this.state;
+        firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, newPassword)
+            .then(user => {
+                firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(user.user.uid)
+                    .set({
+                        gender: gender,
+                        conjugalSituation: conjugalSituation,
+                        email: email.trim().toLowerCase(),
+                        lastname: lastname.trim(),
+                        father: father.trim(),
+                        middlename: middlename.trim().toLowerCase(),
+                        firstname: firstname.trim().toLowerCase(),
+                        birthDate: getFrDate(birthDate),
+                        zipCode: zipCode,
+                        phoneNumber: phoneNumber,
+                        question1: question1,
+                        question2: question2,
+                        response1: response1.trim().toLowerCase(),
+                        response2: response2.trim().toLowerCase(),
+                        isAuthorized: false,
+                        isAdmin: false,
+                    })
+                    .then(() => {
+                        if (this._isMounted) {
+                            this.setState({loading: false});
+                        }
+                    });
+            })
+            .catch(error => {
+                if (this._isMounted) {
+                    this.setState({errorMessage: SERVER_ERROR, loading: false});
+                    this.setModalVisible(true);
+                }
+            });
+        return;
+    };
 
-  _isCorrectFullname = fullname => {
-    return fullname.match(/^[a-zA-Z]+(\s{0,1}[a-zA-Z ])*$/) ? true : false;
-  };
+    onSubmit = () => {
+        const error = checkFormValues(this.state);
+        if (error) {
+            this.setState({errorMessage: error});
+            this.setModalVisible(true);
+            return;
+        }
 
-  _isCorrectEmailAddress = email => {
-    let reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return reg.test(String(email).toLowerCase());
-  };
+        this.setState({loading: true});
+        firebase
+            .firestore()
+            .collection('users')
+            .where('email', '==', this.state.email.trim().toLowerCase()).get()
+            .then(user => {
+                if (user.empty) {
+                    this.save();
+                    return;
+                }
+                if (this._isMounted) {
+                    this.setState({errorMessage: EMAIL_EXIST_ERROR});
+                    this.setModalVisible(true);
+                    this.setState({loading: false});
+                }
+            })
+            .catch(error => {
+                if (this._isMounted) {
+                    this.setState({errorMessage: SERVER_ERROR});
+                    this.setState({loading: false});
+                }
+            });
+        return;
+    };
 
-  _isCorrectPassword = password => {
-    return password.length > 5 ? true : false;
-  };
-
-  render() {
-    const { email, password, fullname, buttonSpinner } = this.state;
-    const profile = require("../assets/images/profile.png");
-
-    return (
-      <View style={styles.bodyWrapper}>
-        <Image style={{ width: 120, height: 120 }} source={profile} />
-        <Item
-          rounded
-          success={this._isCorrectFullname(fullname)}
-          error={!this._isCorrectFullname(fullname)}
-          style={styles.inputItem}
-        >
-          <Input
-            style={styles.input}
-            autoCapitalize="words"
-            keyboardType="default"
-            onChangeText={fullname => this.setState({ fullname })}
-            placeholder={"Fullname"}
-            value={fullname}
-          />
-          <Icon
-            name={
-              this._isCorrectFullname(fullname)
-                ? "checkmark-circle"
-                : "close-circle"
-            }
-          />
-        </Item>
-
-        <Item
-          rounded
-          success={this._isCorrectEmailAddress(email)}
-          error={!this._isCorrectEmailAddress(email)}
-          style={styles.inputItem}
-        >
-          <Input
-            style={styles.input}
-            keyboardType="email-address"
-            onChangeText={email => this.setState({ email })}
-            placeholder={"Email address"}
-            value={email}
-          />
-          <Icon
-            name={
-              this._isCorrectEmailAddress(email)
-                ? "checkmark-circle"
-                : "close-circle"
-            }
-          />
-        </Item>
-
-        <Item
-          rounded
-          success={this._isCorrectPassword(password)}
-          error={!this._isCorrectPassword(password)}
-          style={styles.inputItem}
-        >
-          <Input
-            style={styles.input}
-            onChangeText={password => this.setState({ password })}
-            placeholder={"Password"}
-            value={password}
-          />
-          <Icon
-            name={
-              this._isCorrectPassword(password)
-                ? "checkmark-circle"
-                : "close-circle"
-            }
-          />
-        </Item>
-        <SpinnerButton
-          buttonStyle={styles.signupButton}
-          isLoading={buttonSpinner}
-          onPress={this._onSignUp}
-          indicatorCount={10}
-          spinnerType="SkypeIndicator"
-        >
-          <Text style={styles.nextButtonText}>Create Account</Text>
-        </SpinnerButton>
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate("Login")}
-          activeOpacity={0.6}
-        >
-          <Text>Already have an account? Log In</Text>
-        </TouchableOpacity>
-        <DropdownAlert ref={ref => (this.dropdown = ref)} />
-      </View>
-    );
-  }
+    render() {
+        const data = {
+            email,
+            newPassword,
+            confirmPassword,
+            father,
+            lastname,
+            middlename,
+            firstname,
+            conjugalSituation,
+            zipCode,
+            phoneNumber,
+            birthDate,
+            response1,
+            response2,
+            questions1,
+            questions2,
+            question1,
+            question2,
+            gender,
+        } = this.state;
+        return (
+            questions1 && questions1.length > 0 ?
+                <>
+                    <ProfileForm
+                        scrollViewOpacity={this.state.loading || this.state.modalVisible ? 0.6 : 1}
+                        action={CREATE_ACTION}
+                        data={data}
+                        initData={{}}
+                        navigation={this.props.navigation}
+                        updateState={this.setState.bind(this)}
+                        onSubmit={this.onSubmit.bind(this)}
+                    />
+                    <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible.bind(this)}
+                                message={this.state.errorMessage}/>
+                    <Loader visible={this.state.loading}/>
+                </>
+                :
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <Text>Chargement</Text>
+                    <ActivityIndicator size="large"/>
+                </View>
+        );
+    }
 }
-
-const styles = StyleSheet.create({
-  bodyWrapper: {
-    height: 550,
-    paddingTop: 50,
-    alignItems: "center",
-    justifyContent: "space-evenly"
-  },
-  inputItem: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingHorizontal: 10,
-    width: 300
-  },
-  input: {
-    fontSize: 15
-  },
-  signupButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: 50,
-    width: 150,
-    borderRadius: 50,
-    backgroundColor: "#5CB85C"
-  },
-  nextButtonText: {
-    fontSize: 18,
-    color: "#fff"
-  }
-});

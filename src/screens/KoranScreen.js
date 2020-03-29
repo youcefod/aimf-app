@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View } from "react-native";
 
-class TimelineScreen extends Component {
+class KoranScreen extends Component {
   static navigationOptions = {
     header: null
   };
@@ -10,7 +10,7 @@ class TimelineScreen extends Component {
     this.state = {};
   }
   render() {
-    return <View style={{ flex: 1, backgroundColor: "#81ecec" }} />;
+    return <View style={{ flex: 1, backgroundColor: "#f1c40f" }} />;
   }
 }
-export default TimelineScreen;
+export default KoranScreen;

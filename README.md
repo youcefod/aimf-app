@@ -4,6 +4,12 @@ Afin de lancer l'application, veuillez suivre les etapes suivantes :
 - `cd AIMFAPP/`
 - `yarn install` // <-- [installer Yarn d'abord](https://yarnpkg.com/fr/docs/install#debian-stable)
 - Configurer et lancer un emulateur Android ou connecter et configurer votre smartphone Android (disponible pour Android uniquement pour l'instant)
-- `yarn global add react-native-cli`
-- `react-native start`
-- `react-native run-android`
+``` 
+yarn global add react-native-cli
+```
+```
+react-native start
+```
+```
+react-native run-android
+```

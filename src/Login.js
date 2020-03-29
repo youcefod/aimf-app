@@ -1,14 +1,19 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View, Image} from "react-native";
 import { Item, Input } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import DropdownAlert from "react-native-dropdownalert";
 import firebase from "react-native-firebase";
+import ErrorModal from "./Components/ErrorModal";
+import {CREDENTIALS_EMPTY_ERROR} from "./Utils/Constants";
 
 export default class Login extends React.Component {
-  _isMounted = false;
-  state = { email: "", password: "", buttonSpinner: false };
-
+  constructor(props) {
+    super(props);
+    _isMounted = false;
+    this.state = { email: "", password: "", buttonSpinner: false, modalVisible: false, errorMessage: '' };
+    this.setModalVisible = this.setModalVisible.bind(this);
+  }
   componentDidMount() {
     this._isMounted = true;
   }
@@ -17,14 +22,15 @@ export default class Login extends React.Component {
     this._isMounted = false;
   }
 
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
   handleLogin = () => {
     const { email, password } = this.state;
     if (!email || !password) {
-      this.dropdown.alertWithType(
-        "error",
-        "ERROR OCCURED",
-        "Please, fill up all of your credintials!"
-      );
+      this.setState({errorMessage: CREDENTIALS_EMPTY_ERROR});
+      this.setModalVisible(true);
       return;
     }
     this.setState({ buttonSpinner: true });
@@ -33,16 +39,14 @@ export default class Login extends React.Component {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         if (this._isMounted) {
-          setTimeout(() => {
-            this.setState({ buttonSpinner: false });
-            this.props.navigation.navigate("MainTabNavigator");
-          }, 2000);
+          this.setState({ buttonSpinner: false });
         }
       })
       .catch(error => {
         if (this._isMounted) {
           this.setState({ buttonSpinner: false });
-          this.dropdown.alertWithType("error", "LOGIN ERROR", error.message);
+          this.setState({errorMessage: error.message});
+          this.setModalVisible(true);
         }
       });
   };
@@ -51,6 +55,7 @@ export default class Login extends React.Component {
     const { email, password, buttonSpinner } = this.state;
     const logo = require("../assets/images/logo_transparent.png");
     return (
+      <>
       <View style={styles.bodyWrapper}>
         <Image style={{ width: 120, height: 120 }} source={logo} />
 
@@ -59,16 +64,16 @@ export default class Login extends React.Component {
             style={styles.input}
             keyboardType="email-address"
             onChangeText={email => this.setState({ email })}
-            placeholder={"Email address"}
+            placeholder={"Adresse email"}
             value={email}
           />
         </Item>
         <Item rounded style={styles.inputItem}>
           <Input
+            secureTextEntry={true}
             style={styles.input}
-            keyboardType="visible-password"
             onChangeText={password => this.setState({ password })}
-            placeholder={"Password"}
+            placeholder={"Mot de passe"}
             value={password}
           />
         </Item>
@@ -79,7 +84,7 @@ export default class Login extends React.Component {
           indicatorCount={10}
           spinnerType="SkypeIndicator"
         >
-          <Text style={styles.nextButtonText}>Connect</Text>
+          <Text style={styles.nextButtonText}>Connexion</Text>
         </SpinnerButton>
         <TouchableOpacity
           onPress={() => this.props.navigation.navigate("SignUp")}
@@ -87,11 +92,14 @@ export default class Login extends React.Component {
           activeOpacity={0.6}
         >
           <Text style={styles.createAccount}>
-            You don't have an account yet?
+            Vous n'avez pas encore un compte?
           </Text>
         </TouchableOpacity>
         <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </View>
+        <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible}
+    message={this.state.errorMessage}/>
+    </>
     );
   }
 }
@@ -110,7 +118,8 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
     marginRight: "auto",
     paddingHorizontal: 10,
-    width: 300
+    width: 300,
+    borderRadius: 10,
   },
   input: {
     fontSize: 15
@@ -120,7 +129,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 50,
     width: 150,
-    borderRadius: 50,
+    borderRadius: 10,
     backgroundColor: "#5CB85C"
   },
   nextButtonText: {
