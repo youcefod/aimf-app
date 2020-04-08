@@ -2,10 +2,14 @@ import React, {Component} from "react";
 import {View, FlatList, ActivityIndicator, SafeAreaView} from "react-native";
 import {connect} from "react-redux";
 import BookCard from "./LibraryScreen/BookCard";
-import {LIST_ACTION, SHOW_ACTION} from "../Utils/Constants";
+import {BOOK_GENRES, LIST_ACTION, SHOW_ACTION} from "../Utils/Constants";
 import ShowBook from "./LibraryScreen/ShowBook";
 import {getBooks} from "../store/reducers/bookRedux";
+import {dispatchErrorMessage} from "../store/reducers/errorMessageRedux";
 import {Icon, Input, Item} from "native-base";
+
+import FilterList from "./LibraryScreen/FilterList";
+import ErrorModal from "../Components/ErrorModal";
 
 class LibraryScreen extends Component {
     static navigationOptions = {
@@ -21,6 +25,10 @@ class LibraryScreen extends Component {
             action: LIST_ACTION,
             bookData: [],
             searchValue: '',
+            filterValue: null,
+            modalVisible: false,
+            errorMessage: '',
+            lanceSearch: false,
         };
     }
 
@@ -28,15 +36,22 @@ class LibraryScreen extends Component {
         this.props.getBooks([], 1);
     }
 
+    componentDidUpdate() {
+        if (this.state.lanceSearch) {
+            this.handleRefresh();
+            this.setState({lanceSearch: false});
+        }
+    }
+
     handleRefresh = () => {
         if (!this.props.refreshing && !this.props.handleMore && !this.props.loading) {
-            this.props.getBooks([], 1, this.state.searchValue, true);
+            this.props.getBooks([], 1, this.state.searchValue, this.state.filterValue, true);
         }
     };
 
     handleLoadMore = () => {
         if (!this.props.refreshing && !this.props.handleMore && !this.props.loading) {
-            this.props.getBooks(this.props.books, this.props.page + 1, this.state.searchValue, false, true);
+            this.props.getBooks(this.props.books, this.props.page + 1, this.state.searchValue, this.state.filterValue, false, true);
         }
     };
 
@@ -54,8 +69,7 @@ class LibraryScreen extends Component {
     };
 
     renderFooter = () => {
-        if (!this.props.loading || this.props.books.length < 5) return null;
-        return (
+        return this.props.loading && this.props.books && this.props.books > 5 && (
             <View
                 style={{
                     marginBottom: 100,
@@ -67,6 +81,8 @@ class LibraryScreen extends Component {
                 <ActivityIndicator animating size="large"/>
             </View>
         );
+
+        return null;
     };
 
     showBook = data => {
@@ -82,7 +98,8 @@ class LibraryScreen extends Component {
         });
 
         this.setState({books: books});
-    }
+    };
+
     renderItem = item => {
         return (
             <BookCard
@@ -94,7 +111,30 @@ class LibraryScreen extends Component {
     };
 
     search = () => {
-        this.handleRefresh();
+        if (!this.state.searchValue || this.state.searchValue.length > 2) {
+            this.handleRefresh();
+        } else {
+            this.props.dispatchErrorMessage('Le mot recherché doit avoir au minimum 3 caractères');
+        }
+    };
+
+    updaterFilterValue = filterValue => {
+        this.setState({filterValue, lanceSearch: true});
+    };
+
+    getFilterLabel = () => {
+        if (!this.state.filterValue) {
+            return 'Sélectionner un genre...';
+        }
+        const bookGenre = BOOK_GENRES.find(element => element.id === this.state.filterValue);
+        if (bookGenre) {
+            return bookGenre.label;
+        }
+        return '';
+    };
+
+    setModalVisible(visible) {
+        this.setState({modalVisible: visible});
     };
 
     render() {
@@ -127,22 +167,30 @@ class LibraryScreen extends Component {
                             paddingLeft: 10
                         }}
                         keyboardType='default'
-                        placeholder="Rechercher"
+                        placeholder="Rechercher un livre"
                         value={this.state.searchValue}
                     />
                 </Item>
+                <View style={{flexDirection: "row-reverse"}}>
+                    <FilterList selectedValue={this.getFilterLabel()} updateValue={this.updaterFilterValue}/>
+                </View>
                 <FlatList
                     ListHeaderComponent={this.renderHeader}
                     data={this.props.books}
                     renderItem={({item}) => this.renderItem(item)}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => '' + item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     ListFooterComponent={this.renderFooter}
                     onRefresh={this.handleRefresh}
                     refreshing={this.props.refreshing !== undefined ? this.props.refreshing : false}
                     onEndReached={this.handleLoadMore}
-                    onEndReachedThreshold={1}
+                    onEndReachedThreshold={0.5}
                 />
+
+                {this.props.errorMessage && <ErrorModal visible={true}
+                                                        setVisible={this.setModalVisible.bind(this)}
+                                                        message={this.props.errorMessage}/>}
+
             </SafeAreaView>)
             ;
     }
@@ -156,18 +204,24 @@ const mapStateToProps = state => {
         handleMore,
         page,
     } = state.bookStore;
+
+    const {
+        errorMessage,
+    } = state.errorMessageStore;
     return {
         books,
         loading,
         refreshing,
         handleMore,
         page,
+        errorMessage,
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        getBooks: (books, page, searchValue, refreshing = false, handleMore = false) => dispatch(getBooks(books, page, searchValue, refreshing, handleMore)),
+        getBooks: (books, page, searchValue = '', genre = null, refreshing = false, handleMore = false) => dispatch(getBooks(books, page, searchValue, genre, refreshing, handleMore)),
+        dispatchErrorMessage: (errorMessage) => dispatch(dispatchErrorMessage(errorMessage)),
     };
 };
 

@@ -1,8 +1,10 @@
 import React, {Component } from "react";
 import {Text, Modal, TouchableHighlight, View} from "react-native";
 import {Icon} from "native-base";
+import {connect} from "react-redux";
+import {dispatchErrorMessage} from "../store/reducers/errorMessageRedux";
 
-export default class ErrorModal extends Component {
+ class ErrorModal extends Component {
 
     render() {
 
@@ -16,6 +18,7 @@ export default class ErrorModal extends Component {
                     borderTopEndRadius: 20,  height: 130, borderWidth:1, borderColor: "#d7d7d7", paddingLeft: 20, paddingRight: 20}}>
                     <TouchableHighlight
                         onPress={() => {
+                            this.props.dispatchErrorMessage(null);
                             this.props.setVisible(false);
                         }}>
                         <Icon
@@ -33,3 +36,13 @@ export default class ErrorModal extends Component {
         );
     }
 }
+
+const mapDispatchToProps = dispatch => {
+    return {
+        dispatchErrorMessage: (errorMessage) => dispatch(dispatchErrorMessage(errorMessage)),
+    };
+};
+
+export default connect(
+    null,
+    mapDispatchToProps)(ErrorModal);

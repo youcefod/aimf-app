@@ -22,19 +22,19 @@ export default class BookCard extends Component {
                             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                                 <View style={{flexDirection: "column"}}>
                                     <Text style={{
-                                        fontSize: 14,
+                                        fontSize: 16,
                                         color: "#b48462",
                                         marginBottom: 5
                                     }}>{this.props.data.title}</Text>
-                                    <Text style={{fontSize: 10, marginBottom: 5,  color: "#525252",}}>{this.props.data.author}</Text>
+                                    <Text style={{fontSize: 12, marginBottom: 5,  color: "#525252",}}>{this.props.data.author}</Text>
                                     <Text style={{
-                                        fontSize: 10,
+                                            fontSize: 12,
                                         color: "#919191",
                                         marginLeft: 10
                                     }}>{this.props.data.genre}</Text>
                                 </View>
                                 <View style={{flexDirection: "column"}}>
-                                    <Text style={{fontSize: 11, color: "#919191",}}>{this.props.data.pages} pages</Text>
+                                    <Text style={{fontSize: 13, color: "#919191",}}>{this.props.data.pages} pages</Text>
                                 </View>
                             </View>
                         </Body>
