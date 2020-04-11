@@ -16,6 +16,8 @@ export default class Loading extends Component {
       }
       else {
         this.props.navigation.navigate('Login');
+        //this.props.navigation.navigate('bottomActiveUserTabNavigator');
+        
       }
     });
   }

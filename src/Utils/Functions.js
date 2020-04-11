@@ -35,3 +35,45 @@ export const getFullName = ({lastname, firstname}) => {
     return lastname.toUpperCase() + ' ' + firstname.charAt(0).toUpperCase() +
         firstname.slice(1).toLowerCase();
 }
+
+export const getFormatedDate = (dateMillseconde) => {
+
+    const d = new Date(dateMillseconde)
+    const year = d.getFullYear() // 2019
+    const date = d.getDate() // 23
+
+    const months = [
+        'Janvier',
+        'Février',
+        'Mars',
+        'Avril',
+        'Mai',
+        'Juin',
+        'Juillet',
+        'Août',
+        'Septembre',
+        'Octobre',
+        'Novembre',
+        'Décembre'
+    ]
+
+    const days = [
+        'Dimanche',
+        'Lundi',
+        'Mardi',
+        'Mercredi',
+        'Jeudi',
+        'Vendredi',
+        'Samedi'
+      ]
+
+    const monthIndex = d.getMonth()
+    const monthName = months[monthIndex]
+
+
+    const dayIndex = d.getDay()
+    const dayName = days[dayIndex]
+
+    return `${dayName} ${date} ${monthName} ${year}`
+       
+}

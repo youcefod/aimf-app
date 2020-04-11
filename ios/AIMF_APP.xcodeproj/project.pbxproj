@@ -78,6 +78,7 @@
 		34694B17EFF44836A64777FD /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE3FB449EC604B10BD42A72C /* libRNVectorIcons.a */; };
 		BB72A09BF7D044FDB8CB5281 /* libRNVectorIcons-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721370FF1E8040E5BFB44478 /* libRNVectorIcons-tvOS.a */; };
 		7B6D9EC57D8349DC8754BBC4 /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9BA3EF0BD5BE45B7B40A68FC /* icomoon.ttf */; };
+		26D71F080BB2484B995C021F /* libRNFBFirestore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EE9193A634D64273959287E2 /* libRNFBFirestore.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -430,6 +431,8 @@
 		4DDD047C538E49B09ED8D6F4 /* Fontisto.ttf */ = {isa = PBXFileReference; name = "Fontisto.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		1821521D34454866B08550D7 /* icomoon2.ttf */ = {isa = PBXFileReference; name = "icomoon2.ttf"; path = "../assets/fonts/icomoon2.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		35B43E2A649F42BC8A11912F /* icomoon3.ttf */ = {isa = PBXFileReference; name = "icomoon3.ttf"; path = "../assets/fonts/icomoon3.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		99F8EA18AD6A4DF1B71BDC30 /* RNFBFirestore.xcodeproj */ = {isa = PBXFileReference; name = "RNFBFirestore.xcodeproj"; path = "../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		EE9193A634D64273959287E2 /* libRNFBFirestore.a */ = {isa = PBXFileReference; name = "libRNFBFirestore.a"; path = "libRNFBFirestore.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -461,6 +464,7 @@
 				402BB3829E6F4B1587E8774A /* libRNFirebase.a in Frameworks */,
 				12D3E9FF2D31400BBE302EC6 /* libRNGestureHandler.a in Frameworks */,
 				34694B17EFF44836A64777FD /* libRNVectorIcons.a in Frameworks */,
+				26D71F080BB2484B995C021F /* libRNFBFirestore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -655,6 +659,7 @@
 				D961F3E9787E414FA82C6900 /* RNFirebase.xcodeproj */,
 				3B944983C3EF4189B1E960B0 /* RNGestureHandler.xcodeproj */,
 				FE1598D3639840D386DF0774 /* RNVectorIcons.xcodeproj */,
+				99F8EA18AD6A4DF1B71BDC30 /* RNFBFirestore.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1370,12 +1375,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Debug;
@@ -1402,12 +1409,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Release;
@@ -1433,6 +1442,7 @@
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Debug;
@@ -1457,6 +1467,7 @@
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Release;
@@ -1491,12 +1502,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Debug;
@@ -1531,12 +1544,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Release;
@@ -1570,12 +1585,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Debug;
@@ -1609,12 +1626,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
 				);
 			};
 			name = Release;
