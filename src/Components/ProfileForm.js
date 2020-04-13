@@ -1,390 +1,458 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import {
-    ScrollView,
-    Animated,
-    TouchableWithoutFeedback,
-    View,
-    Image
+  ScrollView,
+  Animated,
+  TouchableWithoutFeedback,
+  View,
+  Image,
 } from "react-native";
-import {Item, Icon, Input, Label, DatePicker, Text, Button} from "native-base";
+import { Item, Icon, Input, Label, DatePicker, Button } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
-import {RadioButtons, SegmentedControls} from 'react-native-radio-buttons'
+import { RadioButtons, SegmentedControls } from "react-native-radio-buttons";
+import * as PropTypes from "prop-types";
 import {
-    isCorrectPhoneNumber,
-    isCorrectName,
-    isCorrectEmailAddress,
-    isCorrectPassword,
-    isCorrectZipCode,
-    getFrDate
+  isCorrectPhoneNumber,
+  isCorrectName,
+  isCorrectEmailAddress,
+  isCorrectPassword,
+  isCorrectZipCode,
+  getFrDate,
 } from "../Utils/Functions";
-import {styles} from "./ProfileForm/css";
-import Loader from '../Components/Loader';
-import {CREATE_ACTION, MARRIED, MEN_GENDER, SHOW_ACTION, SINGLE, UPDATE_ACTION, WOMEN_GENDER} from "../Utils/Constants";
-import {getRandomQuestionIndex} from "./ProfileForm/Functions";
-import ActionsButton from './ProfileForm/ActionsButton'
+import { styles } from "./ProfileForm/css";
+import Loader from "./Loader";
+import {
+  CREATE_ACTION,
+  MARRIED,
+  MALE_GENDER,
+  SHOW_ACTION,
+  SINGLE,
+  UPDATE_ACTION,
+  FEMALE_GENDER,
+} from "../Utils/Constants";
+import { getRandomQuestionIndex } from "./ProfileForm/Functions";
+import ActionsButton from "./ProfileForm/ActionsButton";
 import ChildrenInformation from "./ProfileForm/ChildrenInformation";
-import {RenderInput} from "./ProfileForm/RenderFunctions";
+import { RenderInput } from "./ProfileForm/RenderFunctions";
 
 export default class ProfileForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      spinValue: new Animated.Value(0),
+      loading: false,
+      modal: false,
+      questionIndex1: null,
+      questionIndex2: null,
+    };
+  }
 
-    constructor(props) {
-        super(props);
-        _isMounted = false;
+  setDate(newDate) {
+    this.props.updateState({ birthday: newDate });
+  }
 
-        this.state = {
-            spinValue: new Animated.Value(0),
-            loading: false,
-            modal: false,
-            questionIndex1: null,
-            questionIndex2: null,
-        };
+  setConjugalSituation = (option) => {
+    this.props.updateState({
+      maritalStatus: option,
+    });
+  };
+
+  setQuestionIndex1 = () => {
+    const questionIndex1 = getRandomQuestionIndex(this.state.questionIndex1);
+    const question1 = this.props.data.questions1[questionIndex1];
+    this.props.updateState({ question1 });
+    this.setState({
+      questionIndex1,
+    });
+  };
+
+  setQuestionIndex2 = () => {
+    const questionIndex2 = getRandomQuestionIndex(this.state.questionIndex2);
+    const question2 = this.props.data.questions2[questionIndex2];
+    this.props.updateState({ question2 });
+    this.setState({
+      questionIndex2,
+    });
+  };
+
+  getKinIcon = (option, selected) => {
+    if (option === MALE_GENDER) {
+      return selected
+        ? require("../../assets/images/men_selected.png")
+        : require("../../assets/images/men.png");
     }
+    return selected
+      ? require("../../assets/images/women_selected.png")
+      : require("../../assets/images/women.png");
+  };
 
-    componentDidMount() {
-        this._isMounted = true;
-    }
+  renderGenderOption = (option, selected, onSelect, index) => {
+    const icon = this.getKinIcon(option, selected);
+    return (
+      <TouchableWithoutFeedback onPress={onSelect} key={index}>
+        <Image style={{ width: 60, height: 60 }} source={icon} />
+      </TouchableWithoutFeedback>
+    );
+  };
 
-    setDate(newDate) {
-        this.props.updateState({birthDate: newDate});
-    }
+  renderGenderContainer = (optionNodes) => {
+    return (
+      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+        {optionNodes}
+      </View>
+    );
+  };
 
-    setConjugalSituation = (option) => {
-        this.props.updateState({
-            conjugalSituation: option
-        });
-    }
+  renderQuestionsBloc() {
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            width: 300,
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <Label
+            style={{
+              fontWeight: "bold",
+              fontSize: 14,
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: 280,
+            }}
+          >
+            {this.props.data.question1}*
+          </Label>
+          <SpinnerButton
+            style={{
+              fontWeight: "bold",
+              fontSize: 14,
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: 280,
+            }}
+            buttonStyle={styles.refreshButton}
+            onPress={this.setQuestionIndex1}
+            indicatorCount={10}
+            spinnerType="SkypeIndicator"
+          >
+            <Icon style={{ color: "#d3d3d3", fontSize: 14 }} name="sync" />
+          </SpinnerButton>
+        </View>
+        <Item rounded style={styles.inputItem}>
+          <Input
+            style={styles.input}
+            autoCapitalize="sentences"
+            keyboardType="default"
+            onChangeText={(response1) => this.props.updateState({ response1 })}
+            value={this.props.data.response1}
+          />
+        </Item>
 
-    setQuestionIndex1 = () => {
-        const questionIndex1 = getRandomQuestionIndex(this.state.questionIndex1);
-        const question1 = this.props.data.questions1[questionIndex1];
-        this.props.updateState({question1});
-        this.setState({
-            questionIndex1
-        });
-    }
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            width: 300,
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <Label
+            style={{
+              fontWeight: "bold",
+              fontSize: 14,
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: 280,
+            }}
+          >
+            {this.props.data.question2}*
+          </Label>
+          <SpinnerButton
+            buttonStyle={styles.refreshButton}
+            onPress={this.setQuestionIndex2}
+            indicatorCount={10}
+            spinnerType="SkypeIndicator"
+          >
+            <Icon style={{ color: "#d3d3d3", fontSize: 14 }} name="sync" />
+          </SpinnerButton>
+        </View>
+        <Item rounded style={styles.inputItem}>
+          <Input
+            style={styles.input}
+            autoCapitalize="sentences"
+            keyboardType="default"
+            onChangeText={(response2) => this.props.updateState({ response2 })}
+            value={this.props.data.response2}
+          />
+        </Item>
+      </>
+    );
+  }
 
-    setQuestionIndex2 = () => {
-        const questionIndex2 = getRandomQuestionIndex(this.state.questionIndex2);
-        const question2 = this.props.data.questions2[questionIndex2];
-        this.props.updateState({question2});
-        this.setState({
-            questionIndex2
-        });
-    }
+  render() {
+    const {
+      email,
+      lastName,
+      middleName,
+      currentPassword,
+      newPassword,
+      confirmPassword,
+      fatherName,
+      firstName,
+      zipCode,
+      phoneNumber,
+      childrenNumber,
+      maritalStatus,
+      childrenYears,
+      schoolLevels,
+      functionName,
+      birthday,
+      gender,
+    } = this.props.data;
+    const maritalStatusOptions = [MARRIED, SINGLE];
+    return (
+      <>
+        <ScrollView
+          centerContent
+          style={{
+            paddingTop: 20,
+            opacity: this.props.scrollViewOpacity,
+            backgroundColor: "#f3aa2329",
+          }}
+        >
+          <View>
+            <Button
+              transparent
+              onPress={() => {
+                if (this.props.action === UPDATE_ACTION) {
+                  this.props.updateState({
+                    ...this.props.initData,
+                  });
+                  this.props.updateAction(SHOW_ACTION);
+                } else {
+                  this.props.navigation.navigate("Login");
+                }
+              }}
+              style={{ borderRadius: 30 }}
+            >
+              <Icon
+                style={{ color: "#000" }}
+                name="md-arrow-back"
+                type="Ionicons"
+              />
+            </Button>
+          </View>
+          <Label style={styles.label}>Je suis *</Label>
+          <RadioButtons
+            options={[MALE_GENDER, FEMALE_GENDER]}
+            onSelection={(value) => this.props.updateState({ gender: value })}
+            selectedOption={gender}
+            renderOption={this.renderGenderOption}
+            renderContainer={this.renderGenderContainer}
+          />
+          <RenderInput
+            checkFunction={isCorrectName}
+            label="Nom"
+            onChange={(value) => this.props.updateState({ lastName: value })}
+            required
+            value={lastName}
+          />
+          <RenderInput
+            checkFunction={isCorrectName}
+            label="Nom de jevalueune fille"
+            onChange={(value) => this.props.updateState({ middleName: value })}
+            required={false}
+            value={middleName}
+          />
+          <RenderInput
+            checkFunction={isCorrectName}
+            label="Fils(fille) de"
+            onChange={(value) => this.props.updateState({ fatherName: value })}
+            required
+            value={fatherName}
+          />
+          <RenderInput
+            checkFunction={isCorrectName}
+            label="Prénom"
+            onChange={(value) => this.props.updateState({ firstName: value })}
+            required
+            value={firstName}
+          />
+          <Label style={styles.label}>Situation conjugale*</Label>
+          <SegmentedControls
+            containerStyle={{
+              marginLeft: 30,
+              marginRight: 30,
+              marginBottom: 15,
+            }}
+            tint="#CC9871"
+            options={maritalStatusOptions}
+            onSelection={(value) => this.setConjugalSituation(value)}
+            selectedOption={maritalStatus}
+            extractText={(option) =>
+              option === MARRIED ? "Marié(e)" : "Célibataire"
+            }
+          />
+          <Label style={styles.label}>Date de naissance*</Label>
+          <Item rounded style={styles.inputItem}>
+            <DatePicker
+              defaultDate={new Date(birthday)}
+              minimumDate={new Date(1900, 1, 1)}
+              maximumDate={new Date()}
+              modalTransparent={false}
+              locale="fr"
+              formatChosenDate={(date) => {
+                return getFrDate(date);
+              }}
+              androidMode="spinner"
+              animationType="slide"
+              placeHolderText={
+                this.props.action === UPDATE_ACTION
+                  ? undefined
+                  : "Séléctionner une date"
+              }
+              textStyle={{ color: "#000" }}
+              placeHolderTextStyle={{ color: "#d3d3d3" }}
+              onDateChange={(date) => this.setDate(date)}
+              customStyles={styles.datePicker}
+            />
+          </Item>
 
-    getKinIcon = (option, selected) => {
-        if (option === MEN_GENDER) {
-            return selected ? require('../../assets/images/men_selected.png') : require('../../assets/images/men.png');
-        }
-        return selected ? require('../../assets/images/women_selected.png') : require('../../assets/images/women.png');
-    }
-
-    renderGenderOption = (option, selected, onSelect, index) => {
-        const icon = this.getKinIcon(option, selected);
-        return (<TouchableWithoutFeedback onPress={onSelect} key={index}>
-                <Image style={{width: 60, height: 60}} source={icon}/>
-            </TouchableWithoutFeedback>
-        );
-    }
-
-    renderGenderContainer = (optionNodes) => {
-        return <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>{optionNodes}</View>;
-    }
-
-    renderQuestionsBloc() {
-        return (
+          {this.props.action === UPDATE_ACTION ? (
             <>
-                <View style={{
-                    flexDirection: 'row', justifyContent: 'center', width: 300, marginLeft: "auto",
-                    marginRight: "auto"
-                }}>
-                    <Label
-                        style={{
-                            fontWeight: "bold",
-                            fontSize: 14,
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            width: 280,
-                        }}
-                    >{this.props.data.question1}*</Label>
-                    <SpinnerButton
-                        style={{
-                            fontWeight: "bold",
-                            fontSize: 14,
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            width: 280,
-                        }}
-                        buttonStyle={styles.refreshButton}
-                        onPress={this.setQuestionIndex1}
-                        indicatorCount={10}
-                        spinnerType="SkypeIndicator"
-                    >
-                        <Icon
-                            style={{color: "#d3d3d3", fontSize: 14}}
-                            name="sync"/>
-                    </SpinnerButton>
-                </View>
-                <Item
-                    rounded
-                    style={styles.inputItem}
-                >
-                    <Input
-                        style={styles.input}
-                        autoCapitalize="sentences"
-                        keyboardType="default"
-                        onChangeText={response1 => this.props.updateState({response1})}
-                        value={this.props.data.response1}
-                    />
-                </Item>
-
-                <View style={{
-                    flexDirection: 'row', justifyContent: 'center', width: 300, marginLeft: "auto",
-                    marginRight: "auto"
-                }}>
-                    <Label
-                        style={{
-                            fontWeight: "bold",
-                            fontSize: 14,
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            width: 280,
-                        }}
-                    >{this.props.data.question2}*</Label>
-                    <SpinnerButton
-                        buttonStyle={styles.refreshButton}
-                        onPress={this.setQuestionIndex2}
-                        indicatorCount={10}
-                        spinnerType="SkypeIndicator"
-                    >
-                        <Icon
-                            style={{color: "#d3d3d3", fontSize: 14}}
-                            name="sync"/>
-                    </SpinnerButton>
-
-                </View>
-                <Item
-                    rounded
-                    style={styles.inputItem}
-                >
-                    <Input
-                        style={styles.input}
-                        autoCapitalize="sentences"
-                        keyboardType="default"
-                        onChangeText={response2 => this.props.updateState({response2})}
-                        value={this.props.data.response2}
-                    />
-                </Item>
+              <ChildrenInformation
+                maritalStatus={maritalStatus}
+                childrenNumber={childrenNumber}
+                childrenYears={childrenYears}
+                schoolLevels={schoolLevels}
+                updateState={this.props.updateState}
+              />
+              <RenderInput
+                checkFunction={isCorrectName}
+                label="Fonction"
+                onChange={(value) =>
+                  this.props.updateState({ functionName: value })
+                }
+                required
+                value={functionName}
+              />
             </>
-        );
-    }
+          ) : null}
+          <RenderInput
+            checkFunction={isCorrectZipCode}
+            label="Code postale"
+            maxLength={5}
+            keyboardType="numeric"
+            onChange={(value) => this.props.updateState({ zipCode: value })}
+            required
+            value={zipCode}
+          />
+          <RenderInput
+            checkFunction={
+              this.props.action === CREATE_ACTION && isCorrectEmailAddress
+            }
+            label="Email"
+            keyboardType="email-address"
+            onChange={(value) => this.props.updateState({ email: value })}
+            required
+            disabled={this.props.action === UPDATE_ACTION}
+            value={email}
+            itemStyle={{
+              ...styles.inputItem,
+              opacity: this.props.action === CREATE_ACTION ? 1 : 0.5,
+            }}
+          />
+          <RenderInput
+            checkFunction={isCorrectPhoneNumber}
+            label="Téléphone"
+            maxLength={10}
+            keyboardType="numeric"
+            onChange={(value) => this.props.updateState({ phoneNumber: value })}
+            required
+            value={phoneNumber}
+          />
+          {this.props.action === CREATE_ACTION
+            ? this.renderQuestionsBloc()
+            : null}
 
-    render() {
-        const {
-            email,
-            currentPassword,
-            newPassword,
-            confirmPassword,
-            father,
-            firstname,
-            zipCode,
-            phoneNumber,
-            numberOfChildren,
-            conjugalSituation,
-            childrenYears,
-            schoolLevels,
-            fonction,
-            birthDate,
-            gender,
-        } = this.props.data;
-        const conjugalSituationOptions = [MARRIED, SINGLE];
-        return (
-            <>
-                <ScrollView
-                    centerContent={true}
-                    style={{paddingTop: 20, opacity: this.props.scrollViewOpacity, backgroundColor: '#f3aa2329'}}>
-                    <View>
-                        <Button
-                            transparent
-                            onPress={() => {
-                                this.props.action === UPDATE_ACTION ?
-                                    this.props.updateState({
-                                        ...this.props.initData,
-                                        action: SHOW_ACTION
-                                    }) : this.props.navigation.navigate("Login");
-                            }}
-                            style={{borderRadius: 30}}
-                        >
-                            <Icon style={{color: "#000"}} name="md-arrow-back" type="Ionicons"/>
-                        </Button>
-                    </View>
-                    <Label
-                        style={styles.label}>Je suis *</Label>
-                    <RadioButtons
-                        options={["men", "women"]}
-                        onSelection={gender => this.props.updateState({gender})}
-                        selectedOption={gender}
-                        renderOption={this.renderGenderOption}
-                        renderContainer={this.renderGenderContainer}
-                    />
-                    <RenderInput
-                        checkFunction={isCorrectName}
-                        label="Nom"
-                        onChange={lastname => this.props.updateState({lastname})}
-                        required
-                        value={lastname}
-                    />
-                    <RenderInput
-                        checkFunction={isCorrectName}
-                        label="Nom de jeune fille"
-                        onChange={middlename => this.props.updateState({middlename})}
-                        required={false}
-                        value={middlename}
-                    />
-                    <RenderInput
-                        checkFunction={isCorrectName}
-                        label="Fils de"
-                        onChange={father => this.props.updateState({father})}
-                        required
-                        value={father}
-                    />
-                    <RenderInput
-                        checkFunction={isCorrectName}
-                        label="Prénom"
-                        onChange={firstname => this.props.updateState({firstname})}
-                        required
-                        value={firstname}
-                    />
-                    <Label
-                        style={styles.label}
-                    >Situation conjugale*</Label>
-                    <SegmentedControls
-                        containerStyle={{width: 300, marginLeft: "auto", marginRight: "auto", marginBottom: 15}}
-                        tint={'#CC9871'}
-                        options={conjugalSituationOptions}
-                        onSelection={this.setConjugalSituation.bind(this)}
-                        selectedOption={conjugalSituation}
-                    />
-                    <Label
-                        style={styles.label}
-                    >Date de naissance*</Label>
-                    <Item
-                        rounded
-                        style={styles.inputItem}
-                    >
-                        <DatePicker
-                            defaultDate={birthDate}
-                            minimumDate={new Date(1900, 1, 1)}
-                            maximumDate={new Date()}
-                            modalTransparent={false}
-                            locale={"fr"}
-                            formatChosenDate={(date) => {
-                                return getFrDate(date);
-                            }}
-                            androidMode={"spinner"}
-                            animationType={"slide"}
-                            placeHolderText={this.props.action === UPDATE_ACTION ? undefined : "Séléctionner une date"}
-                            textStyle={{color: "#000"}}
-                            placeHolderTextStyle={{color: "#d3d3d3"}}
-                            onDateChange={this.setDate.bind(this)}
-                            customStyles={styles.datePicker}
-                        />
-                    </Item>
+          {this.props.action === UPDATE_ACTION ? (
+            <RenderInput
+              checkFunction={isCorrectPassword}
+              label="Ancien mot de passe"
+              secureTextEntry
+              onChange={(value) =>
+                this.props.updateState({ currentPassword: value })
+              }
+              required={this.props.action === CREATE_ACTION}
+              value={currentPassword}
+            />
+          ) : null}
 
-                    {this.props.action === UPDATE_ACTION ? (
-                        <>
-                            <ChildrenInformation
-                                conjugalSituation={conjugalSituation}
-                                numberOfChildren={numberOfChildren}
-                                childrenYears={childrenYears}
-                                schoolLevels={schoolLevels}
-                                updateState={this.props.updateState}
-                            />
-                            <RenderInput
-                                checkFunction={isCorrectName}
-                                label="Fonction"
-                                onChange={fonction => this.props.updateState({fonction})}
-                                required
-                                value={fonction}
-                            />
-                        </>
-                    ) : null}
-                    <RenderInput
-                        checkFunction={isCorrectZipCode}
-                        label="Code postale"
-                        maxLength={5}
-                        keyboardType="numeric"
-                        onChange={zipCode => this.props.updateState({zipCode})}
-                        required
-                        value={zipCode}
-                    />
-                    <RenderInput
-                        checkFunction={this.props.action === CREATE_ACTION && isCorrectEmailAddress}
-                        label="Email"
-                        keyboardType="email-address"
-                        onChange={email => this.props.updateState({email})}
-                        required
-                        disabled={this.props.action === UPDATE_ACTION}
-                        value={email}
-                        itemStyle={{...styles.inputItem, opacity: this.props.action === CREATE_ACTION ? 1 : 0.5}}
-                    />
-                    <RenderInput
-                        checkFunction={isCorrectPhoneNumber}
-                        label="Téléphone"
-                        maxLength={10}
-                        keyboardType="numeric"
-                        onChange={phoneNumber => this.props.updateState({phoneNumber})}
-                        required
-                        value={phoneNumber}
-                    />
-                    {this.props.action === CREATE_ACTION ? this.renderQuestionsBloc() : null}
+          <RenderInput
+            checkFunction={isCorrectPassword}
+            label={
+              this.props.action === UPDATE_ACTION
+                ? "Nouveau mot de passe"
+                : "Mot de passe"
+            }
+            secureTextEntry
+            onChange={(value) => this.props.updateState({ newPassword: value })}
+            required={this.props.action === CREATE_ACTION}
+            value={newPassword}
+          />
+          <RenderInput
+            checkFunction={isCorrectPassword}
+            label="Confirmer mot de passe"
+            error={
+              confirmPassword.length > 0 &&
+              (!isCorrectPassword(confirmPassword) ||
+                newPassword !== confirmPassword)
+            }
+            secureTextEntry
+            onChange={(value) =>
+              this.props.updateState({ confirmPassword: value })
+            }
+            required={this.props.action === CREATE_ACTION}
+            value={confirmPassword}
+          />
+          {this.state.loading ? (
+            <Item
+              style={{
+                marginLeft: "auto",
+                marginRight: "auto",
+                position: "relative",
+                width: 50,
+                marginTop: -80,
+              }}
+            >
+              <Loader />
+            </Item>
+          ) : null}
 
-                    {this.props.action === UPDATE_ACTION ?
-
-                        <RenderInput
-                            checkFunction={isCorrectPassword}
-                            label="Ancien mot de passe"
-                            secureTextEntry
-                            onChange={currentPassword => this.props.updateState({currentPassword})}
-                            required={this.props.action === CREATE_ACTION}
-                            value={currentPassword}
-                        /> : null}
-
-                    <RenderInput
-                        checkFunction={isCorrectPassword}
-                        label={this.props.action === UPDATE_ACTION ? 'Nouveau mot de passe' : 'Mot de passe'}
-                        secureTextEntry
-                        onChange={newPassword => this.props.updateState({newPassword})}
-                        required={this.props.action === CREATE_ACTION}
-                        value={newPassword}
-                    />
-                    <RenderInput
-                        checkFunction={isCorrectPassword}
-                        label="Confirmer mot de passe"
-                        error={confirmPassword.length > 0 && (!isCorrectPassword(confirmPassword) || newPassword != confirmPassword)}
-                        secureTextEntry
-                        onChange={confirmPassword => this.props.updateState({confirmPassword})}
-                        required={this.props.action === CREATE_ACTION}
-                        value={confirmPassword}
-                    />
-                    {this.state.loading ? (
-                        <Item style={{
-                            marginLeft: "auto",
-                            marginRight: "auto", position: "relative",
-                            width: 50, marginTop: -80
-                        }}>
-                            <Loader/>
-                        </Item>
-                    ) : null}
-
-                    <ActionsButton
-                        action={this.props.action}
-                        onValidate={this.props.onSubmit}
-                        onCancel={() => this.props.updateState({action: SHOW_ACTION})}
-                        data={this.state}
-                        navigation={this.props.navigation}/>
-                </ScrollView>
-            </>
-        );
-    }
+          <ActionsButton
+            action={this.props.action}
+            onValidate={() => this.props.onSubmit()}
+            onCancel={() => this.props.updateAction(SHOW_ACTION)}
+            data={this.state}
+            navigation={this.props.navigation}
+          />
+        </ScrollView>
+      </>
+    );
+  }
 }
+
+ProfileForm.propTypes = {
+  navigation: PropTypes.object,
+  action: PropTypes.string,
+  onSubmit: PropTypes.func,
+  updateState: PropTypes.func,
+  updateAction: PropTypes.func,
+  data: PropTypes.object,
+  scrollViewOpacity: PropTypes.number,
+  initData: PropTypes.object,
+};

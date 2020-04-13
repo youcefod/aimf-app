@@ -56,14 +56,14 @@ export default class ChildrenInformation extends Component {
 
     renderAdditionalInformationForm = () => {
         let pickers = [];
-        for (i = 0; i < this.props.numberOfChildren; i++) {
+        for (i = 0; i < this.props.childrenNumber; i++) {
             pickers.push(this.renderPicke(i));
         }
         return pickers;
     };
 
     render() {
-        return this.props.conjugalSituation === MARRIED ? (
+        return this.props.maritalStatus === MARRIED ? (
             <>
                 <Label
                     style={styles.label}
@@ -76,8 +76,8 @@ export default class ChildrenInformation extends Component {
                         style={styles.input}
                         keyboardType="numeric"
                         maxLength={1}
-                        onChangeText={numberOfChildren => this.props.updateState({numberOfChildren: numberOfChildren})}
-                        value={this.props.numberOfChildren.toString()}
+                        onChangeText={childrenNumber => this.props.updateState({childrenNumber: childrenNumber})}
+                        value={this.props.childrenNumber.toString()}
                     />
                 </Item>
                 {this.renderAdditionalInformationForm()}
