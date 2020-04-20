@@ -198,8 +198,8 @@ export default class ProfileForm extends Component {
       email,
       lastName,
       middleName,
-      currentPassword,
-      newPassword,
+      oldPassword,
+      password,
       confirmPassword,
       fatherName,
       firstName,
@@ -207,8 +207,7 @@ export default class ProfileForm extends Component {
       phoneNumber,
       childrenNumber,
       maritalStatus,
-      childrenYears,
-      schoolLevels,
+      children,
       functionName,
       birthday,
       gender,
@@ -327,9 +326,8 @@ export default class ProfileForm extends Component {
               <ChildrenInformation
                 maritalStatus={maritalStatus}
                 childrenNumber={childrenNumber}
-                childrenYears={childrenYears}
-                schoolLevels={schoolLevels}
-                updateState={this.props.updateState}
+                childrenInformation={children || []}
+                updateState={(state) => this.props.updateState(state)}
               />
               <RenderInput
                 checkFunction={isCorrectName}
@@ -385,10 +383,10 @@ export default class ProfileForm extends Component {
               label="Ancien mot de passe"
               secureTextEntry
               onChange={(value) =>
-                this.props.updateState({ currentPassword: value })
+                this.props.updateState({ oldPassword: value })
               }
               required={this.props.action === CREATE_ACTION}
-              value={currentPassword}
+              value={oldPassword}
             />
           ) : null}
 
@@ -400,9 +398,9 @@ export default class ProfileForm extends Component {
                 : "Mot de passe"
             }
             secureTextEntry
-            onChange={(value) => this.props.updateState({ newPassword: value })}
+            onChange={(value) => this.props.updateState({ password: value })}
             required={this.props.action === CREATE_ACTION}
-            value={newPassword}
+            value={password}
           />
           <RenderInput
             checkFunction={isCorrectPassword}
@@ -410,7 +408,7 @@ export default class ProfileForm extends Component {
             error={
               confirmPassword.length > 0 &&
               (!isCorrectPassword(confirmPassword) ||
-                newPassword !== confirmPassword)
+                password !== confirmPassword)
             }
             secureTextEntry
             onChange={(value) =>

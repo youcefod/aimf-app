@@ -74,7 +74,6 @@ class Login extends React.Component {
       <>
         <View style={styles.bodyWrapper}>
           <Image style={{ width: 120, height: 120 }} source={logo} />
-
           <Item rounded style={styles.inputItem}>
             <Input
               style={styles.input}

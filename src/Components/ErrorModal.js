@@ -18,7 +18,7 @@ class ErrorModal extends Component {
             alignItems: "center",
             borderTopStartRadius: 20,
             borderTopEndRadius: 20,
-            height: 130,
+            minHeight: 130,
             borderWidth: 1,
             borderColor: "#d7d7d7",
             paddingLeft: 20,
