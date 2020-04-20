@@ -55,7 +55,7 @@ const checkFormValues = (values) => {
   }
   const errorsPAssword =
     values.action === CREATE_ACTION &&
-    (!isCorrectPassword(values.newPassword) ||
+    (!isCorrectPassword(values.password) ||
       !isCorrectPassword(values.confirmPassword));
 
   if (
@@ -71,14 +71,14 @@ const checkFormValues = (values) => {
     return "Veuillez corriger les erreurs affichées dans le formulaire";
   }
 
-  if (values.newPassword !== values.confirmPassword) {
+  if (values.password !== values.confirmPassword) {
     return "Les deux mots de passe doivent êtres identiques";
   }
 
   if (
     values.action === UPDATE_ACTION &&
-    values.currentPassword &&
-    (!values.newPassword || !values.confirmPassword)
+    values.oldPassword &&
+    (!values.password || !values.confirmPassword)
   ) {
     return "Veuillez remplir le nouveau mot de passe et la confirmation de celui-ci";
   }
