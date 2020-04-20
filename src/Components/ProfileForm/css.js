@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   logo: {
     width: 60,
     height: 60,
@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
     height: 50,
     width: 150,
     borderRadius: 10,
-    backgroundColor: "#cc9871",
+    backgroundColor: "#cb8347",
     marginTop: 35,
     marginLeft: "auto",
     marginRight: "auto",
@@ -66,3 +66,5 @@ export const styles = StyleSheet.create({
     color: "#f3aa2329",
   },
 });
+
+export default styles;

@@ -7,7 +7,7 @@ import { styles } from "./PostScreen/css";
 import { DRAFT_ANNONCE_ID } from "../Utils/Constants";
 import ErrorModal from "../Components/ErrorModal";
 
-export default class PostScreen extends React.Component {
+export default class PostScreen extends Component {
   static navigationOptions = {
     header: null,
   };
@@ -154,7 +154,7 @@ export default class PostScreen extends React.Component {
               buttonStyle={{
                 ...styles.spinnerButton,
                 marginRight: 20,
-                backgroundColor: "#f3aa2329",
+                backgroundColor: "#f6a351",
               }}
               isLoading={saveSpinner}
               onPress={this.savePost}
@@ -170,7 +170,7 @@ export default class PostScreen extends React.Component {
             <SpinnerButton
               buttonStyle={{
                 ...styles.spinnerButton,
-                backgroundColor: "#FFD792",
+                backgroundColor: "#cb8347",
               }}
               isLoading={sendSpinner}
               onPress={this.sendPost}

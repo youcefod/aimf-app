@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 150,
     borderRadius: 10,
-    backgroundColor: "#5CB85C",
+    backgroundColor: "#cb8347",
   },
   nextButtonText: {
     fontSize: 18,
@@ -74,7 +74,6 @@ class Login extends React.Component {
       <>
         <View style={styles.bodyWrapper}>
           <Image style={{ width: 120, height: 120 }} source={logo} />
-
           <Item rounded style={styles.inputItem}>
             <Input
               style={styles.input}

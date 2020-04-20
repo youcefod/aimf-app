@@ -12,7 +12,7 @@ export const isCorrectEmailAddress = (email) => {
 };
 
 export const isCorrectPassword = (password) => {
-  return password.length > 5;
+  return password.length > 7;
 };
 
 export const isCorrectZipCode = (zipCode) => {

@@ -27,8 +27,8 @@ class ProfileScreen extends Component {
       gender: null,
       maritalStatus: null,
       email: "",
-      currentPassword: "",
-      newPassword: "",
+      oldPassword: "",
+      password: "",
       confirmPassword: "",
       lastName: "",
       fatherName: "",
@@ -39,9 +39,7 @@ class ProfileScreen extends Component {
       phoneNumber: "",
       childrenNumber: 0,
       functionName: "",
-      childrenYears: [],
-      schoolLevels: [],
-      errorMessage: "",
+      children: [],
     };
   }
 
@@ -50,6 +48,7 @@ class ProfileScreen extends Component {
     if (user) {
       const { state } = this;
       user.functionName = user.function;
+      user.childrenNumber = (user.children && `${user.children.length}`) || "0";
       this.setState({ ...state, ...user, initData: user });
     }
   }
@@ -65,8 +64,8 @@ class ProfileScreen extends Component {
       gender,
       maritalStatus,
       email,
-      currentPassword,
-      newPassword,
+      oldPassword,
+      password,
       confirmPassword,
       lastName,
       fatherName,
@@ -77,11 +76,9 @@ class ProfileScreen extends Component {
       phoneNumber,
       childrenNumber,
       functionName,
-      childrenYears,
-      schoolLevels,
+      children,
     } = this.state;
-    childrenYears.slice(0, childrenNumber);
-    schoolLevels.slice(0, childrenNumber);
+    children.slice(0, childrenNumber);
     return {
       gender,
       maritalStatus,
@@ -94,17 +91,16 @@ class ProfileScreen extends Component {
       phoneNumber,
       childrenNumber,
       email,
-      currentPassword,
-      newPassword,
+      oldPassword,
+      password,
       confirmPassword,
       functionName,
-      childrenYears,
-      schoolLevels,
+      children,
     };
   };
 
   onSubmit = () => {
-    const data = this.getDataFromState(true);
+    const data = { ...this.getDataFromState(true), action: UPDATE_ACTION };
     const error = checkFormValues(data);
     if (error) {
       this.props.dispatchErrorMessage(error);
@@ -121,8 +117,11 @@ class ProfileScreen extends Component {
       birthday,
       zipCode,
       phoneNumber,
-      childrenNumber,
       functionName,
+      children,
+      oldPassword,
+      password,
+      confirmPassword,
     } = data;
 
     this.props.updateCurrentUser(this.props.account.user.id, {
@@ -135,8 +134,11 @@ class ProfileScreen extends Component {
       birthday: getIsoDate(birthday),
       zipCode,
       phoneNumber,
-      childrenNumber,
       function: functionName,
+      children,
+      oldPassword,
+      newPassword: password,
+      passwordConfirmation: confirmPassword,
     });
   };
 
@@ -154,7 +156,9 @@ class ProfileScreen extends Component {
             />
           ) : (
             <ProfileForm
-              scrollViewOpacity={this.props.errorMessage ? 0.6 : 1}
+              scrollViewOpacity={
+                this.props.loading || this.props.errorMessage ? 0.6 : 1
+              }
               action={UPDATE_ACTION}
               data={data}
               initData={this.state.initData}
