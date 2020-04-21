@@ -1,202 +1,177 @@
-import React, {Component} from "react";
-import {
-    Text,
-    Animated,
-    View,
-    ActivityIndicator
-} from "react-native";
-import firebase from "react-native-firebase";
-import {
-    getFrDate
-} from "./Utils/Functions";
-import Loader from './Components/Loader';
+import React, { Component } from "react";
+import { Text, View, ActivityIndicator } from "react-native";
+import * as PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { getIsoDate } from "./Utils/Functions";
+import Loader from "./Components/Loader";
 import ErrorModal from "./Components/ErrorModal";
-import {CREATE_ACTION, EMAIL_EXIST_ERROR, SERVER_ERROR} from "./Utils/Constants";
-import {checkFormValues} from "./Components/ProfileForm/Validate";
-import {getQuestions, getRandomQuestionIndex} from "./Components/ProfileForm/Functions";
+import { CREATE_ACTION } from "./Utils/Constants";
+import {
+  getQuestions,
+  getRandomQuestionIndex,
+} from "./Components/ProfileForm/Functions";
 import ProfileForm from "./Components/ProfileForm";
+import { register } from "./store/reducers/profileRedux";
+import { dispatchErrorMessage } from "./store/reducers/errorMessageRedux";
+import navigate from "./Utils/Account";
+import checkFormValues from "./Components/ProfileForm/Validate";
 
-export default class SignUp extends Component {
-
-    constructor(props) {
-        super(props);
-        _isMounted = false;
-        this.state = {
-            gender: null,
-            conjugalSituation: null,
-            email: "",
-            newPassword: "",
-            confirmPassword: "",
-            lastname: "",
-            father: "",
-            middlename: "",
-            firstname: "",
-            birthDate: new Date(),
-            zipCode: "",
-            phoneNumber: "",
-            response1: "",
-            response2: "",
-            buttonSpinner: false,
-            spinValue: new Animated.Value(0),
-            loading: false,
-            modal: false,
-            modalVisible: false,
-            errorMessage: '',
-            questions1: [],
-            questions2: [],
-            question1: "",
-            question2: "",
-        };
-    }
-
-    componentDidMount() {
-        this._isMounted = true;
-        getQuestions(this.setQuestions.bind(this));
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
-
-    setModalVisible(visible) {
-        this.setState({modalVisible: visible});
-    }
-
-    setQuestions = (questions, index) => {
-        if (index === 1) {
-            this.setState({
-                questions1: questions,
-                question1: questions[getRandomQuestionIndex()],
-            });
-        } else {
-            this.setState({
-                questions2: questions,
-                question2: questions[getRandomQuestionIndex()]
-            });
-        }
-    }
-    save = () => {
-        const {email, newPassword, lastname, father, middlename, firstname, gender, conjugalSituation, birthDate, zipCode, phoneNumber, response1, response2, question1, question2} = this.state;
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(email, newPassword)
-            .then(user => {
-                firebase
-                    .firestore()
-                    .collection("users")
-                    .doc(user.user.uid)
-                    .set({
-                        gender: gender,
-                        conjugalSituation: conjugalSituation,
-                        email: email.trim().toLowerCase(),
-                        lastname: lastname.trim(),
-                        father: father.trim(),
-                        middlename: middlename.trim().toLowerCase(),
-                        firstname: firstname.trim().toLowerCase(),
-                        birthDate: getFrDate(birthDate),
-                        zipCode: zipCode,
-                        phoneNumber: phoneNumber,
-                        question1: question1,
-                        question2: question2,
-                        response1: response1.trim().toLowerCase(),
-                        response2: response2.trim().toLowerCase(),
-                        isAuthorized: false,
-                        isAdmin: false,
-                    })
-                    .then(() => {
-                        if (this._isMounted) {
-                            this.setState({loading: false});
-                        }
-                    });
-            })
-            .catch(error => {
-                if (this._isMounted) {
-                    this.setState({errorMessage: SERVER_ERROR, loading: false});
-                    this.setModalVisible(true);
-                }
-            });
-        return;
+class SignUp extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      gender: null,
+      maritalStatus: null,
+      email: "",
+      password: "",
+      confirmPassword: "",
+      lastName: "",
+      fatherName: "",
+      middleName: "",
+      firstName: "",
+      birthday: new Date(),
+      zipCode: "",
+      phoneNumber: "",
+      response1: "",
+      response2: "",
+      questions1: [],
+      questions2: [],
+      question1: "",
+      question2: "",
     };
+  }
 
-    onSubmit = () => {
-        const error = checkFormValues(this.state);
-        if (error) {
-            this.setState({errorMessage: error});
-            this.setModalVisible(true);
-            return;
-        }
+  componentDidMount() {
+    getQuestions(this.setQuestions.bind(this));
+  }
 
-        this.setState({loading: true});
-        firebase
-            .firestore()
-            .collection('users')
-            .where('email', '==', this.state.email.trim().toLowerCase()).get()
-            .then(user => {
-                if (user.empty) {
-                    this.save();
-                    return;
-                }
-                if (this._isMounted) {
-                    this.setState({errorMessage: EMAIL_EXIST_ERROR});
-                    this.setModalVisible(true);
-                    this.setState({loading: false});
-                }
-            })
-            .catch(error => {
-                if (this._isMounted) {
-                    this.setState({errorMessage: SERVER_ERROR});
-                    this.setState({loading: false});
-                }
-            });
-        return;
-    };
+  componentDidUpdate() {
+    navigate(this.props.account, this.props.navigation, "SignUp");
+  }
 
-    render() {
-        const data = {
-            email,
-            newPassword,
-            confirmPassword,
-            father,
-            lastname,
-            middlename,
-            firstname,
-            conjugalSituation,
-            zipCode,
-            phoneNumber,
-            birthDate,
-            response1,
-            response2,
-            questions1,
-            questions2,
-            question1,
-            question2,
-            gender,
-        } = this.state;
-        return (
-            questions1 && questions1.length > 0 ?
-                <>
-                    <ProfileForm
-                        scrollViewOpacity={this.state.loading || this.state.modalVisible ? 0.6 : 1}
-                        action={CREATE_ACTION}
-                        data={data}
-                        initData={{}}
-                        navigation={this.props.navigation}
-                        updateState={this.setState.bind(this)}
-                        onSubmit={this.onSubmit.bind(this)}
-                    />
-                    <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible.bind(this)}
-                                message={this.state.errorMessage}/>
-                    <Loader visible={this.state.loading}/>
-                </>
-                :
-                <View style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    <Text>Chargement</Text>
-                    <ActivityIndicator size="large"/>
-                </View>
-        );
+  setQuestions = (questions, index) => {
+    if (index === 1) {
+      this.setState({
+        questions1: questions,
+        question1: questions[getRandomQuestionIndex()],
+      });
+    } else {
+      this.setState({
+        questions2: questions,
+        question2: questions[getRandomQuestionIndex()],
+      });
     }
+  };
+
+  getDataFromState = () => {
+    const {
+      email,
+      password,
+      confirmPassword,
+      fatherName,
+      lastName,
+      middleName,
+      firstName,
+      maritalStatus,
+      zipCode,
+      phoneNumber,
+      birthday,
+      response1,
+      response2,
+      question1,
+      question2,
+      gender,
+    } = this.state;
+    return {
+      email,
+      password,
+      confirmPassword,
+      fatherName,
+      lastName,
+      middleName,
+      firstName,
+      maritalStatus,
+      zipCode,
+      phoneNumber,
+      birthday: getIsoDate(birthday),
+      response1,
+      response2,
+      question1,
+      question2,
+      gender,
+    };
+  };
+
+  onSubmit = () => {
+    const data = { ...this.getDataFromState(true), action: CREATE_ACTION };
+    const error = checkFormValues(data);
+    if (error) {
+      this.props.dispatchErrorMessage(error);
+      return;
+    }
+    data.password_confirmation = data.confirmPassword;
+    this.props.register(data);
+  };
+
+  render() {
+    const { questions1, questions2 } = this.state;
+    return questions1 && questions1.length > 0 ? (
+      <>
+        <ProfileForm
+          scrollViewOpacity={
+            this.props.loading || this.props.errorMessage ? 0.6 : 1
+          }
+          action={CREATE_ACTION}
+          data={{ ...this.getDataFromState(), questions1, questions2 }}
+          initData={{}}
+          navigation={this.props.navigation}
+          updateState={(state) => this.setState(state)}
+          onSubmit={() => this.onSubmit()}
+        />
+        {this.props.errorMessage && (
+          <ErrorModal visible message={this.props.errorMessage} />
+        )}
+        <Loader visible={!!this.props.loading} />
+      </>
+    ) : (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text>Chargement</Text>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 }
+
+const mapStateToProps = (state) => {
+  const { errorMessage } = state.errorMessageStore;
+  const { action } = state.profileStore;
+  return {
+    errorMessage,
+    action,
+    account: state.accountStore,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    register: (data) => dispatch(register(data)),
+    dispatchErrorMessage: (errorMessage) =>
+      dispatch(dispatchErrorMessage(errorMessage)),
+  };
+};
+
+SignUp.propTypes = {
+  navigation: PropTypes.object,
+  errorMessage: PropTypes.string,
+  dispatchErrorMessage: PropTypes.func,
+  register: PropTypes.func,
+  loading: PropTypes.bool,
+  account: PropTypes.object,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
