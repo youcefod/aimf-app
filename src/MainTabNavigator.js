@@ -10,6 +10,7 @@ import icoMoonConfig from "../config/icons/selection.json";
 
 import HomeScreen from "./screens/HomeScreen";
 import PostScreen from "./screens/PostScreen";
+import LibraryScreen from "./screens/LibraryScreen";
 import KoranScreen from "./screens/KoranScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import UserScreen from "./screens/UserScreen";
@@ -84,6 +85,38 @@ disableKoranStack.navigationOptions = {
   ),
 };
 
+// ----------------------------------------------LibraryScreen-----------------------------------------------------
+const libraryStack = createStackNavigator({
+  Timeline: LibraryScreen,
+});
+
+libraryStack.navigationOptions = {
+  tabBarLabel: "Bibliothèque",
+  tabBarIcon: ({ focused }) => (
+    <Icon
+      type="FontAwesome"
+      name="book"
+      color={focused ? "#2f95dc" : "#ccc"}
+      style={{ fontSize: 28, marginBottom: -3 }}
+    />
+  ),
+};
+
+const disableLibraryStack = createStackNavigator({
+  Timeline: UnaccessibleScreen,
+});
+
+disableLibraryStack.navigationOptions = {
+  tabBarLabel: "Bibliothèque",
+  tabBarIcon: ({ focused }) => (
+    <Icon
+      type="FontAwesome"
+      name="book"
+      color={focused ? "#2f95dc" : "#ccc"}
+      style={{ fontSize: 35, marginBottom: -3 }}
+    />
+  ),
+};
 // ----------------------------------------------ProfileScreen-----------------------------------------------------
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
@@ -121,6 +154,7 @@ UserStack.navigationOptions = {
 export const bottomActiveUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
+  libraryStack,
   ProfileStack,
 });
 
@@ -128,6 +162,7 @@ export const bottomUnActiveUserTabNavigator = createBottomTabNavigator(
   {
     disableHomeStack,
     disableKoranStack,
+    disableLibraryStack,
     ProfileStack,
   },
   {
@@ -139,7 +174,7 @@ export const bottomUnActiveUserTabNavigator = createBottomTabNavigator(
         ) {
           return null;
         }
-        defaultHandler();
+        return defaultHandler();
       },
     },
     initialRouteName: "ProfileStack",
@@ -150,6 +185,7 @@ export const bottomAdminUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
   PostWorkflowStack,
+  libraryStack,
   UserStack,
   ProfileStack,
 });

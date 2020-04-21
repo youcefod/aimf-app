@@ -42,11 +42,11 @@ export const SERVER_ERROR_MESSAGE =
   "Une erreur est survenue, merci de réessayer ultérieurement";
 
 export const BOOK_GENRES = [
-    {id: 0, label: 'Tous'},
-    {id: 1, label: 'Roman & Fiction'},
-    {id: 2, label: 'BD & Mangas'},
-    {id: 3, label: 'Religion'},
-    {id: 4, label: 'Art & Culture'},
-    {id: 5, label: 'Education'},
-    {id: 6, label: 'Santé'},
+  { id: 0, label: "Tous" },
+  { id: 1, label: "Roman & Fiction" },
+  { id: 2, label: "BD & Mangas" },
+  { id: 3, label: "Religion" },
+  { id: 4, label: "Art & Culture" },
+  { id: 5, label: "Education" },
+  { id: 6, label: "Santé" },
 ];
