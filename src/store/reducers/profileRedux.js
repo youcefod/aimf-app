@@ -178,10 +178,7 @@ export const profileReducer = (state = initialState, action) => {
       return { ...state, ...action.payload };
     }
     case POST_REGISTER_USER_REQUEST:
-      return { ...state, ...action.payload };
-    case POST_REGISTER_USER_SUCCESS: {
-      return { ...state, ...action.payload };
-    }
+    case POST_REGISTER_USER_SUCCESS:
     case POST_REGISTER_USER_ERROR: {
       return { ...state, ...action.payload };
     }

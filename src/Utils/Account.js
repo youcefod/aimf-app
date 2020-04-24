@@ -1,20 +1,32 @@
 import axios from "axios";
+import { ADMIN_ROLE, MEMBER_ROLE, SUPER_ADMIN_ROLE } from "./Constants";
 
-const isAdmin = (user) => {
+export const isSuperAdmin = (user) => {
   if (user && user.roles) {
-    return !!user.roles.find((role) => role.name === "admin");
+    return !!user.roles.find((role) => role.name === SUPER_ADMIN_ROLE);
   }
   return false;
 };
 
-const isMember = (user) => {
+export const isAdmin = (user) => {
   if (user && user.roles) {
-    return !!user.roles.find((role) => role.name === "member");
+    return !!user.roles.find((role) => role.name === ADMIN_ROLE);
   }
   return false;
 };
 
-const navigate = (account, navigation, defaultNavigation = "Login") => {
+export const isMember = (user) => {
+  if (user && user.roles) {
+    return !!user.roles.find((role) => role.name === MEMBER_ROLE);
+  }
+  return false;
+};
+
+export const isAuthorized = (user) => {
+  return isSuperAdmin(user) || isAdmin(user) || isMember(user);
+};
+
+export const navigate = (account, navigation, defaultNavigation = "Login") => {
   if (account.user && account.access_token) {
     axios.defaults.headers.Authorization = `Bearer ${account.access_token}`;
 

@@ -1,20 +1,30 @@
 import React, { Component } from "react";
 import { ScrollView, View } from "react-native";
 import { Button, Icon, Text, Thumbnail } from "native-base";
-import firebase from "react-native-firebase";
+import * as PropTypes from "prop-types";
 import SpinnerButton from "react-native-spinner-button";
 import InformationsModal from "../../Components/InformationsModal";
 import SettingsSwitch from "../../Components/switch";
-import { LIST_ACTION, MARRIED, FEMALE_GENDER } from "../../Utils/Constants";
+import {
+  LIST_ACTION,
+  MARRIED,
+  FEMALE_GENDER,
+  UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+  ADMIN_ROLE,
+  SUPER_ADMIN_ROLE,
+  MEMBER_ROLE,
+  NEW_MEMBER_ROLE,
+} from "../../Utils/Constants";
+import { isAdmin, isSuperAdmin, isAuthorized } from "../../Utils/Account";
 
 class ShowUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      informationModalVisible: false,
       confirmUpdateVisible: false,
-      isAuthorized: props.data.isAuthorized,
-      isAdmin: props.data.isAdmin,
+      isAuthorized: isAuthorized(props.data),
+      isSuperAdmin: isSuperAdmin(props.data),
+      isAdmin: isAdmin(props.data),
       confirmMessage: "",
       updateUserLoadding: false,
       scrollViewOpacity: 1,
@@ -24,8 +34,9 @@ class ShowUser extends Component {
   setConfirmModalVisible = (visible) => {
     if (!visible) {
       this.setState({
-        isAuthorized: this.props.data.isAuthorized,
-        isAdmin: this.props.data.isAdmin,
+        isAuthorized: isAuthorized(),
+        isSuperAdmin: isSuperAdmin(this.props.data),
+        isAdmin: isAdmin(this.props.data),
       });
     }
     this.setState({
@@ -35,48 +46,25 @@ class ShowUser extends Component {
   };
 
   cancelUpdateEnableAdminFields = () => {
-    this.setState({
-      isAuthorized: this.props.data.isAuthorized,
-      isAdmin: this.props.data.isAdmin,
-    });
     this.setConfirmModalVisible(false);
   };
 
-  updateUser = () => {
-    const thatComponent = this;
-    this.setState({
-      updateUserLoadding: true,
-    });
-    const data = {
-      ...this.props.data,
-      isAuthorized: this.state.isAuthorized,
-      isAdmin: this.state.isAdmin,
-    };
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(this.props.data.id)
-      .set(data)
-      .then(() => {
-        setTimeout(() => {
-          this.setState({
-            updateUserLoadding: false,
-          });
-          this.props.updateState({ userData: data });
-          this.props.updateCard(data);
-          this.setConfirmModalVisible(false);
-        }, 2000);
-      })
-      .catch(function (error) {
-        thatComponent.setState({
-          errorMessage:
-            "Une erreur est survenue lors de la modification de vos informations",
-          updateUserLoadding: false,
-          isAuthorized: thatComponent.props.isAuthorized,
-          isAdmin: thatComponent.props.isAdmin,
-        });
-        thatComponent.setConfirmModalVisible(false);
-      });
+  updateUserRole = () => {
+    const roles = [];
+    if (this.state.isSuperAdmin) {
+      roles.push(SUPER_ADMIN_ROLE);
+    }
+    if (!this.state.isSuperAdmin && this.state.isAdmin) {
+      roles.push(ADMIN_ROLE);
+    }
+    if (!this.state.isAdmin && this.state.isAuthorized) {
+      roles.push(MEMBER_ROLE);
+    }
+
+    if (roles.length === 0) {
+      roles.push(NEW_MEMBER_ROLE);
+    }
+    this.props.updateUserRole(this.props.data.id, roles);
   };
 
   renderInformation = () => {
@@ -147,7 +135,7 @@ class ShowUser extends Component {
           </Text>
         </View>
       );
-      for (i = 0; i < this.props.data.childrenNumber; i++) {
+      for (let i = 0; i < this.props.data.childrenNumber; i += 1) {
         rows.push(
           <View
             key={`separator_${i}`}
@@ -219,9 +207,7 @@ class ShowUser extends Component {
           <Button
             transparent
             onPress={() => {
-              this.props.updateState({
-                action: LIST_ACTION,
-              });
+              this.props.updateAction(LIST_ACTION);
             }}
             style={{ borderRadius: 30, marginLeft: 20, marginBottom: 20 }}
           >
@@ -252,13 +238,12 @@ class ShowUser extends Component {
           }}
         />
         <SettingsSwitch
-          title="Administrateur"
+          title="Admin"
           titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
           onValueChange={(value) => {
             this.setState({
               isAdmin: value,
-              confirmMessage:
-                "Etes vous sûr de vouloir changer les droits d'administration pour cet utilisateur ?",
+              confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
             });
             this.setConfirmModalVisible(true);
           }}
@@ -268,10 +253,26 @@ class ShowUser extends Component {
             false: "#efeff3",
           }}
         />
+        <SettingsSwitch
+          title="Super Admin"
+          titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+          onValueChange={(value) => {
+            this.setState({
+              isSuperAdmin: value,
+              confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+            });
+            this.setConfirmModalVisible(true);
+          }}
+          value={this.state.isSuperAdmin}
+          trackColor={{
+            true: "#c18b64",
+            false: "#efeff3",
+          }}
+        />
         <View style={{ marginBottom: 30 }} />
         <InformationsModal
           visible={this.state.confirmUpdateVisible}
-          setVisible={this.setConfirmModalVisible.bind(this)}
+          setVisible={(visible) => this.setConfirmModalVisible(visible)}
           title="Confirmer la modification"
         >
           <Text style={{ color: "#3E3E3E", marginLeft: 5, marginBottom: 50 }}>
@@ -311,7 +312,7 @@ class ShowUser extends Component {
               isLoading={this.state.updateUserLoadding}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
-              onPress={this.updateUser}
+              onPress={this.updateUserRole}
             >
               <Text>Confirmer</Text>
             </SpinnerButton>
@@ -321,5 +322,11 @@ class ShowUser extends Component {
     );
   }
 }
+
+ShowUser.propTypes = {
+  data: PropTypes.object,
+  updateAction: PropTypes.func,
+  updateUserRole: PropTypes.func,
+};
 
 export default ShowUser;
