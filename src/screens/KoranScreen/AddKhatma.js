@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import { View, StyleSheet, Text, Alert } from "react-native"
 import { DatePicker } from 'native-base';
 import CostumHeader from "../../Components/KoranScreen/CostumHeader"
-import { gray, black, white, gray2, blue } from '../../Utils/colors'
+import { gray3, black, white } from '../../Utils/colors'
 import { ayncSaveKhatma } from '../../store/reducers/khatmaRedux'
 import { getFormatedDate } from "../../Utils/Functions"
 
@@ -64,7 +64,7 @@ class AddKhatma extends Component {
         const today = new Date()
 
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: gray3 }}>
                 <CostumHeader
                     title="Ajouter une Khatma"
                     isHome={false}

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux"
-import { View, FlatList, ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native"
+import { View, FlatList, ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, ViewComponent } from "react-native"
 import { Container, Fab, Icon } from 'native-base'
 import CostumHeader from '../Components/KoranScreen/CostumHeader'
 import { getFormatedDate } from "../Utils/Functions"
 import KoranItem from "../Components/KoranScreen/KoranItem"
 import { ayncReceiveKhatma } from "../store/reducers/khatmaRedux"
+import { ayncReceiveKoran } from '../store/reducers/koranRedux'
 import { gray3, black, white, gray } from "../Utils/colors";
 import HistoryItem from "../Components/KoranScreen/HistoryItem";
 
@@ -22,6 +23,7 @@ class KoranScreen extends Component {
     componentDidMount = () => {
         const { dispatch } = this.props
         dispatch(ayncReceiveKhatma())
+        dispatch(ayncReceiveKoran())
     }
 
     renderKoranItem = ({ item }) => {
@@ -34,10 +36,10 @@ class KoranScreen extends Component {
         const numberOfRead = currentUser ? Object.keys(currentUser.read).length : 0
         let numberofPartDispo = 0
 
-        Object.values(item.koranPart).map( (part) => {
+        Object.values(item.koranPart).map((part) => {
             if (part.pickedBy.length === 0) {
                 numberofPartDispo = numberofPartDispo + 1
-            } 
+            }
         })
 
 
@@ -88,68 +90,74 @@ class KoranScreen extends Component {
         }
 
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: gray3  }}>
-                <Container>
-                    <CostumHeader
-                        title="Mon Espace Khatma"
-                        isHome={true}
-                    />
-                    <ScrollView scrollEventThrottle={16} >
-                        <View style={{ marginTop: 10, paddingHorizontal: 10 }}>
-                            <Text style={styles.textHeader}>
-                                Mes Prochaines Khatma
+            <View style={{ flex: 1, backgroundColor: gray3 }}>
+            <Container>
+                <CostumHeader
+                    title="Mon Espace Khatma"
+                    isHome={true}
+                />
+
+                <ScrollView scrollEventThrottle={16}  >
+                    <View style={{ marginTop: 10, paddingHorizontal: 10 }}>
+                        <Text style={styles.textHeader}>
+                            Mes Prochaines Khatma
                             </Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            {
-                                (openKhatma.length === 0) &&
-                                <View style={{ marginTop: 10, paddingHorizontal: 15 }}>
-                                    <Text style={styles.textDetails}>
-                                         Aucune Khatma n'est ouverte à ce jour.
-                                    </Text>
-                                </View>
-                            }
-                                
-
-                            <FlatList
-                                data={Object.values(openKhatma)
-                                    .sort((a, b) => b.date - a.date)}
-
-                                keyExtractor={item => item.id}
-                                renderItem={this.renderKoranItem}
-                            />
-                        </View>
-                        <View style={{ marginTop: 20,  marginBottom: 10, paddingHorizontal: 15 }}>
-                            <Text style={styles.textHeader}>
-                                Mon Historique
-                            </Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <FlatList
-                                data={Object.values(khatmaHistory)
-                                    .sort((a, b) => b.date - a.date)}
-
-                                keyExtractor={item => item.id}
-                                renderItem={this.renderHistoryItem}
-                            />
-                        </View>
-                    </ScrollView>
-                    <View>
-
-                        <Fab
-                            active={this.state.active}
-                            style={{ backgroundColor: '#5067FF' }}
-                            position="bottomRight"
-                            direction="up"
-                            onPress={() => this.props.navigation.navigate('AddKhatma')}>
-                            <Icon name="add" />
-                        </Fab>
                     </View>
+                    <View style={{ flex: 1 }}>
+                        {
+                            (openKhatma.length === 0) &&
+                            <View style={{ marginTop: 10, paddingHorizontal: 15 }}>
+                                <Text style={styles.textDetails}>
+                                    Aucune Khatma n'est ouverte à ce jour.
+                                    </Text>
+                            </View>
+                        }
 
 
-                </Container>
+                        <FlatList
+                            data={Object.values(openKhatma)
+                                .sort((a, b) => b.date - a.date)}
 
-            </SafeAreaView>
+                            keyExtractor={item => item.id}
+                            renderItem={this.renderKoranItem}
+                        />
+                    </View>
+                    <View style={{ marginTop: 20, marginBottom: 10, paddingHorizontal: 15 }}>
+                        <Text style={styles.textHeader}>
+                            Mon Historique
+                            </Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                    {
+                        (khatmaHistory.length === 0) &&
+                        <View style={{ marginBottom: 10, paddingHorizontal: 15 }}>
+                            <Text style={styles.textDetails}>
+                                Vous n'avez à ce jour partcipé à aucune Khatma
+                                </Text>
+                        </View>
+                    }
+                        <FlatList
+                            data={Object.values(khatmaHistory)
+                                .sort((a, b) => b.date - a.date)}
+
+                            keyExtractor={item => item.id}
+                            renderItem={this.renderHistoryItem}
+                        />
+                    </View>
+                </ScrollView>
+                <View>
+
+                    <Fab
+                        active={this.state.active}
+                        style={{ backgroundColor: '#5067FF' }}
+                        position="bottomRight"
+                        direction="up"
+                        onPress={() => this.props.navigation.navigate('AddKhatma')}>
+                        <Icon name="add" />
+                    </Fab>
+                </View>
+            </Container>
+            </View>
 
         )
     }
@@ -167,7 +175,7 @@ function mapStateToProps(state) {
     })
 
     const khatmaHistory = Object.values(state.khatmaStore.khatma).filter(function (khatma) {
-        return (!khatma.isOpen) && !(khatma.users[authedUser]  === undefined )
+        return (!khatma.isOpen) && !(khatma.users[authedUser] === undefined)
     })
 
     return {

@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { Platform } from "react-native"
 import { Header, Left, Body, Right, Title, Subtitle, Button, Icon, Text } from 'native-base'
 
 class CostumHeader extends Component {
@@ -10,33 +11,30 @@ class CostumHeader extends Component {
         return (
 
             <Header>
-                <Left>
-                    {
-                        (!isHome) &&
-                        <Button hasText transparent onPress={() => navigation.goBack()}>
+                {(!isHome) &&
+                    <Left>
+                        <Button transparent onPress={() => navigation.goBack()}>
                             <Icon name='arrow-back' />
                         </Button>
-
-                    }
-
-                </Left>
-                <Body>
+                    </Left>
+                }
+                {(isHome && Platform.OS == 'android') && <Left/>}
+                <Body style={{flex: 1, justifyContent: "center"}}>
                     <Title style={{ fontSize: 14, textAlign: "center" }}>{title}</Title>
                     {
                         !(subtile === undefined) && <Subtitle style={{ fontSize: 12, textAlign: "center" }}>{subtile}</Subtitle>
                     }
 
                 </Body>
-                <Right>
-                    {
-                        (!isHome) &&
-
+                {(isHome && Platform.OS == 'android') && <Right/>}
+                {
+                    (!isHome) &&
+                    <Right>
                         <Button hasText transparent onPress={(event) => validate(event)}>
-                            <Text style={{ color: "white" }}>Valider</Text>
+                            <Text >Valider</Text>
                         </Button>
-
-                    }
-                </Right>
+                    </Right>
+                }
             </Header>
 
         )

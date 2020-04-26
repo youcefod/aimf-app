@@ -3,7 +3,9 @@ import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import firebase from "react-native-firebase";
 
 export default class Loading extends Component {
+  
   componentDidMount() {
+
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
           firebase.firestore().collection("users")

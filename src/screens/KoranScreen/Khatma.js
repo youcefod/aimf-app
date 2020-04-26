@@ -1,14 +1,13 @@
 import React, { Component } from "react"
-import { ScrollView, View, Text, StyleSheet, SafeAreaView, Alert } from "react-native"
+import { ScrollView, View, Text, StyleSheet, Alert } from "react-native"
 import { connect } from "react-redux"
 import { Container, Content } from 'native-base';
 import CostumHeader from "../../Components/KoranScreen/CostumHeader"
 import CostumItemList from "../../Components/KoranScreen/CostumItemList"
 import TextButton from "../../Components/KoranScreen/TextButton"
-import { ayncReceiveKoran } from '../../store/reducers/koranRedux'
 import { saveUserPicks, saveUserReads, saveKhatmaStatus } from '../../store/reducers/khatmaRedux'
 import { getFormatedDate } from "../../Utils/Functions"
-import { gray, gray2, black, white } from "../../Utils/colors"
+import { gray3, black } from "../../Utils/colors"
 
 class Khatma extends Component {
 
@@ -24,9 +23,7 @@ class Khatma extends Component {
 
     componentDidMount = () => {
 
-        const { dispatch, userReadList, userToReadList, isOpen } = this.props
-
-        dispatch(ayncReceiveKoran())
+        const { userReadList, userToReadList, isOpen } = this.props
 
         this.setState({
             toggleUserToReadList: userToReadList,
@@ -53,7 +50,8 @@ class Khatma extends Component {
         const includeInToRead = Object.values(userToReadList).includes(id)
 
         if (includeInToRead) {
-            alert(`Vous avez déjà validé la selection de  ${koranList[id].value}.
+            Alert.alert("Opération non permise",
+                `Vous avez déjà validé la selection de  ${koranList[id].value}.
             Vous ne pouvez pas annuler une selection déjâ validée`)
         }
         else {
@@ -74,7 +72,8 @@ class Khatma extends Component {
 
 
         if (includeInRead) {
-            alert(`Vous avez déjà validé la lecture de  ${koranList[id].value}.
+            Alert.alert("Opération non permise",
+                `Vous avez déjà validé la lecture de  ${koranList[id].value}.
             Vous ne pouvez pas annuler une lecture déjâ validée`)
 
         }
@@ -103,7 +102,7 @@ class Khatma extends Component {
 
         const { toggleUserToReadList, toggleUserReadList } = this.state
 
-        if (toggleUserToReadList || toggleUserReadList) {
+        if (toggleUserToReadList.length || toggleUserReadList.length) {
             Alert.alert(
                 'Confirmation',
                 //body
@@ -125,7 +124,7 @@ class Khatma extends Component {
 
         }
         else {
-            alert('Merci de bien vouloir sélectioner une Takheroubt à lire')
+            Alert.alert("Aucune selection", 'Merci de bien vouloir sélectioner une Takheroubt à lire')
         }
 
     }
@@ -139,7 +138,7 @@ class Khatma extends Component {
         const numberOfToRead = userToReadList.length
 
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: gray3 }}>
                 <Container>
                     <CostumHeader
                         title="Khetma"
@@ -165,15 +164,15 @@ class Khatma extends Component {
                                         </Text>
                                     <Text style={styles.textDetails}>
                                         Vous avez choisi dans cette Khatma {numberOfToRead} {numberOfToRead == 1 ? 'Takheroubt' : ' Tikheroubine'}.
-                                            Merci de confirmer vos lectures.
+                                        Merci de confirmer vos lectures.
                                         </Text>
                                 </View>
 
-                                <Content>
+                                <View>
                                     {
                                         userToReadList.map((id) => {
                                             const alreadyReadByAuthedUser = Object.values(toggleUserReadList).includes(id)
-                                            let numberOfReader  = Object.keys(khatma[0].koranPart[id].pickedBy).length
+                                            let numberOfReader = Object.keys(khatma[0].koranPart[id].pickedBy).length
                                             return (
                                                 <CostumItemList
                                                     key={koranList[id].id}
@@ -190,61 +189,65 @@ class Khatma extends Component {
 
 
                                     }
-                                </Content>
+                                </View>
                             </View>
                         }
 
                         {
-                            (this.props.isOpen )
+                            (isOpen)
                             &&
                             <View>
 
-                            <View style={{ marginTop: 40, paddingHorizontal: 20 }}>
-                                <Text style={styles.textHeader}>
-                                    Choisir une ou plusieurs Tekheroubine
-                            </Text>
-                                {
-                                    (!numberOfToRead) && (
+                                <View style={{ marginTop: 40, paddingHorizontal: 20 }}>
+                                    <Text style={styles.textHeader}>
+                                        Choisir une ou plusieurs Tekheroubine
+                                    </Text>
+                                    {
+                                        (!numberOfToRead) && (
 
-                                        <Text style={styles.textDetails}>
-                                            Vous n'avez pas encore choisi aucune Takheroubt dans cette Khatma.
-                                            Privilégier une Takheroubte en gris.
-                                            Celles qui sont en noir ont déjà été choisies par d'autres personnes.
-                                        </Text>
-                                    )
-                                }
-                            </View>
-                            <Content>
-                                {
-                                    Object.keys(koranList).map((id) => {
-
-                                        let alreadyPickedByAuthedUser = Object.values(toggleUserToReadList).includes(id)
-                                        let numberOfReader  = Object.keys(khatma[0].koranPart[id].pickedBy).length
-                                        //let readByNumber = Object.keys(khatma[0].koranPart[id].readBy).length
-
-                                        return (
-                                            <CostumItemList
-                                                key={koranList[id].id}
-                                                text={koranList[id].value}
-                                                colorText={numberOfReader || alreadyPickedByAuthedUser}
-                                                value={alreadyPickedByAuthedUser}
-                                                numberOfReader={numberOfReader}
-                                                id={id}
-                                                onChangeToggle={this.onChangeToggleToRead}
-                                            />
-
+                                            <View>
+                                                <Text style={styles.textDetails}>
+                                                    Vous n'avez encore choisi aucune Takheroubt dans cette Khatma.
+                                                </Text>
+                                                <Text style={styles.textDetails}>
+                                                    Privilégier une Takheroubte qui a un compteur à Zéro.
+                                                    Celles qui ont un compteur différent de Zéro ont déjà été choisies par d'autres personnes.
+                                                </Text>
+                                            </View>
                                         )
-                                    })
-                                }
+                                    }
+                                </View>
+                                <View>
+                                    {
+                                        Object.keys(koranList).map((id) => {
 
-                            </Content>
+                                            let alreadyPickedByAuthedUser = Object.values(toggleUserToReadList).includes(id)
+                                            let numberOfReader = Object.keys(khatma[0].koranPart[id].pickedBy).length
+                                            //let readByNumber = Object.keys(khatma[0].koranPart[id].readBy).length
+
+                                            return (
+                                                <CostumItemList
+                                                    key={koranList[id].id}
+                                                    text={koranList[id].value}
+                                                    colorText={numberOfReader || alreadyPickedByAuthedUser}
+                                                    value={alreadyPickedByAuthedUser}
+                                                    numberOfReader={numberOfReader}
+                                                    id={id}
+                                                    onChangeToggle={this.onChangeToggleToRead}
+                                                />
+
+                                            )
+                                        })
+                                    }
+
+                                </View>
                             </View>
 
                         }
 
                     </ScrollView>
                 </Container>
-            </SafeAreaView>
+            </View>
         )
     }
 }
@@ -284,7 +287,10 @@ const styles = StyleSheet.create({
         color: black
     },
     textDetails: {
-        fontWeight: '100',
-        marginTop: 10
+        fontSize: 16,
+        fontWeight: '300',
+        paddingHorizontal: 5,
+        marginTop: 10,
+        marginBottom: 10
     },
 })
