@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   ScrollView,
-  Animated,
   TouchableWithoutFeedback,
   View,
   Image,
@@ -19,7 +18,6 @@ import {
   getFrDate,
 } from "../Utils/Functions";
 import { styles } from "./ProfileForm/css";
-import Loader from "./Loader";
 import {
   CREATE_ACTION,
   MARRIED,
@@ -29,7 +27,7 @@ import {
   UPDATE_ACTION,
   FEMALE_GENDER,
 } from "../Utils/Constants";
-import { getRandomQuestionIndex } from "./ProfileForm/Functions";
+import getRandomQuestionIndex from "./ProfileForm/Functions";
 import ActionsButton from "./ProfileForm/ActionsButton";
 import ChildrenInformation from "./ProfileForm/ChildrenInformation";
 import { RenderInput } from "./ProfileForm/RenderFunctions";
@@ -38,12 +36,30 @@ export default class ProfileForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      spinValue: new Animated.Value(0),
-      loading: false,
-      modal: false,
       questionIndex1: null,
       questionIndex2: null,
     };
+  }
+
+  componentDidMount() {
+    const { questions1, questions2, question1, question2 } = this.props.data;
+    if (question1) {
+      this.props.updateState({ question1 });
+      this.setState({
+        questionIndex1: questions1.findIndex(
+          (question) => question.id === question1.id
+        ),
+      });
+    }
+
+    if (question2) {
+      this.props.updateState({ question2 });
+      this.setState({
+        questionIndex2: questions2.findIndex(
+          (question) => question.id === question2.id
+        ),
+      });
+    }
   }
 
   setDate(newDate) {
@@ -57,20 +73,23 @@ export default class ProfileForm extends Component {
   };
 
   setQuestionIndex1 = () => {
-    const questionIndex1 = getRandomQuestionIndex(this.state.questionIndex1);
-    const question1 = this.props.data.questions1[questionIndex1];
+    const { questionIndex1 } = this.state;
+
+    const newQuestionIndex1 = getRandomQuestionIndex(questionIndex1);
+    const question1 = this.props.data.questions1[newQuestionIndex1];
     this.props.updateState({ question1 });
     this.setState({
-      questionIndex1,
+      questionIndex1: newQuestionIndex1,
     });
   };
 
   setQuestionIndex2 = () => {
-    const questionIndex2 = getRandomQuestionIndex(this.state.questionIndex2);
-    const question2 = this.props.data.questions2[questionIndex2];
+    const { questionIndex2 } = this.state;
+    const newQuestionIndex2 = getRandomQuestionIndex(questionIndex2);
+    const question2 = this.props.data.questions2[newQuestionIndex2];
     this.props.updateState({ question2 });
     this.setState({
-      questionIndex2,
+      questionIndex2: newQuestionIndex2,
     });
   };
 
@@ -110,29 +129,20 @@ export default class ProfileForm extends Component {
             flexDirection: "row",
             justifyContent: "center",
             width: 300,
-            marginLeft: "auto",
-            marginRight: "auto",
+            marginLeft: 30,
           }}
         >
           <Label
             style={{
               fontWeight: "bold",
               fontSize: 14,
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: 280,
+              marginLeft: 30,
+              width: 300,
             }}
           >
-            {this.props.data.question1}*
+            {this.props.data.question1 && this.props.data.question1.question}*
           </Label>
           <SpinnerButton
-            style={{
-              fontWeight: "bold",
-              fontSize: 14,
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: 280,
-            }}
             buttonStyle={styles.refreshButton}
             onPress={this.setQuestionIndex1}
             indicatorCount={10}
@@ -154,22 +164,19 @@ export default class ProfileForm extends Component {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "center",
+            justifyContent: "space-between",
             width: 300,
-            marginLeft: "auto",
-            marginRight: "auto",
+            marginLeft: 30,
           }}
         >
           <Label
             style={{
               fontWeight: "bold",
               fontSize: 14,
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: 280,
+              width: 300,
             }}
           >
-            {this.props.data.question2}*
+            {this.props.data.question2 && this.props.data.question2.question}*
           </Label>
           <SpinnerButton
             buttonStyle={styles.refreshButton}
@@ -262,7 +269,7 @@ export default class ProfileForm extends Component {
           />
           <RenderInput
             checkFunction={isCorrectName}
-            label="Nom de jevalueune fille"
+            label="Nom jeune fille"
             onChange={(value) => this.props.updateState({ middleName: value })}
             required={false}
             value={middleName}
@@ -417,20 +424,6 @@ export default class ProfileForm extends Component {
             required={this.props.action === CREATE_ACTION}
             value={confirmPassword}
           />
-          {this.state.loading ? (
-            <Item
-              style={{
-                marginLeft: "auto",
-                marginRight: "auto",
-                position: "relative",
-                width: 50,
-                marginTop: -80,
-              }}
-            >
-              <Loader />
-            </Item>
-          ) : null}
-
           <ActionsButton
             action={this.props.action}
             onValidate={() => this.props.onSubmit()}

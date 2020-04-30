@@ -48,6 +48,7 @@ class ProfileScreen extends Component {
     if (user) {
       const { state } = this;
       user.functionName = user.function;
+      user.childrenNumber = (user.children && `${user.children.length}`) || "0";
       this.setState({ ...state, ...user, initData: user });
     }
   }
@@ -116,7 +117,6 @@ class ProfileScreen extends Component {
       birthday,
       zipCode,
       phoneNumber,
-      childrenNumber,
       functionName,
       children,
       oldPassword,
@@ -134,7 +134,6 @@ class ProfileScreen extends Component {
       birthday: getIsoDate(birthday),
       zipCode,
       phoneNumber,
-      childrenNumber: childrenNumber || 0,
       function: functionName,
       children,
       oldPassword,

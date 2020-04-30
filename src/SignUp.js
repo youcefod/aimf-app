@@ -1,20 +1,16 @@
 import React, { Component } from "react";
-import { Text, View, ActivityIndicator } from "react-native";
 import * as PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getIsoDate } from "./Utils/Functions";
 import Loader from "./Components/Loader";
 import ErrorModal from "./Components/ErrorModal";
 import { CREATE_ACTION } from "./Utils/Constants";
-import {
-  getQuestions,
-  getRandomQuestionIndex,
-} from "./Components/ProfileForm/Functions";
 import ProfileForm from "./Components/ProfileForm";
 import { register } from "./store/reducers/profileRedux";
 import { dispatchErrorMessage } from "./store/reducers/errorMessageRedux";
 import navigate from "./Utils/Account";
 import checkFormValues from "./Components/ProfileForm/Validate";
+import { getQuestions } from "./store/reducers/authenticationRedux";
 
 class SignUp extends Component {
   constructor(props) {
@@ -34,34 +30,18 @@ class SignUp extends Component {
       phoneNumber: "",
       response1: "",
       response2: "",
-      questions1: [],
-      questions2: [],
-      question1: "",
-      question2: "",
+      question1: null,
+      question2: null,
     };
   }
 
   componentDidMount() {
-    getQuestions(this.setQuestions.bind(this));
+    this.props.getQuestions();
   }
 
   componentDidUpdate() {
     navigate(this.props.account, this.props.navigation, "SignUp");
   }
-
-  setQuestions = (questions, index) => {
-    if (index === 1) {
-      this.setState({
-        questions1: questions,
-        question1: questions[getRandomQuestionIndex()],
-      });
-    } else {
-      this.setState({
-        questions2: questions,
-        question2: questions[getRandomQuestionIndex()],
-      });
-    }
-  };
 
   getDataFromState = () => {
     const {
@@ -82,6 +62,7 @@ class SignUp extends Component {
       question2,
       gender,
     } = this.state;
+
     return {
       email,
       password,
@@ -109,58 +90,93 @@ class SignUp extends Component {
       this.props.dispatchErrorMessage(error);
       return;
     }
-    data.password_confirmation = data.confirmPassword;
-    this.props.register(data);
+    this.props.register({
+      ...data,
+      password_confirmation: data.confirmPassword,
+      securityQuestions: [
+        {
+          question: data.question1.id,
+          answer: data.response1,
+        },
+        {
+          question: data.question2.id,
+          answer: data.response2,
+        },
+      ],
+    });
   };
 
   render() {
-    const { questions1, questions2 } = this.state;
-    return questions1 && questions1.length > 0 ? (
+    let { question1, question2 } = this.state;
+    const { questions1, questions2 } = this.props;
+    if (!question1 || !question2) {
+      question1 = this.props.question1;
+      question2 = this.props.question2;
+    }
+    return (
       <>
-        <ProfileForm
-          scrollViewOpacity={
-            this.props.loading || this.props.errorMessage ? 0.6 : 1
-          }
-          action={CREATE_ACTION}
-          data={{ ...this.getDataFromState(), questions1, questions2 }}
-          initData={{}}
-          navigation={this.props.navigation}
-          updateState={(state) => this.setState(state)}
-          onSubmit={() => this.onSubmit()}
-        />
+        {question1 && question2 && (
+          <ProfileForm
+            scrollViewOpacity={
+              this.props.loadingQuestion ||
+              this.props.loadingRegister ||
+              this.props.errorMessage
+                ? 0.6
+                : 1
+            }
+            action={CREATE_ACTION}
+            data={{
+              ...this.getDataFromState(),
+              questions1,
+              questions2,
+              question1,
+              question2,
+            }}
+            initData={{}}
+            navigation={this.props.navigation}
+            updateState={(state) => this.setState(state)}
+            onSubmit={() => this.onSubmit()}
+          />
+        )}
+
         {this.props.errorMessage && (
           <ErrorModal visible message={this.props.errorMessage} />
         )}
-        <Loader visible={!!this.props.loading} />
+        <Loader
+          visible={!!this.props.loadingRegister || !!this.props.loadingQuestion}
+        />
       </>
-    ) : (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>Chargement</Text>
-        <ActivityIndicator size="large" />
-      </View>
     );
   }
 }
 
 const mapStateToProps = (state) => {
   const { errorMessage } = state.errorMessageStore;
-  const { action } = state.profileStore;
+  const { action, loading: loadingRegister } = state.profileStore;
+  const {
+    questions1,
+    questions2,
+    question1,
+    question2,
+    loading: loadingQuestion,
+  } = state.authenticationStore;
   return {
     errorMessage,
     action,
     account: state.accountStore,
+    questions1,
+    questions2,
+    question1,
+    question2,
+    loadingQuestion,
+    loadingRegister,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     register: (data) => dispatch(register(data)),
+    getQuestions: () => dispatch(getQuestions()),
     dispatchErrorMessage: (errorMessage) =>
       dispatch(dispatchErrorMessage(errorMessage)),
   };
@@ -171,7 +187,13 @@ SignUp.propTypes = {
   errorMessage: PropTypes.string,
   dispatchErrorMessage: PropTypes.func,
   register: PropTypes.func,
-  loading: PropTypes.bool,
+  loadingQuestion: PropTypes.bool,
+  loadingRegister: PropTypes.bool,
   account: PropTypes.object,
+  getQuestions: PropTypes.func,
+  questions1: PropTypes.array,
+  questions2: PropTypes.array,
+  question1: PropTypes.object,
+  question2: PropTypes.object,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

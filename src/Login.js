@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 150,
     borderRadius: 10,
-    backgroundColor: "#5CB85C",
+    backgroundColor: "#cc9871",
   },
   nextButtonText: {
     fontSize: 18,
