@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as PropTypes from "prop-types";
-import navigate from "./Utils/Account";
+import { navigate } from "./Utils/Account";
 
 const styles = StyleSheet.create({
   container: {

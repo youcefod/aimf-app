@@ -8,6 +8,7 @@ import { errorMessageReducer } from "./reducers/errorMessageRedux";
 import { authenticationReducer } from "./reducers/authenticationRedux";
 import { accountReducer } from "./reducers/accountRedux";
 import { profileReducer } from "./reducers/profileRedux";
+import { announcementReducer } from "./reducers/announcementsRedux";
 
 const persistConfig = {
   key: "root",
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   authenticationStore: authenticationReducer,
   accountStore: accountReducer,
   profileStore: profileReducer,
+  announcementStore: announcementReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

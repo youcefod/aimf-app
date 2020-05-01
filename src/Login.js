@@ -8,7 +8,7 @@ import ErrorModal from "./Components/ErrorModal";
 import { CREDENTIALS_EMPTY_ERROR } from "./Utils/Constants";
 import { dispatchErrorMessage } from "./store/reducers/errorMessageRedux";
 import { login } from "./store/reducers/authenticationRedux";
-import navigate from "./Utils/Account";
+import { navigate } from "./Utils/Account";
 
 const styles = StyleSheet.create({
   bodyWrapper: {

@@ -41,5 +41,3 @@ export const navigate = (account, navigation, defaultNavigation = "Login") => {
   }
   navigation.navigate(defaultNavigation);
 };
-
-export default navigate;
