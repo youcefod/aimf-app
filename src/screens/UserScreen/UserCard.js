@@ -16,21 +16,11 @@ import { getFullName } from "../../Utils/Functions";
 import { isAdmin, isAuthorized, isSuperAdmin } from "../../Utils/Account";
 
 class UserCard extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isAuthorized: isAuthorized(props.data),
-      isAdmin: isSuperAdmin(props.data) || isAdmin(props.data),
-    };
-  }
-
   render() {
     let logo = require("../../../assets/images/men.png");
     if (this.props.data.gender === FEMALE_GENDER) {
       logo = require("../../../assets/images/women.png");
     }
-
     return (
       <Card transparent>
         <CardItem>
@@ -48,7 +38,7 @@ class UserCard extends Component {
           <Right style={{ height: 58 }}>
             <View style={{ flexDirection: "row" }}>
               <View style={{ flexDirection: "row" }}>
-                {this.state.isAuthorized && (
+                {isAuthorized(this.props.data) && (
                   <Text style={{ marginTop: 20, marginRight: 30 }}>
                     <Icon
                       type="AntDesign"
@@ -57,18 +47,24 @@ class UserCard extends Component {
                     />
                   </Text>
                 )}
-                {this.state.isAdmin && (
-                  <Text style={{ marginTop: 20, marginRight: 30 }}>
-                    <Icon
-                      type="FontAwesome5"
-                      name="user-cog"
-                      style={{ fontSize: 17, color: "#000" }}
-                    />
-                  </Text>
-                )}
+                {isSuperAdmin(this.props.data) ||
+                  (isAdmin(this.props.data) && (
+                    <Text style={{ marginTop: 20, marginRight: 30 }}>
+                      <Icon
+                        type="FontAwesome5"
+                        name="user-cog"
+                        style={{ fontSize: 17, color: "#000" }}
+                      />
+                    </Text>
+                  ))}
               </View>
               <Text
-                onPress={() => this.props.showUser(this.props.data)}
+                onPress={() =>
+                  this.props.showUser(
+                    this.props.data,
+                    this.props.currentUserIndex
+                  )
+                }
                 style={{ fontSize: 17 }}
               >
                 ...
@@ -84,6 +80,7 @@ class UserCard extends Component {
 UserCard.propTypes = {
   data: PropTypes.object,
   showUser: PropTypes.func,
+  currentUserIndex: PropTypes.number,
 };
 
 export default UserCard;

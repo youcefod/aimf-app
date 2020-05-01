@@ -12,6 +12,8 @@ import {
   updateUserRole,
 } from "../store/reducers/userRedux";
 import ErrorModal from "../Components/ErrorModal";
+import { isSuperAdmin } from "../Utils/Account";
+import Loader from "../Components/Loader";
 
 class UserScreen extends Component {
   static navigationOptions = {
@@ -23,12 +25,11 @@ class UserScreen extends Component {
 
     this.state = {
       users: [],
-      opacity: 1,
     };
   }
 
   componentDidMount() {
-    this.props.getUsers([], 1);
+    this.props.getUsers([], 1, true);
   }
 
   handleRefresh = () => {
@@ -45,7 +46,8 @@ class UserScreen extends Component {
     if (
       !this.props.refreshing &&
       !this.props.handleMore &&
-      !this.props.loading
+      !this.props.loading &&
+      !this.props.lastPage
     ) {
       this.props.getUsers(this.props.users, this.props.page + 1, false, true);
     }
@@ -93,12 +95,13 @@ class UserScreen extends Component {
     this.setState({ users });
   };
 
-  renderItem = (item) => {
+  renderItem = (item, currentUserIndex) => {
     return (
       <UserCard
         showUser={this.props.showUser}
         data={item}
         backgroundColor="#ffffff"
+        currentUserIndex={currentUserIndex}
       />
     );
   };
@@ -108,16 +111,25 @@ class UserScreen extends Component {
       <>
         {this.props.action === SHOW_ACTION ? (
           <ShowUser
+            style={{
+              opacity: this.props.loading || this.props.errorMessage ? 0.6 : 1,
+            }}
             data={this.props.userToShow || {}}
             updateAction={(action) => this.props.updateAction(action)}
             updateState={(data) => this.setState(data)}
             updateUserRole={(id, roles) => this.props.updateUserRole(id, roles)}
+            isSuperAdmin={isSuperAdmin(this.props.currentUser)}
+            currentUserId={this.props.currentUser.id}
           />
         ) : (
-          <SafeAreaView style={{ opacity: this.state.opacity }}>
+          <SafeAreaView
+            style={{
+              opacity: this.props.loading || this.props.errorMessage ? 0.6 : 1,
+            }}
+          >
             <FlatList
               data={this.props.users}
-              renderItem={({ item }) => this.renderItem(item)}
+              renderItem={({ item, index }) => this.renderItem(item, index)}
               keyExtractor={(item) => `${item.id}`}
               ItemSeparatorComponent={this.renderSeparator}
               ListFooterComponent={this.renderFooter}
@@ -132,6 +144,7 @@ class UserScreen extends Component {
             />
           </SafeAreaView>
         )}
+        <Loader visible={!!this.props.loading} />
         {this.props.errorMessage && (
           <ErrorModal visible message={this.props.errorMessage} />
         )}
@@ -150,6 +163,7 @@ const mapStateToProps = (state) => {
     page,
     action,
     userToShow,
+    lastPage,
   } = state.userStore;
   return {
     users,
@@ -160,6 +174,8 @@ const mapStateToProps = (state) => {
     errorMessage,
     action,
     userToShow,
+    lastPage,
+    currentUser: state.accountStore.user,
   };
 };
 
@@ -167,13 +183,15 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getUsers: (users, page, refreshing = false, handleMore = false) =>
       dispatch(getUsers(users, page, refreshing, handleMore)),
-    showUser: (data) => dispatch(showUser(data)),
+    showUser: (data, currentUserIndex) =>
+      dispatch(showUser(data, currentUserIndex)),
     updateAction: (action) => dispatch(updateAction(action)),
     updateUserRole: (id, roles) => dispatch(updateUserRole(id, roles)),
   };
 };
 
 UserScreen.propTypes = {
+  currentUser: PropTypes.object,
   page: PropTypes.number,
   users: PropTypes.array,
   getUsers: PropTypes.func,
@@ -186,6 +204,7 @@ UserScreen.propTypes = {
   updateUserRole: PropTypes.func,
   userToShow: PropTypes.object,
   errorMessage: PropTypes.string,
+  lastPage: PropTypes.bool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserScreen);

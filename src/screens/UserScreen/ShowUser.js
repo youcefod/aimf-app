@@ -14,6 +14,7 @@ import {
   SUPER_ADMIN_ROLE,
   MEMBER_ROLE,
   NEW_MEMBER_ROLE,
+  UPDATE_USER_STATUS_CONFIRM_MESSAGE,
 } from "../../Utils/Constants";
 import { isAdmin, isSuperAdmin, isAuthorized } from "../../Utils/Account";
 
@@ -26,9 +27,17 @@ class ShowUser extends Component {
       isSuperAdmin: isSuperAdmin(props.data),
       isAdmin: isAdmin(props.data),
       confirmMessage: "",
-      updateUserLoadding: false,
+      updateUserLoading: false,
       scrollViewOpacity: 1,
     };
+  }
+
+  componentWillReceiveProps(nextProps): void {
+    this.setState({
+      isAuthorized: isAuthorized(nextProps.data),
+      isSuperAdmin: isSuperAdmin(nextProps.data),
+      isAdmin: isAdmin(nextProps.data),
+    });
   }
 
   setConfirmModalVisible = (visible) => {
@@ -64,7 +73,172 @@ class ShowUser extends Component {
     if (roles.length === 0) {
       roles.push(NEW_MEMBER_ROLE);
     }
+    this.setState({
+      confirmUpdateVisible: false,
+      scrollViewOpacity: 1,
+    });
     this.props.updateUserRole(this.props.data.id, roles);
+  };
+
+  renderSeparator = (key) => {
+    return (
+      <View
+        key={key}
+        style={{
+          height: 1,
+          width: "86%",
+          backgroundColor: "#CED0CE",
+          marginLeft: "14%",
+        }}
+      />
+    );
+  };
+
+  getSecurityQuestionBlock = () => {
+    const rows = [];
+    if (this.props.data.securityQuestions.length > 0) {
+      rows.push(
+        <View
+          key="securityQuestions"
+          style={{
+            height: 40,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 15 }}>
+            Les réponses aux questions de sécurité :
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="question1"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[0].question}
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="answer1"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[0].answer}
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="question2"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[1].question}
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="answer2"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[1].answer}
+          </Text>
+        </View>
+      );
+      rows.push(this.renderSeparator("securityQuestions_separator"));
+    }
+    return rows;
+  };
+
+  getChildrenBlock = () => {
+    const rows = [];
+    if (this.props.data.children.length > 0) {
+      rows.push(
+        <View
+          key="childrens"
+          style={{
+            height: 40,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 15 }}>
+            Les enfants :
+          </Text>
+        </View>
+      );
+      for (let i = 0; i < this.props.data.children.length; i += 1) {
+        rows.push(
+          <View
+            key={`children_year_${i}`}
+            style={{
+              height: 30,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+              Année de naissance
+            </Text>
+            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
+              {this.props.data.children[i].yearOfBirth}
+            </Text>
+          </View>
+        );
+        rows.push(
+          <View
+            key={`children_schoolLevels_${i}`}
+            style={{
+              height: 30,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+              Année scolaire
+            </Text>
+            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
+              {this.props.data.children[i].schoolLevel}
+            </Text>
+          </View>
+        );
+      }
+      rows.push(this.renderSeparator("children_separator"));
+    }
+
+    return rows;
   };
 
   renderInformation = () => {
@@ -105,87 +279,76 @@ class ShowUser extends Component {
         </View>
       );
 
-      rows.push(
-        <View
-          key={`separator_${row.field}`}
-          style={{
-            height: 1,
-            width: "86%",
-            backgroundColor: "#CED0CE",
-            marginLeft: "14%",
-          }}
-        />
-      );
+      rows.push(this.renderSeparator(`separator_${row.field}`));
     });
 
-    if (this.props.data.childrenNumber > 0) {
-      rows.push(
-        <View
-          key="childrens"
-          style={{
-            height: 40,
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 15 }}>
-            Les enfants :
-          </Text>
-        </View>
-      );
-      for (let i = 0; i < this.props.data.childrenNumber; i += 1) {
-        rows.push(
-          <View
-            key={`separator_${i}`}
-            style={{
-              height: 1,
-              width: "86%",
-              backgroundColor: "#CED0CE",
-              marginLeft: "14%",
+    return rows.concat(
+      this.getSecurityQuestionBlock(),
+      this.getChildrenBlock()
+    );
+  };
+
+  renderUserStatus = () => {
+    if (this.props.currentUserId !== this.props.data.id) {
+      return (
+        <>
+          <SettingsSwitch
+            title="Autorisé"
+            titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+            onValueChange={(value) => {
+              this.setState({
+                isAuthorized: value,
+                confirmMessage: UPDATE_USER_STATUS_CONFIRM_MESSAGE,
+              });
+              this.setConfirmModalVisible(true);
+            }}
+            value={this.state.isAuthorized}
+            trackColor={{
+              true: "#c18b64",
+              false: "#efeff3",
             }}
           />
-        );
-        rows.push(
-          <View
-            key={`children_year_${i}`}
-            style={{
-              height: 30,
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
-              Année de naissance
-            </Text>
-            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
-              {this.props.data.childrenYears[i]}
-            </Text>
-          </View>
-        );
-        rows.push(
-          <View
-            key={`children_schoolLevels_${i}`}
-            style={{
-              height: 30,
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
-              Année scolaire
-            </Text>
-            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
-              {this.props.data.schoolLevels[i]}
-            </Text>
-          </View>
-        );
-      }
+          {this.state.isAuthorized && (
+            <SettingsSwitch
+              title="Admin"
+              titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+              onValueChange={(value) => {
+                this.setState({
+                  isAdmin: value,
+                  confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+                });
+                this.setConfirmModalVisible(true);
+              }}
+              value={this.state.isAdmin}
+              trackColor={{
+                true: "#c18b64",
+                false: "#efeff3",
+              }}
+            />
+          )}
+
+          {this.props.isSuperAdmin && this.state.isAdmin && (
+            <SettingsSwitch
+              title="Super Admin"
+              titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+              onValueChange={(value) => {
+                this.setState({
+                  isSuperAdmin: value,
+                  confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+                });
+                this.setConfirmModalVisible(true);
+              }}
+              value={this.state.isSuperAdmin}
+              trackColor={{
+                true: "#c18b64",
+                false: "#efeff3",
+              }}
+            />
+          )}
+        </>
+      );
     }
-    return rows;
+    return null;
   };
 
   render() {
@@ -220,55 +383,8 @@ class ShowUser extends Component {
         </View>
         <Thumbnail source={logo} style={{ marginBottom: 14 }} />
         {this.renderInformation()}
-        <SettingsSwitch
-          title="Autorisé"
-          titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
-          onValueChange={(value) => {
-            this.setState({
-              isAuthorized: value,
-              confirmMessage:
-                "Etes vous sûr de vouloir activer/désactiver cet utilisateur ?",
-            });
-            this.setConfirmModalVisible(true);
-          }}
-          value={this.state.isAuthorized}
-          trackColor={{
-            true: "#c18b64",
-            false: "#efeff3",
-          }}
-        />
-        <SettingsSwitch
-          title="Admin"
-          titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
-          onValueChange={(value) => {
-            this.setState({
-              isAdmin: value,
-              confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
-            });
-            this.setConfirmModalVisible(true);
-          }}
-          value={this.state.isAdmin}
-          trackColor={{
-            true: "#c18b64",
-            false: "#efeff3",
-          }}
-        />
-        <SettingsSwitch
-          title="Super Admin"
-          titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
-          onValueChange={(value) => {
-            this.setState({
-              isSuperAdmin: value,
-              confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
-            });
-            this.setConfirmModalVisible(true);
-          }}
-          value={this.state.isSuperAdmin}
-          trackColor={{
-            true: "#c18b64",
-            false: "#efeff3",
-          }}
-        />
+        {this.renderUserStatus()}
+
         <View style={{ marginBottom: 30 }} />
         <InformationsModal
           visible={this.state.confirmUpdateVisible}
@@ -309,7 +425,7 @@ class ShowUser extends Component {
                 backgroundColor: "#FFD792",
                 marginLeft: 4,
               }}
-              isLoading={this.state.updateUserLoadding}
+              isLoading={this.state.updateUserLoading}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
               onPress={this.updateUserRole}
@@ -327,6 +443,8 @@ ShowUser.propTypes = {
   data: PropTypes.object,
   updateAction: PropTypes.func,
   updateUserRole: PropTypes.func,
+  isSuperAdmin: PropTypes.bool,
+  currentUserId: PropTypes.number,
 };
 
 export default ShowUser;

@@ -41,6 +41,8 @@ export const FEMALE_GENDER = "female";
 export const SERVER_ERROR_MESSAGE =
   "Une erreur est survenue, merci de réessayer ultérieurement";
 
+export const UPDATE_USER_STATUS_CONFIRM_MESSAGE =
+  "Etes vous sûr de vouloir activer/désactiver cet utilisateur ?";
 export const UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE =
   "Etes vous sûr de vouloir changer les droits d'administration pour cet utilisateur ?";
 
