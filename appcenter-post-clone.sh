@@ -1,1 +1,1 @@
-cp .env.example .env
+sed  -e "s|API_BASE_URL=|API_BASE_URL=$API_BASE_URL|g" .env.example > .env
