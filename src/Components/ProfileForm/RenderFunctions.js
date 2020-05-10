@@ -1,6 +1,6 @@
 import { Icon, Input, Item, Label } from "native-base";
 import React from "react";
-import { styles } from "./css";
+import styles from "./css";
 
 export const RenderInput = ({
   label,
