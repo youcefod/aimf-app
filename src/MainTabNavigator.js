@@ -14,6 +14,7 @@ import KoranScreen from "./screens/KoranScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import UserScreen from "./screens/UserScreen";
 import UnaccessibleScreen from "./screens/UnaccessibleScreen";
+import YouTubeScreen from "./screens/YouTubeSceen";
 
 const CustomIcon = createIconSetFromIcoMoon(icoMoonConfig);
 // ----------------------------------------------HomeScreen-----------------------------------------------------
@@ -84,6 +85,23 @@ disableKoranStack.navigationOptions = {
   ),
 };
 
+// ----------------------------------------------YouTubeScreen-----------------------------------------------------
+const YouTubeStack = createStackNavigator({
+  YouTube: YouTubeScreen,
+});
+
+YouTubeStack.navigationOptions = {
+  tabBarLabel: "Youtube",
+  tabBarIcon: ({ focused }) => (
+    <Icon
+      type="SimpleLineIcons"
+      name="social-youtube"
+      style={{ fontSize: 30, marginBottom: -3 }}
+      color={focused ? "#2f95dc" : "#ccc"}
+    />
+  ),
+};
+
 // ----------------------------------------------ProfileScreen-----------------------------------------------------
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
@@ -121,6 +139,7 @@ UserStack.navigationOptions = {
 export const bottomActiveUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
+  YouTubeStack,
   ProfileStack,
 });
 
@@ -150,6 +169,7 @@ export const bottomAdminUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
   PostWorkflowStack,
+  YouTubeStack,
   UserStack,
   ProfileStack,
 });

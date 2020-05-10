@@ -5542,6 +5542,11 @@ jest@^24.8.0:
     import-local "^2.0.0"
     jest-cli "^24.8.0"
 
+jetifier@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/jetifier/-/jetifier-1.6.5.tgz#ea87324a4230bef20a9651178ecab978ee54a8cb"
+  integrity sha512-T7yzBSu9PR+DqjYt+I0KVO1XTb1QhAfHnXV5Nd3xpbXM6Xg4e3vP60Q4qkNU8Fh6PHC2PivPUNN3rY7G2MxcDQ==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -7328,7 +7333,7 @@ prop-types@15.5.10:
     fbjs "^0.8.9"
     loose-envify "^1.3.1"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -7629,6 +7634,13 @@ react-native-wheel-pick@^1.1.0:
   integrity sha512-zk6FIx6t930jr4BWR8A49vMxiX7SUqn+IULZ67m4ulycb4Ixc02SnBAx/lBpk/LPLpFT0+SKzGXhLZShiM74Ww==
   dependencies:
     moment "^2.19.1"
+
+react-native-youtube@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-youtube/-/react-native-youtube-2.0.1.tgz#1b6275ca2c1db8e13539a59ccfda8ae8479b1590"
+  integrity sha512-CVzJyynKoEEMXHv/Nx+s8HdovnfVIZs0DIUjWUQsgEd+kbBubXJZTguCKj4WigI8SI1LJ0thF8SEGbdqW8oJkw==
+  dependencies:
+    prop-types "^15.5.0"
 
 react-native@0.59.5:
   version "0.59.5"
