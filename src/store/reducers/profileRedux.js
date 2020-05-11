@@ -72,26 +72,25 @@ const postRegisterSuccess = () => {
 
 const updateUser = (id, data, dispatch) => {
   getAxiosInstance()
-    .patch(PATCH_UPDATE_USER_URI + id, data)
+    .patch(`${PATCH_UPDATE_USER_URI + id}?with_roles=1&with_children=1`, data, {
+      with_roles: 1,
+      with_children: 1,
+    })
     .then(function (response) {
-      setTimeout(() => {
-        dispatch(
-          batchActions(
-            [storeAccount({ user: response.data.data }), patchUpdateSuccess()],
-            PATCH_BATCH_UPDATE_USER_SUCCESS
-          )
-        );
-      }, 500);
+      dispatch(
+        batchActions(
+          [storeAccount({ user: response.data.data }), patchUpdateSuccess()],
+          PATCH_BATCH_UPDATE_USER_SUCCESS
+        )
+      );
     })
     .catch(function (error) {
-      setTimeout(() => {
-        dispatch(
-          batchActions(
-            [dispatchError(error), patchUpdateError()],
-            PATCH_BATCH_UPDATE_USER_ERROR
-          )
-        );
-      }, 500);
+      dispatch(
+        batchActions(
+          [dispatchError(error), patchUpdateError()],
+          PATCH_BATCH_UPDATE_USER_ERROR
+        )
+      );
     });
 };
 
@@ -170,21 +169,12 @@ const initialState = { action: SHOW_ACTION };
 export const profileReducer = (state = initialState, action) => {
   switch (action.type) {
     case PATCH_UPDATE_USER_REQUEST:
-      return { ...state, ...action.payload };
-    case PATCH_UPDATE_USER_SUCCESS: {
-      return { ...state, ...action.payload };
-    }
-    case PATCH_UPDATE_USER_ERROR: {
-      return { ...state, ...action.payload };
-    }
+    case PATCH_UPDATE_USER_SUCCESS:
+    case PATCH_UPDATE_USER_ERROR:
     case POST_REGISTER_USER_REQUEST:
+    case POST_REGISTER_USER_SUCCESS:
+    case POST_REGISTER_USER_ERROR:
       return { ...state, ...action.payload };
-    case POST_REGISTER_USER_SUCCESS: {
-      return { ...state, ...action.payload };
-    }
-    case POST_REGISTER_USER_ERROR: {
-      return { ...state, ...action.payload };
-    }
     case CHANGE_ACTION: {
       return { ...state, action: action.payload };
     }

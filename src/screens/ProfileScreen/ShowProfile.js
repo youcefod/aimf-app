@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Image } from "react-native";
 import { Button, Icon, Text } from "native-base";
 import * as PropTypes from "prop-types";
-import { styles } from "./css";
+import styles from "./css";
 import {
   FEMALE_GENDER,
   MALE_GENDER,

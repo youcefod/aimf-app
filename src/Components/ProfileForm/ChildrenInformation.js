@@ -12,7 +12,7 @@ import {
 import { styles } from "./css";
 
 class ChildrenInformation extends Component {
-  renderPicke = (index) => {
+  renderPicker = (index) => {
     const currentYear = new Date().getFullYear();
     const defaultSchoolLevel = DEFAULT_SCHOOL_LEVEL;
     const start = currentYear - 18;
@@ -80,7 +80,7 @@ class ChildrenInformation extends Component {
   renderAdditionalInformationForm = () => {
     const pickers = [];
     for (let i = 0; i < this.props.childrenNumber; i += 1) {
-      pickers.push(this.renderPicke(i));
+      pickers.push(this.renderPicker(i));
     }
     return pickers;
   };
@@ -94,14 +94,14 @@ class ChildrenInformation extends Component {
             style={styles.input}
             keyboardType="numeric"
             maxLength={1}
-            onChangeText={(childrenNumber) =>
-              this.props.updateState({ childrenNumber })
-            }
-            value={
-              this.props.childrenNumber
-                ? this.props.childrenNumber.toString()
-                : ""
-            }
+            onChangeText={(childrenNumber) => {
+              const children = this.props.childrenInformation;
+              this.props.updateState({
+                children: children.slice(0, childrenNumber),
+                childrenNumber,
+              });
+            }}
+            value={`${this.props.childrenNumber}`}
           />
         </Item>
         {this.renderAdditionalInformationForm()}
@@ -111,7 +111,7 @@ class ChildrenInformation extends Component {
 }
 
 ChildrenInformation.propTypes = {
-  childrenNumber: PropTypes.number,
+  childrenNumber: PropTypes.string,
   maritalStatus: PropTypes.string,
   updateState: PropTypes.func,
   childrenInformation: PropTypes.array,
