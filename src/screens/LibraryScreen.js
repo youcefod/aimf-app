@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator, SafeAreaView } from "react-native";
+import { View, FlatList, SafeAreaView } from "react-native";
 import { connect } from "react-redux";
 import { Icon, Input, Item } from "native-base";
 import * as PropTypes from "prop-types";
@@ -11,6 +11,7 @@ import { dispatchErrorMessage } from "../store/reducers/errorMessageRedux";
 
 import FilterList from "./LibraryScreen/FilterList";
 import ErrorModal from "../Components/ErrorModal";
+import Loader from "../Components/Loader";
 
 class LibraryScreen extends Component {
   static navigationOptions = {
@@ -32,7 +33,7 @@ class LibraryScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.getBooks([], 1);
+    this.handleRefresh();
   }
 
   componentDidUpdate() {
@@ -63,7 +64,8 @@ class LibraryScreen extends Component {
     if (
       !this.props.refreshing &&
       !this.props.handleMore &&
-      !this.props.loading
+      !this.props.loading &&
+      !this.props.lastPage
     ) {
       this.props.getBooks(
         this.props.books,
@@ -86,25 +88,6 @@ class LibraryScreen extends Component {
           marginLeft: "14%",
         }}
       />
-    );
-  };
-
-  renderFooter = () => {
-    return (
-      this.props.loading &&
-      this.props.books &&
-      this.props.books > 5 && (
-        <View
-          style={{
-            marginBottom: 100,
-            paddingVertical: 20,
-            borderTopWidth: 1,
-            borderColor: "#CED0CE",
-          }}
-        >
-          <ActivityIndicator animating size="large" />
-        </View>
-      )
     );
   };
 
@@ -162,71 +145,83 @@ class LibraryScreen extends Component {
   };
 
   render() {
-    return this.state.action === SHOW_ACTION ? (
-      <ShowBook
-        data={this.state.bookData}
-        updateCard={(data) => this.updateCard(data)}
-        updateState={(state) => this.setState(state)}
-      />
-    ) : (
-      <SafeAreaView style={{ opacity: this.state.opacity }}>
-        <Item
-          rounded
-          style={{
-            margin: 10,
-            marginLeft: 15,
-            paddingHorizontal: 10,
-            paddingLeft: 5,
-            borderRadius: 5,
-            height: 40,
-            backgroundColor: "#FFF",
-            fontSize: 12,
-          }}
-        >
-          <Icon type="AntDesign" name="search1" />
-          <Input
-            onChangeText={(value) => this.setState({ searchValue: value })}
-            onBlur={this.search}
-            style={{
-              fontSize: 15,
-              paddingLeft: 10,
-            }}
-            keyboardType="default"
-            placeholder="Rechercher un livre"
-            value={this.state.searchValue}
+    return (
+      <>
+        {this.state.action === SHOW_ACTION ? (
+          <ShowBook
+            data={this.state.bookData}
+            updateCard={(data) => this.updateCard(data)}
+            updateState={(state) => this.setState(state)}
           />
-        </Item>
-        <View style={{ flexDirection: "row-reverse" }}>
-          <FilterList
-            selectedValue={this.getFilterLabel()}
-            updateValue={this.updaterFilterValue}
-          />
-        </View>
-        <FlatList
-          ListHeaderComponent={this.renderHeader}
-          data={this.props.books}
-          renderItem={({ item }) => this.renderItem(item)}
-          keyExtractor={(item) => `${item.id}`}
-          ItemSeparatorComponent={this.renderSeparator}
-          ListFooterComponent={this.renderFooter}
-          onRefresh={this.handleRefresh}
-          refreshing={
-            this.props.refreshing !== undefined ? this.props.refreshing : false
-          }
-          onEndReached={this.handleLoadMore}
-          onEndReachedThreshold={0.5}
-        />
-
+        ) : (
+          <SafeAreaView style={{ marginTop: 0, opacity: this.state.opacity }}>
+            <Item
+              rounded
+              style={{
+                margin: 10,
+                marginLeft: 15,
+                paddingHorizontal: 10,
+                paddingLeft: 5,
+                borderRadius: 5,
+                height: 40,
+                backgroundColor: "#FFF",
+                fontSize: 12,
+              }}
+            >
+              <Icon type="AntDesign" name="search1" />
+              <Input
+                onChangeText={(value) => this.setState({ searchValue: value })}
+                onBlur={this.search}
+                style={{
+                  fontSize: 15,
+                  paddingLeft: 10,
+                }}
+                keyboardType="default"
+                placeholder="Rechercher un livre"
+                value={this.state.searchValue}
+              />
+            </Item>
+            <View style={{ flexDirection: "row-reverse" }}>
+              <FilterList
+                selectedValue={this.getFilterLabel()}
+                updateValue={this.updaterFilterValue}
+              />
+            </View>
+            <FlatList
+              ListHeaderComponent={this.renderHeader}
+              data={this.props.books}
+              renderItem={({ item }) => this.renderItem(item)}
+              keyExtractor={(item) => `${item.id}`}
+              ItemSeparatorComponent={this.renderSeparator}
+              onRefresh={this.handleRefresh}
+              refreshing={
+                this.props.refreshing !== undefined
+                  ? this.props.refreshing
+                  : false
+              }
+              onEndReached={this.handleLoadMore}
+              onEndReachedThreshold={0.5}
+            />
+          </SafeAreaView>
+        )}
+        <Loader visible={!!this.props.loading} />
         {this.props.errorMessage && (
           <ErrorModal visible message={this.props.errorMessage} />
         )}
-      </SafeAreaView>
+      </>
     );
   }
 }
 
 const mapStateToProps = (state) => {
-  const { books, loading, refreshing, handleMore, page } = state.bookStore;
+  const {
+    books,
+    loading,
+    refreshing,
+    handleMore,
+    page,
+    lastPage,
+  } = state.bookStore;
 
   const { errorMessage } = state.errorMessageStore;
   return {
@@ -236,6 +231,7 @@ const mapStateToProps = (state) => {
     handleMore,
     page,
     errorMessage,
+    lastPage,
   };
 };
 
@@ -265,6 +261,7 @@ LibraryScreen.propTypes = {
   loading: PropTypes.bool,
   refreshing: PropTypes.bool,
   handleMore: PropTypes.bool,
+  lastPage: PropTypes.bool,
   getBooks: PropTypes.func,
 };
 

@@ -2,11 +2,11 @@ import { batchActions } from "redux-batched-actions";
 import { GET_BOOK_LIST } from "../../Utils/ApiUrl";
 import { dispatchError } from "./errorMessageRedux";
 import getAxiosInstance from "../../Utils/axios";
-import { POST_BATCH_UPDATE_USER_ERROR } from "./accountRedux";
 
 const GET_BOOKS_REQUEST = "GET_BOOKS_REQUEST";
 const GET_BOOKS_SUCCESS = "GET_BOOKS_SUCCESS";
 const GET_BOOKS_ERROR = "GET_BOOKS_ERROR";
+const POST_BATCH_GET_BOOKS_ERROR = "POST_BATCH_GET_BOOKS_ERROR";
 
 const getBookRequest = (refreshing, handleMore) => {
   return {
@@ -33,7 +33,7 @@ const getBookError = (messageError) => {
   };
 };
 
-const initialState = [];
+const initialState = { books: [] };
 
 export const getBooks = (
   currentBooks,
@@ -55,7 +55,6 @@ export const getBooks = (
       })
       .then(function (response) {
         setTimeout(() => {
-          console.log(response);
           dispatch(
             getBookSuccess({
               books:
@@ -63,6 +62,9 @@ export const getBooks = (
                   ? response.data.data
                   : [...currentBooks, ...response.data.data],
               page,
+              lastPage:
+                response.data.meta.last_page ===
+                response.data.meta.current_page,
             })
           );
         }, 500);
@@ -71,7 +73,7 @@ export const getBooks = (
         dispatch(
           batchActions(
             [dispatchError(error), getBookError()],
-            POST_BATCH_UPDATE_USER_ERROR
+            POST_BATCH_GET_BOOKS_ERROR
           )
         );
       });
