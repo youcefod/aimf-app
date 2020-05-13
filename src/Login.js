@@ -9,6 +9,7 @@ import { CREDENTIALS_EMPTY_ERROR } from "./Utils/Constants";
 import { dispatchErrorMessage } from "./store/reducers/errorMessageRedux";
 import { login } from "./store/reducers/authenticationRedux";
 import { navigate } from "./Utils/Account";
+import NavigationService from "./Utils/NavigationService";
 
 const styles = StyleSheet.create({
   bodyWrapper: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 150,
     borderRadius: 10,
-    backgroundColor: "#cc9871",
+    backgroundColor: "#cb8347",
   },
   nextButtonText: {
     fontSize: 18,

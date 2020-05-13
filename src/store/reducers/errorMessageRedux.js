@@ -1,6 +1,7 @@
 import { SERVER_ERROR_MESSAGE } from "../../Utils/Constants";
 
 const DISPATCH_ERROR_MESSAGE = "DISPATCH_ERROR_MESSAGE";
+export const DISPATCH_UNAUTHORIZED_ERROR = "DISPATCH_UNAUTHORIZED_ERROR";
 
 export const dispatchErrorMessage = (errorMessage) => {
   return {
@@ -24,6 +25,12 @@ const getErrorMessageFromResponse = (response) => {
 export const dispatchError = (error) => {
   let errorMessage = SERVER_ERROR_MESSAGE;
   if (error.response) {
+    if (error.response.status === 401) {
+      return {
+        type: DISPATCH_UNAUTHORIZED_ERROR,
+        payload: errorMessage,
+      };
+    }
     if (error.response.status < 500 && error.response.status >= 400) {
       if (error.response.data) {
         errorMessage = getErrorMessageFromResponse(error.response);
@@ -42,6 +49,9 @@ export const errorMessageReducer = (state = initialState, action) => {
   switch (action.type) {
     case DISPATCH_ERROR_MESSAGE: {
       return { errorMessage: action.errorMessage };
+    }
+    case DISPATCH_UNAUTHORIZED_ERROR: {
+      return {};
     }
     default: {
       return state;

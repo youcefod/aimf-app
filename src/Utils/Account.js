@@ -30,7 +30,7 @@ export const navigate = (account, navigation, defaultNavigation = "Login") => {
   if (account.user && account.access_token) {
     axios.defaults.headers.Authorization = `Bearer ${account.access_token}`;
 
-    if (isAdmin(account.user)) {
+    if (isAdmin(account.user) || isSuperAdmin(account.user)) {
       navigation.navigate("bottomAdminUserTabNavigator");
     } else if (isMember(account.user)) {
       navigation.navigate("bottomActiveUserTabNavigator");

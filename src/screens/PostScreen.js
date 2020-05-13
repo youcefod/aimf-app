@@ -109,7 +109,7 @@ class PostScreen extends Component {
               buttonStyle={{
                 ...styles.spinnerButton,
                 marginRight: 20,
-                backgroundColor: "#f3aa2329",
+                backgroundColor: "#f6a351",
               }}
               onPress={() => this.sendPost(false)}
               indicatorCount={10}
@@ -124,7 +124,7 @@ class PostScreen extends Component {
             <SpinnerButton
               buttonStyle={{
                 ...styles.spinnerButton,
-                backgroundColor: "#FFD792",
+                backgroundColor: "#cb8347",
               }}
               onPress={() => this.sendPost(true)}
               indicatorCount={10}

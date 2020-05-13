@@ -17,7 +17,7 @@ import {
   isCorrectZipCode,
   getFrDate,
 } from "../Utils/Functions";
-import { styles } from "./ProfileForm/css";
+import styles from "./ProfileForm/css";
 import {
   CREATE_ACTION,
   MARRIED,
@@ -227,7 +227,7 @@ export default class ProfileForm extends Component {
           style={{
             paddingTop: 20,
             opacity: this.props.scrollViewOpacity,
-            backgroundColor: "#f3aa2329",
+            backgroundColor: "#fce3ba",
           }}
         >
           <View>
@@ -295,7 +295,7 @@ export default class ProfileForm extends Component {
               marginRight: 30,
               marginBottom: 15,
             }}
-            tint="#CC9871"
+            tint="#cb8347"
             options={maritalStatusOptions}
             onSelection={(value) => this.setConjugalSituation(value)}
             selectedOption={maritalStatus}
