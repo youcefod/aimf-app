@@ -1,31 +1,51 @@
 import React, { Component } from "react";
 import { ScrollView, View } from "react-native";
 import { Button, Icon, Text, Thumbnail } from "native-base";
-import firebase from "react-native-firebase";
+import * as PropTypes from "prop-types";
 import SpinnerButton from "react-native-spinner-button";
 import InformationsModal from "../../Components/InformationsModal";
 import SettingsSwitch from "../../Components/switch";
-import { LIST_ACTION, MARRIED, FEMALE_GENDER } from "../../Utils/Constants";
+import {
+  LIST_ACTION,
+  MARRIED,
+  FEMALE_GENDER,
+  UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+  ADMIN_ROLE,
+  SUPER_ADMIN_ROLE,
+  MEMBER_ROLE,
+  NEW_MEMBER_ROLE,
+  UPDATE_USER_STATUS_CONFIRM_MESSAGE,
+} from "../../Utils/Constants";
+import { isAdmin, isSuperAdmin, isAuthorized } from "../../Utils/Account";
 
 class ShowUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      informationModalVisible: false,
       confirmUpdateVisible: false,
-      isAuthorized: props.data.isAuthorized,
-      isAdmin: props.data.isAdmin,
+      isAuthorized: isAuthorized(props.data),
+      isSuperAdmin: isSuperAdmin(props.data),
+      isAdmin: isAdmin(props.data),
       confirmMessage: "",
-      updateUserLoadding: false,
+      updateUserLoading: false,
       scrollViewOpacity: 1,
     };
+  }
+
+  componentWillReceiveProps(nextProps): void {
+    this.setState({
+      isAuthorized: isAuthorized(nextProps.data),
+      isSuperAdmin: isSuperAdmin(nextProps.data),
+      isAdmin: isAdmin(nextProps.data),
+    });
   }
 
   setConfirmModalVisible = (visible) => {
     if (!visible) {
       this.setState({
-        isAuthorized: this.props.data.isAuthorized,
-        isAdmin: this.props.data.isAdmin,
+        isAuthorized: isAuthorized(),
+        isSuperAdmin: isSuperAdmin(this.props.data),
+        isAdmin: isAdmin(this.props.data),
       });
     }
     this.setState({
@@ -35,48 +55,190 @@ class ShowUser extends Component {
   };
 
   cancelUpdateEnableAdminFields = () => {
-    this.setState({
-      isAuthorized: this.props.data.isAuthorized,
-      isAdmin: this.props.data.isAdmin,
-    });
     this.setConfirmModalVisible(false);
   };
 
-  updateUser = () => {
-    const thatComponent = this;
+  updateUserRole = () => {
+    const roles = [];
+    if (this.state.isSuperAdmin) {
+      roles.push(SUPER_ADMIN_ROLE);
+    }
+    if (!this.state.isSuperAdmin && this.state.isAdmin) {
+      roles.push(ADMIN_ROLE);
+    }
+    if (!this.state.isAdmin && this.state.isAuthorized) {
+      roles.push(MEMBER_ROLE);
+    }
+
+    if (roles.length === 0) {
+      roles.push(NEW_MEMBER_ROLE);
+    }
     this.setState({
-      updateUserLoadding: true,
+      confirmUpdateVisible: false,
+      scrollViewOpacity: 1,
     });
-    const data = {
-      ...this.props.data,
-      isAuthorized: this.state.isAuthorized,
-      isAdmin: this.state.isAdmin,
-    };
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(this.props.data.id)
-      .set(data)
-      .then(() => {
-        setTimeout(() => {
-          this.setState({
-            updateUserLoadding: false,
-          });
-          this.props.updateState({ userData: data });
-          this.props.updateCard(data);
-          this.setConfirmModalVisible(false);
-        }, 2000);
-      })
-      .catch(function (error) {
-        thatComponent.setState({
-          errorMessage:
-            "Une erreur est survenue lors de la modification de vos informations",
-          updateUserLoadding: false,
-          isAuthorized: thatComponent.props.isAuthorized,
-          isAdmin: thatComponent.props.isAdmin,
-        });
-        thatComponent.setConfirmModalVisible(false);
-      });
+    this.props.updateUserRole(this.props.data.id, roles);
+  };
+
+  renderSeparator = (key) => {
+    return (
+      <View
+        key={key}
+        style={{
+          height: 1,
+          width: "86%",
+          backgroundColor: "#CED0CE",
+          marginLeft: "14%",
+        }}
+      />
+    );
+  };
+
+  getSecurityQuestionBlock = () => {
+    const rows = [];
+    if (this.props.data.securityQuestions.length > 0) {
+      rows.push(
+        <View
+          key="securityQuestions"
+          style={{
+            height: 40,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 15 }}>
+            Les réponses aux questions de sécurité :
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="question1"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[0].question}
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="answer1"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[0].answer}
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="question2"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[1].question}
+          </Text>
+        </View>
+      );
+      rows.push(
+        <View
+          key="answer2"
+          style={{
+            height: 30,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+            {this.props.data.securityQuestions[1].answer}
+          </Text>
+        </View>
+      );
+      rows.push(this.renderSeparator("securityQuestions_separator"));
+    }
+    return rows;
+  };
+
+  getChildrenBlock = () => {
+    const rows = [];
+    if (this.props.data.children.length > 0) {
+      rows.push(
+        <View
+          key="childrens"
+          style={{
+            height: 40,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+          }}
+        >
+          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 15 }}>
+            Les enfants :
+          </Text>
+        </View>
+      );
+      for (let i = 0; i < this.props.data.children.length; i += 1) {
+        rows.push(
+          <View
+            key={`children_year_${i}`}
+            style={{
+              height: 30,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+              Année de naissance
+            </Text>
+            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
+              {this.props.data.children[i].yearOfBirth}
+            </Text>
+          </View>
+        );
+        rows.push(
+          <View
+            key={`children_schoolLevels_${i}`}
+            style={{
+              height: 30,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
+              Année scolaire
+            </Text>
+            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
+              {this.props.data.children[i].schoolLevel}
+            </Text>
+          </View>
+        );
+      }
+      rows.push(this.renderSeparator("children_separator"));
+    }
+
+    return rows;
   };
 
   renderInformation = () => {
@@ -117,87 +279,76 @@ class ShowUser extends Component {
         </View>
       );
 
-      rows.push(
-        <View
-          key={`separator_${row.field}`}
-          style={{
-            height: 1,
-            width: "86%",
-            backgroundColor: "#CED0CE",
-            marginLeft: "14%",
-          }}
-        />
-      );
+      rows.push(this.renderSeparator(`separator_${row.field}`));
     });
 
-    if (this.props.data.childrenNumber > 0) {
-      rows.push(
-        <View
-          key="childrens"
-          style={{
-            height: 40,
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 15 }}>
-            Les enfants :
-          </Text>
-        </View>
-      );
-      for (i = 0; i < this.props.data.childrenNumber; i++) {
-        rows.push(
-          <View
-            key={`separator_${i}`}
-            style={{
-              height: 1,
-              width: "86%",
-              backgroundColor: "#CED0CE",
-              marginLeft: "14%",
+    return rows.concat(
+      this.getSecurityQuestionBlock(),
+      this.getChildrenBlock()
+    );
+  };
+
+  renderUserStatus = () => {
+    if (this.props.currentUserId !== this.props.data.id) {
+      return (
+        <>
+          <SettingsSwitch
+            title="Autorisé"
+            titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+            onValueChange={(value) => {
+              this.setState({
+                isAuthorized: value,
+                confirmMessage: UPDATE_USER_STATUS_CONFIRM_MESSAGE,
+              });
+              this.setConfirmModalVisible(true);
+            }}
+            value={this.state.isAuthorized}
+            trackColor={{
+              true: "#c18b64",
+              false: "#efeff3",
             }}
           />
-        );
-        rows.push(
-          <View
-            key={`children_year_${i}`}
-            style={{
-              height: 30,
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
-              Année de naissance
-            </Text>
-            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
-              {this.props.data.childrenYears[i]}
-            </Text>
-          </View>
-        );
-        rows.push(
-          <View
-            key={`children_schoolLevels_${i}`}
-            style={{
-              height: 30,
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ marginLeft: 14, color: "#3E3E3E", fontSize: 14 }}>
-              Année scolaire
-            </Text>
-            <Text style={{ marginRight: 14, color: "#3E3E3E", fontSize: 14 }}>
-              {this.props.data.schoolLevels[i]}
-            </Text>
-          </View>
-        );
-      }
+          {this.state.isAuthorized && (
+            <SettingsSwitch
+              title="Admin"
+              titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+              onValueChange={(value) => {
+                this.setState({
+                  isAdmin: value,
+                  confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+                });
+                this.setConfirmModalVisible(true);
+              }}
+              value={this.state.isAdmin}
+              trackColor={{
+                true: "#c18b64",
+                false: "#efeff3",
+              }}
+            />
+          )}
+
+          {this.props.isSuperAdmin && this.state.isAdmin && (
+            <SettingsSwitch
+              title="Super Admin"
+              titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
+              onValueChange={(value) => {
+                this.setState({
+                  isSuperAdmin: value,
+                  confirmMessage: UPDATE_ADMIN_ROLE_CONFIRM_MESSAGE,
+                });
+                this.setConfirmModalVisible(true);
+              }}
+              value={this.state.isSuperAdmin}
+              trackColor={{
+                true: "#c18b64",
+                false: "#efeff3",
+              }}
+            />
+          )}
+        </>
+      );
     }
-    return rows;
+    return null;
   };
 
   render() {
@@ -219,9 +370,7 @@ class ShowUser extends Component {
           <Button
             transparent
             onPress={() => {
-              this.props.updateState({
-                action: LIST_ACTION,
-              });
+              this.props.updateAction(LIST_ACTION);
             }}
             style={{ borderRadius: 30, marginLeft: 20, marginBottom: 20 }}
           >
@@ -234,44 +383,12 @@ class ShowUser extends Component {
         </View>
         <Thumbnail source={logo} style={{ marginBottom: 14 }} />
         {this.renderInformation()}
-        <SettingsSwitch
-          title="Autorisé"
-          titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
-          onValueChange={(value) => {
-            this.setState({
-              isAuthorized: value,
-              confirmMessage:
-                "Etes vous sûr de vouloir activer/désactiver cet utilisateur ?",
-            });
-            this.setConfirmModalVisible(true);
-          }}
-          value={this.state.isAuthorized}
-          trackColor={{
-            true: "#c18b64",
-            false: "#efeff3",
-          }}
-        />
-        <SettingsSwitch
-          title="Administrateur"
-          titleStyle={{ marginLeft: -5, color: "#3E3E3E", fontSize: 15 }}
-          onValueChange={(value) => {
-            this.setState({
-              isAdmin: value,
-              confirmMessage:
-                "Etes vous sûr de vouloir changer les droits d'administration pour cet utilisateur ?",
-            });
-            this.setConfirmModalVisible(true);
-          }}
-          value={this.state.isAdmin}
-          trackColor={{
-            true: "#c18b64",
-            false: "#efeff3",
-          }}
-        />
+        {this.renderUserStatus()}
+
         <View style={{ marginBottom: 30 }} />
         <InformationsModal
           visible={this.state.confirmUpdateVisible}
-          setVisible={this.setConfirmModalVisible.bind(this)}
+          setVisible={(visible) => this.setConfirmModalVisible(visible)}
           title="Confirmer la modification"
         >
           <Text style={{ color: "#3E3E3E", marginLeft: 5, marginBottom: 50 }}>
@@ -308,10 +425,10 @@ class ShowUser extends Component {
                 backgroundColor: "#FFD792",
                 marginLeft: 4,
               }}
-              isLoading={this.state.updateUserLoadding}
+              isLoading={this.state.updateUserLoading}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
-              onPress={this.updateUser}
+              onPress={this.updateUserRole}
             >
               <Text>Confirmer</Text>
             </SpinnerButton>
@@ -321,5 +438,13 @@ class ShowUser extends Component {
     );
   }
 }
+
+ShowUser.propTypes = {
+  data: PropTypes.object,
+  updateAction: PropTypes.func,
+  updateUserRole: PropTypes.func,
+  isSuperAdmin: PropTypes.bool,
+  currentUserId: PropTypes.number,
+};
 
 export default ShowUser;
