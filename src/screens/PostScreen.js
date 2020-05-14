@@ -4,11 +4,16 @@ import { Icon, Input, Item, Label } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
 import { connect } from "react-redux";
 import * as PropTypes from "prop-types";
-import { styles } from "./PostScreen/css";
+import styles from "./PostScreen/css";
 import ErrorModal from "../Components/ErrorModal";
 import { dispatchErrorMessage } from "../store/reducers/errorMessageRedux";
 import Loader from "../Components/Loader";
-import { createPost, updatePost } from "../store/reducers/announcementsRedux";
+import {
+  createPost,
+  updatePost,
+  getDraftArticle,
+} from "../store/reducers/articlesRedux";
+import { DRAFT_ARTICLE_STATUS, VALID_ARTICLE_STATUS } from "../Utils/Constants";
 
 class PostScreen extends Component {
   static navigationOptions = {
@@ -19,59 +24,62 @@ class PostScreen extends Component {
     super(props);
     this.state = {
       title: "",
-      text: "",
+      description: "",
     };
   }
 
   componentDidMount() {
-    if (this.props.currentAnnouncement) {
-      const { title, text } = this.props.currentAnnouncement;
-      this.setState({ title, text });
+    if (!this.props.draftArticle) {
+      this.props.getDraftArticle();
+    }
+    if (this.props.draftArticle) {
+      const { title, description } = this.props.draftArticle;
+      this.setState({ title, description });
     }
   }
 
   componentWillReceiveProps(nextProps): void {
     if (this.props.loading && !nextProps.loading && !nextProps.errorMessage) {
       let title = null;
-      let text = null;
-      if (nextProps.currentAnnouncement) {
-        title = nextProps.currentAnnouncement.title;
-        text = nextProps.currentAnnouncement.text;
+      let description = null;
+      if (nextProps.draftArticle) {
+        title = nextProps.draftArticle.title;
+        description = nextProps.draftArticle.description;
       }
-      this.setState({ title, text });
+      this.setState({ title, description });
     }
   }
 
   disabledButtons = () => {
-    return !(this.state.title.trim() && this.state.text.trim());
+    return !(this.state.title.trim() && this.state.description.trim());
   };
 
-  sendPost = (enable) => {
-    const { text, title } = this.state;
+  sendPost = (status) => {
+    const { description, title } = this.state;
 
-    if (!title.trim() || !text.trim()) {
+    if (!title.trim() || !description.trim()) {
       this.props.dispatchErrorMessage(
         "Le titre et le messagde de l'annonce doivent êtres renseignés"
       );
       return;
     }
-    if (this.props.currentAnnouncement) {
-      this.props.updatePost(this.props.currentAnnouncement.id, {
-        enable,
-        text: text.trim(),
+    if (this.props.draftArticle && this.props.draftArticle.id) {
+      this.props.updatePost(this.props.draftArticle.id, {
+        status,
+        description: description.trim(),
         title: title.trim(),
       });
     } else {
       this.props.createPost({
-        enable,
-        text: text.trim(),
+        status,
+        description: description.trim(),
         title: title.trim(),
       });
     }
   };
 
   render() {
-    const { text, title } = this.state;
+    const { description, title } = this.state;
     return (
       <>
         <ScrollView
@@ -99,8 +107,8 @@ class PostScreen extends Component {
               keyboardType="default"
               multiline
               numberOfLines={10}
-              onChangeText={(value) => this.setState({ text: value })}
-              value={text}
+              onChangeText={(value) => this.setState({ description: value })}
+              value={description}
             />
           </Item>
 
@@ -111,7 +119,7 @@ class PostScreen extends Component {
                 marginRight: 20,
                 backgroundColor: "#f6a351",
               }}
-              onPress={() => this.sendPost(false)}
+              onPress={() => this.sendPost(DRAFT_ARTICLE_STATUS)}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
               disabled={this.disabledButtons}
@@ -126,7 +134,7 @@ class PostScreen extends Component {
                 ...styles.spinnerButton,
                 backgroundColor: "#cb8347",
               }}
-              onPress={() => this.sendPost(true)}
+              onPress={() => this.sendPost(VALID_ARTICLE_STATUS)}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
               disabled={this.disabledButtons}
@@ -149,13 +157,13 @@ class PostScreen extends Component {
 
 const mapStateToProps = (state) => {
   const { errorMessage } = state.errorMessageStore;
-  const { loading, currentAnnouncement } = state.announcementStore;
+  const { loading, draftArticle } = state.articleStore;
   const { user } = state.accountStore;
   return {
     errorMessage,
     loading,
     user,
-    currentAnnouncement,
+    draftArticle,
   };
 };
 
@@ -165,15 +173,17 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(dispatchErrorMessage(errorMessage)),
     createPost: (data) => dispatch(createPost(data)),
     updatePost: (id, data) => dispatch(updatePost(id, data)),
+    getDraftArticle: () => dispatch(getDraftArticle()),
   };
 };
 PostScreen.propTypes = {
   errorMessage: PropTypes.string,
   dispatchErrorMessage: PropTypes.func,
   loading: PropTypes.bool,
-  currentAnnouncement: PropTypes.object,
+  draftArticle: PropTypes.object,
   createPost: PropTypes.func,
   updatePost: PropTypes.func,
+  getDraftArticle: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PostScreen);

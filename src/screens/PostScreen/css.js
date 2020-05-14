@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   view: {
     paddingTop: 60,
     textAlign: "center",
@@ -65,3 +65,5 @@ export const styles = StyleSheet.create({
     color: "red",
   },
 });
+
+export default styles;
