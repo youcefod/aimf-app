@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import * as PropTypes from "prop-types";
 import { getFrDate } from "../Utils/Functions";
 import FeedCard from "./HomeScreen/FeedCard";
-import { getAnnouncements } from "../store/reducers/announcementsRedux";
+import { getArticles } from "../store/reducers/articlesRedux";
 import Loader from "../Components/Loader";
 import ErrorModal from "../Components/ErrorModal";
 
@@ -14,7 +14,7 @@ class HomeScreen extends Component {
   };
 
   componentDidMount() {
-    this.props.getAnnouncements([], 1, true);
+    this.props.getArticles([], 1, true);
   }
 
   handleRefresh = () => {
@@ -23,7 +23,7 @@ class HomeScreen extends Component {
       !this.props.handleMore &&
       !this.props.loading
     ) {
-      this.props.getAnnouncements([], 1, true);
+      this.props.getArticles([], 1, true);
     }
   };
 
@@ -34,8 +34,8 @@ class HomeScreen extends Component {
       !this.props.loading &&
       !this.props.lastPage
     ) {
-      this.props.getAnnouncements(
-        this.props.announcements,
+      this.props.getArticles(
+        this.props.articles,
         this.props.page + 1,
         false,
         true
@@ -72,22 +72,22 @@ class HomeScreen extends Component {
     );
   };
 
-  isNewAnnouncement = (announcement) => {
+  isNewArticle = (article) => {
     let now = new Date();
-    const announcementDate = new Date(announcement.date);
+    const articleDate = new Date(article.publishedAt);
     now = new Date(
       `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
     );
-    return announcementDate >= now;
+    return articleDate >= now;
   };
 
   renderItem = (item) => {
     return (
       <FeedCard
         title={item.title}
-        date={getFrDate(new Date(item.date), true)}
-        text={item.text}
-        backgroundColor={this.isNewAnnouncement(item) ? "#ffffff" : "#dadada"}
+        date={getFrDate(new Date(item.publishedAt), true)}
+        description={item.description}
+        backgroundColor={this.isNewArticle(item) ? "#ffffff" : "#dadada"}
       />
     );
   };
@@ -95,9 +95,14 @@ class HomeScreen extends Component {
   render() {
     return (
       <>
-        <SafeAreaView>
+        <SafeAreaView
+          style={{
+            backgroundColor: "#fce3ba",
+            opacity: this.props.loading || this.props.errorMessage ? 0.6 : 1,
+          }}
+        >
           <FlatList
-            data={this.props.announcements}
+            data={this.props.articles}
             renderItem={({ item }) => this.renderItem(item)}
             keyExtractor={(item) => `${item.id}`}
             ItemSeparatorComponent={this.renderSeparator}
@@ -124,15 +129,15 @@ class HomeScreen extends Component {
 const mapStateToProps = (state) => {
   const { errorMessage } = state.errorMessageStore;
   const {
-    announcements,
+    articles,
     loading,
     refreshing,
     handleMore,
     page,
     lastPage,
-  } = state.announcementStore;
+  } = state.articleStore;
   return {
-    announcements,
+    articles,
     loading,
     refreshing,
     handleMore,
@@ -144,20 +149,15 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getAnnouncements: (
-      announcements,
-      page,
-      refreshing = false,
-      handleMore = false
-    ) =>
-      dispatch(getAnnouncements(announcements, page, refreshing, handleMore)),
+    getArticles: (articles, page, refreshing = false, handleMore = false) =>
+      dispatch(getArticles(articles, page, refreshing, handleMore)),
   };
 };
 
 HomeScreen.propTypes = {
   page: PropTypes.number,
-  announcements: PropTypes.array,
-  getAnnouncements: PropTypes.func,
+  articles: PropTypes.array,
+  getArticles: PropTypes.func,
   loading: PropTypes.bool,
   refreshing: PropTypes.bool,
   handleMore: PropTypes.bool,

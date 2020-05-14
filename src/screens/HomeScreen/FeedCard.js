@@ -18,7 +18,7 @@ class FeedCard extends Component {
         </CardItem>
         <CardItem style={{ backgroundColor: this.props.backgroundColor }}>
           <Body>
-            <Text>{this.props.text}</Text>
+            <Text>{this.props.description}</Text>
           </Body>
         </CardItem>
       </Card>
@@ -28,7 +28,7 @@ class FeedCard extends Component {
 
 FeedCard.propTypes = {
   title: PropTypes.string,
-  text: PropTypes.string,
+  description: PropTypes.string,
   date: PropTypes.string,
   backgroundColor: PropTypes.string,
 };

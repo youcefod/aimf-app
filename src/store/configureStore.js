@@ -16,7 +16,7 @@ import {
 import { accountReducer } from "./reducers/accountRedux";
 import { profileReducer } from "./reducers/profileRedux";
 import NavigationService from "../Utils/NavigationService";
-import { announcementReducer } from "./reducers/announcementsRedux";
+import { articleReducer } from "./reducers/articlesRedux";
 
 const persistConfig = {
   key: "root",
@@ -29,7 +29,7 @@ const rootReducer = combineReducers({
   authenticationStore: authenticationReducer,
   accountStore: accountReducer,
   profileStore: profileReducer,
-  announcementStore: announcementReducer,
+  articleStore: articleReducer,
 });
 
 const appReducer = (state, action) => {

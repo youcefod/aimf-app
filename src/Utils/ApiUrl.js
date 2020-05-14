@@ -7,4 +7,5 @@ export const POST_REGISTER_USER_URI = `${API_URL}auth/register`;
 export const POST_RESET_PASSWORD_URI = `${API_URL}auth/reset-password`;
 export const GET_SECURITY_QUESTIONS_URI = `${API_URL}auth/security-questions`;
 export const GET_USERS_URI = `${API_URL}user`;
-export const ANNOUNCEMENTS_URI = `${API_URL}announcement`;
+export const GET_ARTICLES_URI = `${API_URL}article`;
+export const GET_DRAFT_ARTICLE_URI = `${API_URL}article/draft`;
