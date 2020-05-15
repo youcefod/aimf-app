@@ -8,11 +8,10 @@ const styles = StyleSheet.create({
   },
   inputItem: {
     marginBottom: 15,
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginLeft: 30,
+    marginRight: 30,
     paddingHorizontal: 10,
     paddingLeft: 5,
-    width: 300,
     borderRadius: 10,
     height: 45,
     backgroundColor: "#FFF",
@@ -23,11 +22,10 @@ const styles = StyleSheet.create({
   },
   textItem: {
     marginBottom: 15,
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginLeft: 30,
+    marginRight: 30,
     paddingTop: 0,
     paddingLeft: 5,
-    width: 300,
     borderRadius: 10,
     height: 180,
     backgroundColor: "#FFF",
@@ -35,8 +33,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: "bold",
     fontSize: 14,
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginLeft: 30,
     width: 300,
   },
   input: {
@@ -48,6 +45,13 @@ const styles = StyleSheet.create({
     width: 140,
     borderRadius: 10,
     marginTop: 25,
+  },
+
+  uploadPhotoButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 10,
+    backgroundColor: "#f6a351",
   },
 
   buttonText: {

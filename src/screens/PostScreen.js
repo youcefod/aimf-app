@@ -14,6 +14,7 @@ import {
   getDraftArticle,
 } from "../store/reducers/articlesRedux";
 import { DRAFT_ARTICLE_STATUS, VALID_ARTICLE_STATUS } from "../Utils/Constants";
+import ImageUploader from "../Components/ImageUploader";
 
 class PostScreen extends Component {
   static navigationOptions = {
@@ -25,6 +26,7 @@ class PostScreen extends Component {
     this.state = {
       title: "",
       description: "",
+      photo: null,
     };
   }
 
@@ -50,12 +52,16 @@ class PostScreen extends Component {
     }
   }
 
+  updatePhoto = (photo) => {
+    this.setState({ photo });
+  };
+
   disabledButtons = () => {
     return !(this.state.title.trim() && this.state.description.trim());
   };
 
   sendPost = (status) => {
-    const { description, title } = this.state;
+    const { description, title, photo } = this.state;
 
     if (!title.trim() || !description.trim()) {
       this.props.dispatchErrorMessage(
@@ -68,6 +74,7 @@ class PostScreen extends Component {
         status,
         description: description.trim(),
         title: title.trim(),
+        uri: photo && photo.uri,
       });
     } else {
       this.props.createPost({
@@ -98,6 +105,15 @@ class PostScreen extends Component {
               value={title}
             />
           </Item>
+          <Label style={styles.label}>Photo intervenant</Label>
+          <ImageUploader
+            style={{ marginBottom: 15, marginLeft: 30, flexDirection: "row" }}
+            updatePhoto={(value) => this.updatePhoto(value)}
+            photo={this.state.photo}
+            imageStyle={{ width: 60, height: 60 }}
+            buttonStyle={styles.uploadPhotoButton}
+            iconStyle={styles.buttonIcon}
+          />
           <Label style={styles.label}>Message*</Label>
           <Item rounded style={styles.textItem}>
             <TextInput
@@ -112,7 +128,13 @@ class PostScreen extends Component {
             />
           </Item>
 
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginBottom: 70,
+            }}
+          >
             <SpinnerButton
               buttonStyle={{
                 ...styles.spinnerButton,
