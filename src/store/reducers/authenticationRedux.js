@@ -6,16 +6,15 @@ import {
 } from "../../Utils/ApiUrl";
 import getAxiosInstance from "../../Utils/axios";
 import { dispatchError } from "./errorMessageRedux";
-import { clearStoreAccount, storeAccount } from "./accountRedux";
+import { storeAccount } from "./accountRedux";
 import getRandomQuestionIndex from "../../Components/ProfileForm/Functions";
 
 const POST_REQUEST = "POST_REQUEST";
 const POST_LOGIN_SUCCESS = "POST_LOGIN_SUCCESS";
-const POST_LOGOUT_SUCCESS = "POST_LOGOUT_SUCCESS";
+export const POST_LOGOUT_SUCCESS = "POST_LOGOUT_SUCCESS";
 const POST_LOGIN_ERROR = "POST_LOGIN_ERROR";
 const POST_BATCH_LOGIN_ERROR = "POST_BATCH_LOGIN_ERROR";
 const POST_BATCH_LOGIN_SUCCESS = "POST_BATCH_LOGIN_SUCCESS";
-const POST_BATCH_LOGOUT_SUCCESS = "POST_BATCH_LOGOUT_SUCCESS";
 
 const GET_QUESTIONS_ERROR = "GET_QUESTIONS_ERROR";
 const GET_QUESTIONS_SUCCESS = "GET_QUESTIONS_SUCCESS";
@@ -129,12 +128,7 @@ export const logout = () => {
     getAxiosInstance()
       .post(POST_LOGOUT_URI, {})
       .then(function () {
-        dispatch(
-          batchActions(
-            [clearStoreAccount(), postLogoutSuccess()],
-            POST_BATCH_LOGOUT_SUCCESS
-          )
-        );
+        dispatch(postLogoutSuccess());
       })
       .catch(function (error) {
         dispatch(

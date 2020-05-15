@@ -1,7 +1,7 @@
 import { SERVER_ERROR_MESSAGE } from "../../Utils/Constants";
 
 const DISPATCH_ERROR_MESSAGE = "DISPATCH_ERROR_MESSAGE";
-const DISPATCH_UNAUTHORIZED_ERROR = "DISPATCH_UNAUTHORIZED_ERROR";
+export const DISPATCH_UNAUTHORIZED_ERROR = "DISPATCH_UNAUTHORIZED_ERROR";
 
 export const dispatchErrorMessage = (errorMessage) => {
   return {

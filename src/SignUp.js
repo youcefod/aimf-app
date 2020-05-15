@@ -8,7 +8,7 @@ import { CREATE_ACTION } from "./Utils/Constants";
 import ProfileForm from "./Components/ProfileForm";
 import { register } from "./store/reducers/profileRedux";
 import { dispatchErrorMessage } from "./store/reducers/errorMessageRedux";
-import navigate from "./Utils/Account";
+import { navigate } from "./Utils/Account";
 import checkFormValues from "./Components/ProfileForm/Validate";
 import { getQuestions } from "./store/reducers/authenticationRedux";
 
