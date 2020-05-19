@@ -1,219 +1,223 @@
-import React, {Component} from "react";
-import firebase from "react-native-firebase";
+import React, { Component } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
+import { connect } from "react-redux";
+import * as PropTypes from "prop-types";
 import ShowProfile from "./ProfileScreen/ShowProfile";
 import ProfileForm from "../Components/ProfileForm";
-import {getFrDate, getDateFromFr, getFullName} from "../Utils/Functions";
-import {SHOW_ACTION, UPDATE_ACTION} from "../Utils/Constants";
-import {checkFormValues} from "../Components/ProfileForm/Validate";
-import {ActivityIndicator, Text, View} from "react-native";
+import { getFullName, getIsoDate } from "../Utils/Functions";
+import { SHOW_ACTION, UPDATE_ACTION } from "../Utils/Constants";
 import ErrorModal from "../Components/ErrorModal";
+import { logout } from "../store/reducers/authenticationRedux";
+import { dispatchErrorMessage } from "../store/reducers/errorMessageRedux";
+import checkFormValues from "../Components/ProfileForm/Validate";
+import {
+  updateCurrentUser,
+  updateAction,
+} from "../store/reducers/profileRedux";
 import Loader from "../Components/Loader";
 
 class ProfileScreen extends Component {
-    static navigationOptions = {
-        header: null
+  static navigationOptions = {
+    header: null,
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      gender: null,
+      maritalStatus: null,
+      email: "",
+      oldPassword: "",
+      password: "",
+      confirmPassword: "",
+      lastName: "",
+      fatherName: "",
+      middleName: "",
+      firstName: "",
+      birthday: new Date(),
+      zipCode: "",
+      phoneNumber: "",
+      childrenNumber: 0,
+      functionName: "",
+      children: [],
     };
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            kind: null,
-            conjugalSituation: null,
-            email: "",
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-            lastname: "",
-            brother: "",
-            maidename: "",
-            firstname: "",
-            birthDate: new Date(),
-            zipCode: "",
-            phoneNumber: "",
-            numberOfChildren: 0,
-            fonction: '',
-            childrenYears: [],
-            schoolLevels: [],
-            action: SHOW_ACTION,
-            modalVisible: false,
-            errorMessage: '',
-            loading: false,
-        };
+  componentDidMount() {
+    const { user } = this.props.account;
+    if (user) {
+      const { state } = this;
+      user.functionName = user.function;
+      user.childrenNumber = (user.children && `${user.children.length}`) || "0";
+      this.setState({ ...state, ...user, initData: user });
+    }
+  }
+
+  componentDidUpdate() {
+    if (!this.props.account.user) {
+      this.props.navigation.navigate("Login");
+    }
+  }
+
+  getDataFromState = () => {
+    const {
+      gender,
+      maritalStatus,
+      email,
+      oldPassword,
+      password,
+      confirmPassword,
+      lastName,
+      fatherName,
+      middleName,
+      firstName,
+      birthday,
+      zipCode,
+      phoneNumber,
+      childrenNumber,
+      functionName,
+      children,
+    } = this.state;
+    children.slice(0, childrenNumber);
+    return {
+      gender,
+      maritalStatus,
+      lastName,
+      fatherName,
+      middleName,
+      firstName,
+      birthday,
+      zipCode,
+      phoneNumber,
+      childrenNumber,
+      email,
+      oldPassword,
+      password,
+      confirmPassword,
+      functionName,
+      children,
+    };
+  };
+
+  onSubmit = () => {
+    const data = { ...this.getDataFromState(true), action: UPDATE_ACTION };
+    const error = checkFormValues(data);
+    if (error) {
+      this.props.dispatchErrorMessage(error);
+      return;
     }
 
-    componentDidMount() {
-        const currentUser = firebase.auth().currentUser;
-        this.setState({currentUser});
-        firebase.firestore().collection("users")
-            .doc(currentUser._user.uid)
-            .get()
-            .then(doc => {
-                const data = doc.data();
-                data.birthDate = getDateFromFr(data.birthDate);
-                this.setState({...this.state, ...data, initData: data});
-            });
+    const {
+      gender,
+      maritalStatus,
+      lastName,
+      fatherName,
+      middleName,
+      firstName,
+      birthday,
+      zipCode,
+      phoneNumber,
+      functionName,
+      children,
+      oldPassword,
+      password,
+      confirmPassword,
+    } = data;
 
+    this.props.updateCurrentUser(this.props.account.user.id, {
+      gender,
+      maritalStatus,
+      lastName,
+      fatherName,
+      middleName,
+      firstName,
+      birthday: getIsoDate(birthday),
+      zipCode,
+      phoneNumber,
+      function: functionName,
+      children,
+      oldPassword,
+      newPassword: password,
+      passwordConfirmation: confirmPassword,
+    });
+  };
+
+  render() {
+    const data = this.getDataFromState();
+    if (this.state.email) {
+      return (
+        <>
+          {this.props.action === SHOW_ACTION ? (
+            <ShowProfile
+              gender={this.state.gender}
+              fullName={getFullName(this.state)}
+              updateAction={(value) => this.props.updateAction(value)}
+              logout={() => this.props.logout()}
+            />
+          ) : (
+            <ProfileForm
+              scrollViewOpacity={
+                this.props.loading || this.props.errorMessage ? 0.6 : 1
+              }
+              action={UPDATE_ACTION}
+              data={data}
+              initData={this.state.initData}
+              navigation={this.props.navigation}
+              updateAction={(value) => this.props.updateAction(value)}
+              updateState={(state) => this.setState(state)}
+              onSubmit={() => this.onSubmit()}
+            />
+          )}
+          {this.props.errorMessage && (
+            <ErrorModal visible message={this.props.errorMessage} />
+          )}
+          <Loader visible={!!this.props.loading} />
+        </>
+      );
     }
-
-    setModalVisible(visible) {
-        this.setState({modalVisible: visible});
-    }
-
-    updateAction(action) {
-        this.setState({action: action});
-    }
-
-    reauthenticate = (currentPassword) => {
-        const user = firebase.auth().currentUser;
-        const credential = firebase.auth.EmailAuthProvider.credential(
-            user.email, currentPassword);
-        return user.reauthenticateWithCredential(credential);
-    }
-
-    updatePassword = (newPassword, currentPassword) => {
-        const thatComponent = this;
-        this.reauthenticate(currentPassword).then(() => {
-            const user = firebase.auth().currentUser;
-            user.updatePassword(newPassword).then(() => {
-                this.setState({action: SHOW_ACTION, loading: false});
-            }).catch((error) => {
-                thatComponent.setState({
-                    errorMessage: 'Une erreur est survenue lors de la modification de mot de passe',
-                    loading: false
-                });
-                thatComponent.setModalVisible(true);
-            });
-        }).catch((error) => {
-            thatComponent.setState({errorMessage: 'L\'ancien mot de passe est incorrect', loading: false});
-            thatComponent.setModalVisible(true);
-        });
-    }
-    onSubmit = () => {
-        const error = checkFormValues(this.state);
-        if (error) {
-            this.setState({errorMessage: error});
-            this.setModalVisible(true);
-            return;
-        }
-        const thatComponent = this;
-        this.setState({loading: true});
-        const {
-            lastname,
-            brother,
-            maidename,
-            firstname,
-            kind,
-            conjugalSituation,
-            birthDate,
-            zipCode,
-            phoneNumber,
-            numberOfChildren,
-            childrenYears,
-            schoolLevels,
-            fonction,
-            isAuthorized,
-            isAdmin,
-            newPassword,
-            currentPassword,
-            confirmPassword,
-        } = this.state;
-        childrenYears.slice(0, numberOfChildren);
-        schoolLevels.slice(0, numberOfChildren);
-
-        firebase
-            .firestore()
-            .collection("users")
-            .doc(this.state.currentUser.uid)
-            .set({
-                kind: kind,
-                conjugalSituation: conjugalSituation,
-                email: email.trim().toLowerCase(),
-                lastname: lastname.trim(),
-                brother: brother.trim(),
-                maidename: maidename.trim().toLowerCase(),
-                firstname: firstname.trim().toLowerCase(),
-                birthDate: getFrDate(birthDate),
-                zipCode: zipCode,
-                phoneNumber: phoneNumber,
-                numberOfChildren: numberOfChildren,
-                childrenYears: childrenYears,
-                schoolLevels: schoolLevels,
-                fonction: fonction,
-                isAuthorized: isAuthorized,
-                isAdmin: isAdmin,
-            })
-            .then(() => {
-                setTimeout(() => {
-                    if (newPassword && confirmPassword) {
-                        this.updatePassword(newPassword, currentPassword);
-                    } else {
-                        this.setState({action: SHOW_ACTION, loading: false});
-                    }
-                }, 2000);
-            }).catch(function (error) {
-            thatComponent.setState({
-                errorMessage: 'Une erreur est survenue lors de la modification de vos informations',
-                loading: false
-            });
-            thatComponent.setModalVisible(true);
-        });
-
-        return;
-    }
-
-    render() {
-        const data = {
-            kind,
-            conjugalSituation,
-            email,
-            currentPassword,
-            newPassword,
-            confirmPassword,
-            lastname,
-            brother,
-            maidename,
-            firstname,
-            birthDate,
-            zipCode,
-            phoneNumber,
-            numberOfChildren,
-            fonction,
-            childrenYears,
-            schoolLevels,
-            action,
-        } = this.state;
-
-        if (this.state.email) {
-            return (
-                this.state.action === SHOW_ACTION ?
-                    <ShowProfile kind={this.state.kind} fullName={getFullName(this.state)}
-                                 updateAction={this.updateAction.bind(this)}/> :
-                    <>
-                        <ProfileForm
-                            scrollViewOpacity={this.state.loading || this.state.modalVisible ? 0.6 : 1}
-                            action={UPDATE_ACTION}
-                            data={data}
-                            initData={this.state.initData}
-                            navigation={this.props.navigation}
-                            updateState={this.setState.bind(this)}
-                            onSubmit={this.onSubmit.bind(this)}
-                        />
-                        <ErrorModal visible={this.state.modalVisible} setVisible={this.setModalVisible.bind(this)}
-                                    message={this.state.errorMessage}/>
-                        <Loader visible={this.state.loading}/>
-                    </>
-            );
-        } else
-            return (
-                <View style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    <Text>Chargement</Text>
-                    <ActivityIndicator size="large"/>
-                </View>);
-    }
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text>Chargement</Text>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 }
 
-export default ProfileScreen;
+const mapStateToProps = (state) => {
+  const { errorMessage } = state.errorMessageStore;
+  const { action } = state.profileStore;
+  return {
+    errorMessage,
+    action,
+    account: state.accountStore,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => dispatch(logout()),
+    updateCurrentUser: (id, data) => dispatch(updateCurrentUser(id, data)),
+    updateAction: (action) => dispatch(updateAction(action)),
+    dispatchErrorMessage: (errorMessage) =>
+      dispatch(dispatchErrorMessage(errorMessage)),
+  };
+};
+
+ProfileScreen.propTypes = {
+  account: PropTypes.object,
+  navigation: PropTypes.object,
+  logout: PropTypes.func,
+  errorMessage: PropTypes.string,
+  dispatchErrorMessage: PropTypes.func,
+  updateCurrentUser: PropTypes.func,
+  updateAction: PropTypes.func,
+  loading: PropTypes.bool,
+  action: PropTypes.string,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen);

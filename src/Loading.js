@@ -1,28 +1,22 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import firebase from "react-native-firebase";
+import { connect } from "react-redux";
+import * as PropTypes from "prop-types";
+import { navigate } from "./Utils/Account";
 
-export default class Loading extends Component {
-  
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+class Loading extends React.Component {
   componentDidMount() {
-
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-          firebase.firestore().collection("users")
-              .doc(user._user.uid)
-              .get()
-              .then(doc => {
-                  const navigation = doc.data().isAuthorized ? 'bottomActiveUserTabNavigator' : 'bottomUnActiveUserTabNavigator';
-                  this.props.navigation.navigate(doc.data().isAdmin ? 'bottomAdminUserTabNavigator' : navigation);
-              });
-      }
-      else {
-        this.props.navigation.navigate('Login');
-        //this.props.navigation.navigate('bottomActiveUserTabNavigator');
-        
-      }
-    });
+    navigate(this.props.account, this.props.navigation);
   }
+
   render() {
     return (
       <View style={styles.container}>
@@ -33,10 +27,15 @@ export default class Loading extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
-});
+const mapStateToProps = (state) => {
+  return {
+    account: state.accountStore,
+  };
+};
+
+Loading.propTypes = {
+  account: PropTypes.object,
+  navigation: PropTypes.object,
+};
+
+export default connect(mapStateToProps, null)(Loading);

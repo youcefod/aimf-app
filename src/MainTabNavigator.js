@@ -1,12 +1,12 @@
 import React from "react";
 import {
   createStackNavigator,
-  createBottomTabNavigator
+  createBottomTabNavigator,
 } from "react-navigation";
 
-import { Icon  } from "native-base";
-import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
-import icoMoonConfig from '../config/icons/selection.json';
+import { Icon } from "native-base";
+import { createIconSetFromIcoMoon } from "react-native-vector-icons";
+import icoMoonConfig from "../config/icons/selection.json";
 
 import HomeScreen from "./screens/HomeScreen";
 import PostScreen from "./screens/PostScreen";
@@ -16,34 +16,39 @@ import Khatma from "./screens/KoranScreen/Khatma"
 import ProfileScreen from "./screens/ProfileScreen";
 import UserScreen from "./screens/UserScreen";
 import UnaccessibleScreen from "./screens/UnaccessibleScreen";
+
 const CustomIcon = createIconSetFromIcoMoon(icoMoonConfig);
 // ----------------------------------------------HomeScreen-----------------------------------------------------
 const HomeStack = createStackNavigator({
-  Timeline: HomeScreen
+  Timeline: HomeScreen,
 });
-
 
 HomeStack.navigationOptions = {
   tabBarLabel: "Accueil",
   tabBarIcon: ({ focused }) => (
-      <CustomIcon name="minaret" size={25} color={"#000"}/>
-  )
+    <CustomIcon name="minaret" size={25} color="#000" />
+  ),
 };
 
 const disableHomeStack = createStackNavigator({
-  Timeline: UnaccessibleScreen
+  Timeline: UnaccessibleScreen,
 });
 
 disableHomeStack.navigationOptions = {
   tabBarLabel: "Accueil",
   tabBarIcon: ({ focused }) => (
-      <CustomIcon style={{opacity : 0.5}} name="minaret" size={25} color={"#000"}/>
-  )
+    <CustomIcon
+      style={{ opacity: 0.5 }}
+      name="minaret"
+      size={25}
+      color="#000"
+    />
+  ),
 };
 
 // ----------------------------------------------PostWorkflowScreen-----------------------------------------------------
 const PostWorkflowStack = createStackNavigator({
-  PostWorkflow: PostScreen
+  PostWorkflow: PostScreen,
 });
 
 PostWorkflowStack.navigationOptions = {
@@ -55,26 +60,26 @@ PostWorkflowStack.navigationOptions = {
       style={{ fontSize: 23, marginBottom: -3 }}
       color={focused ? "#2f95dc" : "#ccc"}
     />
-  )
+  ),
 };
 
 // ----------------------------------------------KoranScreen-----------------------------------------------------
 const navOptionHandler = (nafigation) => ({
-  header: null
-})
+  header: null,
+});
 
 const KoranStack = createStackNavigator({
   KoranTimeLine: {
     screen: KoranScreen,
-    navigationOptions: navOptionHandler
+    navigationOptions: navOptionHandler,
   },
   AddKhatma: {
     screen: AddKhatma,
-    navigationOptions: navOptionHandler
+    navigationOptions: navOptionHandler,
   },
   Khatma: {
     screen: Khatma,
-    navigationOptions: navOptionHandler
+    navigationOptions: navOptionHandler,
   },
 });
 
@@ -82,25 +87,24 @@ const KoranStack = createStackNavigator({
 KoranStack.navigationOptions = {
   tabBarLabel: "Coran",
   tabBarIcon: ({ focused }) => (
-      <CustomIcon name="coran" size={25} color={"#000"}/>
-  )
+    <CustomIcon name="coran" size={25} color="#000" />
+  ),
 };
 
-
 const disableKoranStack = createStackNavigator({
-  Koran: UnaccessibleScreen
+  Koran: UnaccessibleScreen,
 });
 
 disableKoranStack.navigationOptions = {
   tabBarLabel: "Coran",
   tabBarIcon: ({ focused }) => (
-      <CustomIcon name="coran" style={{opacity : 0.5}} size={25} color={"#000"}/>
-  )
+    <CustomIcon name="coran" style={{ opacity: 0.5 }} size={25} color="#000" />
+  ),
 };
 
 // ----------------------------------------------ProfileScreen-----------------------------------------------------
 const ProfileStack = createStackNavigator({
-  Profile: ProfileScreen
+  Profile: ProfileScreen,
 });
 
 ProfileStack.navigationOptions = {
@@ -112,59 +116,58 @@ ProfileStack.navigationOptions = {
       color={focused ? "#2f95dc" : "#ccc"}
       style={{ fontSize: 35, marginBottom: -3 }}
     />
-  )
+  ),
 };
 
 // ----------------------------------------------UserScreen-----------------------------------------------------
 const UserStack = createStackNavigator({
-  User: UserScreen
+  User: UserScreen,
 });
 
 UserStack.navigationOptions = {
   tabBarLabel: "User",
   tabBarIcon: ({ focused }) => (
-      <Icon
-          type="FontAwesome5"
-          name="user-check"
-          color={focused ? "#2f95dc" : "#ccc"}
-          style={{ marginBottom: -3, fontSize: 18 }}
-      />
-  )
+    <Icon
+      type="FontAwesome5"
+      name="user-check"
+      color={focused ? "#2f95dc" : "#ccc"}
+      style={{ marginBottom: -3, fontSize: 18 }}
+    />
+  ),
 };
 
 export const bottomActiveUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
-  ProfileStack
+  ProfileStack,
 });
 
-export const bottomUnActiveUserTabNavigator =
-    createBottomTabNavigator({
-      disableHomeStack,
-      disableKoranStack,
-      ProfileStack
-    },
-    {
-      defaultNavigationOptions: {
-        tabBarOnPress: ({ navigation, defaultHandler }) => {
-          if (
-              navigation.state.routeName === "disableHomeStack" ||
-              navigation.state.routeName === "disableKoranStack"
-          ) {
-            return null;
-          }
-          defaultHandler();
-        },
+export const bottomUnActiveUserTabNavigator = createBottomTabNavigator(
+  {
+    disableHomeStack,
+    disableKoranStack,
+    ProfileStack,
+  },
+  {
+    defaultNavigationOptions: {
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        if (
+          navigation.state.routeName === "disableHomeStack" ||
+          navigation.state.routeName === "disableKoranStack"
+        ) {
+          return null;
+        }
+        defaultHandler();
       },
-      initialRouteName : "ProfileStack"});
+    },
+    initialRouteName: "ProfileStack",
+  }
+);
 
 export const bottomAdminUserTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
   PostWorkflowStack,
   UserStack,
-  ProfileStack
+  ProfileStack,
 });
-
-
-
