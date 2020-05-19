@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator, SafeAreaView } from "react-native";
+import { View, FlatList, SafeAreaView } from "react-native";
 import { connect } from "react-redux";
 import * as PropTypes from "prop-types";
-import { getFrDate } from "../Utils/Functions";
+import { getDateFromIso, isoDateToFr } from "../Utils/Functions";
 import FeedCard from "./HomeScreen/FeedCard";
 import { getArticles } from "../store/reducers/articlesRedux";
 import Loader from "../Components/Loader";
@@ -56,28 +56,10 @@ class HomeScreen extends Component {
     );
   };
 
-  renderFooter = () => {
-    if (!this.props.loading) return null;
-    return (
-      <View
-        style={{
-          marginBottom: 100,
-          paddingVertical: 20,
-          borderTopWidth: 1,
-          borderColor: "#CED0CE",
-        }}
-      >
-        <ActivityIndicator animating size="large" />
-      </View>
-    );
-  };
-
   isNewArticle = (article) => {
+    const articleDate = getDateFromIso(article.publishedAt);
     let now = new Date();
-    const articleDate = new Date(article.publishedAt);
-    now = new Date(
-      `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
-    );
+    now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     return articleDate >= now;
   };
 
@@ -85,7 +67,7 @@ class HomeScreen extends Component {
     return (
       <FeedCard
         title={item.title}
-        date={getFrDate(new Date(item.publishedAt), true)}
+        date={isoDateToFr(item.publishedAt)}
         description={item.description}
         backgroundColor={this.isNewArticle(item) ? "#ffffff" : "#dadada"}
       />
@@ -106,13 +88,8 @@ class HomeScreen extends Component {
             renderItem={({ item }) => this.renderItem(item)}
             keyExtractor={(item) => `${item.id}`}
             ItemSeparatorComponent={this.renderSeparator}
-            ListFooterComponent={this.renderFooter}
             onRefresh={this.handleRefresh}
-            refreshing={
-              this.props.refreshing !== undefined
-                ? this.props.refreshing
-                : false
-            }
+            refreshing={false}
             onEndReached={this.handleLoadMore}
             onEndReachedThreshold={0.5}
           />

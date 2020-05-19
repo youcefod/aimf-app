@@ -134,11 +134,7 @@ class UserScreen extends Component {
               ItemSeparatorComponent={this.renderSeparator}
               ListFooterComponent={this.renderFooter}
               onRefresh={this.handleRefresh}
-              refreshing={
-                this.props.refreshing !== undefined
-                  ? this.props.refreshing
-                  : false
-              }
+              refreshing={false}
               onEndReached={this.handleLoadMore}
               onEndReachedThreshold={0.5}
             />
