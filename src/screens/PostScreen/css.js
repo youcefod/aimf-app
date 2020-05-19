@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   view: {
     paddingTop: 60,
     textAlign: "center",
@@ -8,11 +8,10 @@ export const styles = StyleSheet.create({
   },
   inputItem: {
     marginBottom: 15,
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginLeft: 30,
+    marginRight: 30,
     paddingHorizontal: 10,
     paddingLeft: 5,
-    width: 300,
     borderRadius: 10,
     height: 45,
     backgroundColor: "#FFF",
@@ -23,11 +22,10 @@ export const styles = StyleSheet.create({
   },
   textItem: {
     marginBottom: 15,
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginLeft: 30,
+    marginRight: 30,
     paddingTop: 0,
     paddingLeft: 5,
-    width: 300,
     borderRadius: 10,
     height: 180,
     backgroundColor: "#FFF",
@@ -35,8 +33,7 @@ export const styles = StyleSheet.create({
   label: {
     fontWeight: "bold",
     fontSize: 14,
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginLeft: 30,
     width: 300,
   },
   input: {
@@ -65,3 +62,5 @@ export const styles = StyleSheet.create({
     color: "red",
   },
 });
+
+export default styles;

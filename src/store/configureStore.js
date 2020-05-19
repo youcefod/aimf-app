@@ -15,8 +15,9 @@ import {
 } from "./reducers/authenticationRedux";
 import { accountReducer } from "./reducers/accountRedux";
 import { profileReducer } from "./reducers/profileRedux";
-import { liveVideoReducer } from "./reducers/liveVideoRedux";
 import NavigationService from "../Utils/NavigationService";
+import { articleReducer } from "./reducers/articlesRedux";
+import { liveVideoReducer } from "./reducers/liveVideoRedux";
 
 const persistConfig = {
   key: "root",
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   authenticationStore: authenticationReducer,
   accountStore: accountReducer,
   profileStore: profileReducer,
+  articleStore: articleReducer,
   liveVideoStore: liveVideoReducer,
 });
 

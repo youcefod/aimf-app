@@ -50,3 +50,6 @@ export const SUPER_ADMIN_ROLE = "superadmin";
 export const ADMIN_ROLE = "admin";
 export const MEMBER_ROLE = "member";
 export const NEW_MEMBER_ROLE = "new_member";
+
+export const DRAFT_ARTICLE_STATUS = "draft";
+export const PUBLISHED_ARTICLE_STATUS = "published";
