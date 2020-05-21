@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "refresh:env": "rm -rf node_modules && rm -rf android/.gradle && rm -rf android/app/build && yarn install",
+    "refresh:env": "rm -rf node_modules && rm -rf android/.gradle && rm -rf android/app/build && yarn install && npx jetify",
     "test": "jest"
   },
   "rnpm": {

@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { ScrollView, PixelRatio, Dimensions, Text, View } from "react-native";
 import YouTube from "react-native-youtube";
 
-import { API_KEY } from "react-native-dotenv";
+import { Thumbnail } from "native-base";
+import * as PropTypes from "prop-types";
+import { connect } from "react-redux";
 import styles from "./YouTubeScreen/css";
 
 class YouTubeScreen extends Component {
@@ -22,12 +24,13 @@ class YouTubeScreen extends Component {
   }
 
   render() {
+    const logo = require("../../assets/images/tamejida_47.jpg");
     return (
       <ScrollView style={styles.container}>
         <YouTube
           ref={this.youTubeRef}
-          apiKey={API_KEY}
-          videoId="mddmc_a9Rlw"
+          apiKey="apiKey"
+          videoId={this.props.video && this.props.video.youtube_id}
           play={this.state.isPlaying}
           loop={this.state.isLooping}
           fullscreen={false}
@@ -41,13 +44,48 @@ class YouTubeScreen extends Component {
             styles.player,
           ]}
         />
-        <View style={{ marginTop: 30, marginLeft: 30, marginRight: 30 }}>
-          <Text style={{ fontSize: 16 }}>
-            شبابنا و وسائل التواصل الإجتماعي ـ الشيخ محمد بن عيسى
+        <View
+          style={{
+            margin: 25,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ width: "80%" }}>
+            <Text style={{ fontSize: 17, fontWeight: "bold" }}>
+              {this.props.video && this.props.video.title}
+            </Text>
+          </View>
+          <View style={{ marginLeft: 10 }}>
+            <Thumbnail source={logo} />
+            <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+              Tamejida 47
+            </Text>
+          </View>
+        </View>
+        <View
+          style={{
+            margin: 25,
+          }}
+        >
+          <Text style={{ fontSize: 16}}>
+            {this.props.video && this.props.video.description}
           </Text>
         </View>
       </ScrollView>
     );
   }
 }
-export default YouTubeScreen;
+
+const mapStateToProps = (state) => {
+  const { video } = state.liveVideoStore;
+  return {
+    video,
+  };
+};
+
+YouTubeScreen.propTypes = {
+  video: PropTypes.object,
+};
+
+export default connect(mapStateToProps, null)(YouTubeScreen);
