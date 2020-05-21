@@ -1,154 +1,144 @@
 import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator, SafeAreaView } from "react-native";
-import {getFrDate} from "../Utils/Functions";
-import FeedCard from "../Components/FeedCard";
-import firebase from "react-native-firebase";
+import { View, FlatList, SafeAreaView } from "react-native";
+import { connect } from "react-redux";
+import * as PropTypes from "prop-types";
+import { getDateFromIso, isoDateToFr } from "../Utils/Functions";
+import FeedCard from "./HomeScreen/FeedCard";
+import { getArticles } from "../store/reducers/articlesRedux";
+import Loader from "../Components/Loader";
+import ErrorModal from "../Components/ErrorModal";
 
 class HomeScreen extends Component {
-    static navigationOptions = {
-        header: null
-    };
-    constructor(props) {
-        super(props);
+  static navigationOptions = {
+    header: null,
+  };
 
-        this.state = {
-            loading: true,
-            announcements: [],
-            page: 1,
-            lastVisible: null,
-            refreshing: false
-        };
+  componentDidMount() {
+    this.props.getArticles([], 1, true);
+  }
+
+  handleRefresh = () => {
+    if (
+      !this.props.refreshing &&
+      !this.props.handleMore &&
+      !this.props.loading
+    ) {
+      this.props.getArticles([], 1, true);
     }
+  };
 
-    componentDidMount() {
-        this.loadAnnouncements();
+  handleLoadMore = () => {
+    if (
+      !this.props.refreshing &&
+      !this.props.handleMore &&
+      !this.props.loading &&
+      !this.props.lastPage
+    ) {
+      this.props.getArticles(
+        this.props.articles,
+        this.props.page + 1,
+        false,
+        true
+      );
     }
+  };
 
-    loadAnnouncements = () => {
-        this.setState({ loading: true });
-        const that = this;
-        let query = firebase
-            .firestore()
-            .collection("announcements")
-            .where('enable', '==', true)
-            .orderBy('date', 'desc');
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: "86%",
+          backgroundColor: "#CED0CE",
+          marginLeft: "14%",
+        }}
+      />
+    );
+  };
 
-        if (that.state.lastVisible) {
-            query = query.startAfter(that.state.lastVisible);
-        }
+  isNewArticle = (article) => {
+    const articleDate = getDateFromIso(article.publishedAt);
+    let now = new Date();
+    now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return articleDate >= now;
+  };
 
-        query
-            .limit(5)
-            .get()
-            .then(announcements => {
-                if (announcements.docs.length > 0) {
-                    that.setState({lastVisible : announcements.docs[announcements.docs.length-1]});
-                }
-                setTimeout(() => {
-                    const data = [];
-                    announcements.forEach(function (doc) {
-                        const row = doc.data();
-                        row.id = doc.id;
-                        data.push(row) ;
-                    });
-                that.setState({
-                    announcements: that.state.page === 1 ? data : [...that.state.announcements, ...data],
-                    loading: false,
-                    refreshing: false});
-                            }, 2000);
+  renderItem = (item) => {
+    return (
+      <FeedCard
+        title={item.title}
+        date={isoDateToFr(item.publishedAt)}
+        description={item.description}
+        backgroundColor={this.isNewArticle(item) ? "#ffffff" : "#dadada"}
+      />
+    );
+  };
 
-            })
-            .catch(error => {
-                this.setState({ error, loading: false, refreshing: false });
-            });
-
-    };
-
-    handleRefresh = () => {
-        this.setState(
-            {
-                page: 1,
-                refreshing: true,
-                lastVisible: null
-            },
-            () => {
-                this.loadAnnouncements();
-            }
-        );
-    };
-
-    handleLoadMore = () => {
-        this.setState(
-            {
-                page: this.state.page + 1
-            },
-            () => {
-                this.loadAnnouncements();
-            }
-        );
-    };
-
-    renderSeparator = () => {
-        return (
-            <View
-                style={{
-                    height: 1,
-                    width: "86%",
-                    backgroundColor: "#CED0CE",
-                    marginLeft: "14%"
-                }}
-            />
-        );
-    };
-
-    renderFooter = () => {
-        if (!this.state.loading) return null;
-        return (
-            <View
-                style={{
-                    marginBottom: 100,
-                    paddingVertical: 20,
-                    borderTopWidth: 1,
-                    borderColor: "#CED0CE"
-                }}
-            >
-                <ActivityIndicator animating size="large" />
-            </View>
-        );
-    };
-    isNewAnnouncement =(announcement) => {
-        const now = new Date();
-        const today = new Date(now.getFullYear() + '-' +  ((parseInt(now.getMonth().toString()) + 1) + '').
-        padStart(2, "0") + '-' +  now.getDate().toString().padStart(2, "0") + 'T00:00:00');
-        return announcement.date.toDate() >= today;
-    }
-    renderItem = item => {
-        return (
-            <FeedCard
-                title={item.title}
-                date={getFrDate(item.date.toDate(), true)}
-                text={item.text}
-                backgroundColor={this.isNewAnnouncement(item) ? "#ffffff" : "#dadada"}
-            />
-        );
-    }
-    render() {
-        return (
-            <SafeAreaView >
-                <FlatList
-                    data={this.state.announcements}
-                    renderItem={({ item }) => this.renderItem(item)}
-                    keyExtractor={item => item.id}
-                    ItemSeparatorComponent={this.renderSeparator}
-                    ListFooterComponent={this.renderFooter}
-                    onRefresh={this.handleRefresh}
-                    refreshing={this.state.refreshing}
-                    onEndReached={this.handleLoadMore}
-                    onEndReachedThreshold={1}
-                />
-            </SafeAreaView>
-        );
-    }
+  render() {
+    return (
+      <>
+        <SafeAreaView
+          style={{
+            backgroundColor: "#fce3ba",
+            opacity: this.props.loading || this.props.errorMessage ? 0.6 : 1,
+          }}
+        >
+          <FlatList
+            data={this.props.articles}
+            renderItem={({ item }) => this.renderItem(item)}
+            keyExtractor={(item) => `${item.id}`}
+            ItemSeparatorComponent={this.renderSeparator}
+            onRefresh={this.handleRefresh}
+            refreshing={false}
+            onEndReached={this.handleLoadMore}
+            onEndReachedThreshold={0.5}
+          />
+        </SafeAreaView>
+        <Loader visible={!!this.props.loading} />
+        {this.props.errorMessage && (
+          <ErrorModal visible message={this.props.errorMessage} />
+        )}
+      </>
+    );
+  }
 }
 
-export default HomeScreen;
+const mapStateToProps = (state) => {
+  const { errorMessage } = state.errorMessageStore;
+  const {
+    articles,
+    loading,
+    refreshing,
+    handleMore,
+    page,
+    lastPage,
+  } = state.articleStore;
+  return {
+    articles,
+    loading,
+    refreshing,
+    handleMore,
+    page,
+    errorMessage,
+    lastPage,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getArticles: (articles, page, refreshing = false, handleMore = false) =>
+      dispatch(getArticles(articles, page, refreshing, handleMore)),
+  };
+};
+
+HomeScreen.propTypes = {
+  page: PropTypes.number,
+  articles: PropTypes.array,
+  getArticles: PropTypes.func,
+  loading: PropTypes.bool,
+  refreshing: PropTypes.bool,
+  handleMore: PropTypes.bool,
+  lastPage: PropTypes.bool,
+  errorMessage: PropTypes.string,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

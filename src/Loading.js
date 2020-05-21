@@ -1,51 +1,40 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { connect } from "react-redux";
+import * as PropTypes from "prop-types";
+import NavigationService from "./Utils/NavigationService";
+import { navigate } from "./Utils/Account";
 import firebase from "react-native-firebase";
 import Notifications from "./services/Notifications";
 
-export default class Loading extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            user: null,
-            tokenCreated: false,
-        };
-    }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
+class Loading extends React.Component {
   componentDidMount() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-          new Notifications(this.onRegister.bind(this));
-          if (!this.state.user) {
-            this.setState({user: user});
-          }
-          firebase.firestore().collection("users")
-              .doc(user._user.uid)
-              .get()
-              .then(doc => {
-                  const navigation = doc.data().isAuthorized ? 'bottomActiveUserTabNavigator' : 'bottomNotActiveUserTabNavigator';
-                  this.props.navigation.navigate(doc.data().isAdmin ? 'bottomAdminUserTabNavigator' : navigation);
-              });
-      }
-      else {
-        this.props.navigation.navigate('Login');
-      }
-    });
+    NavigationService.setInstance(this.props.navigation);
+    navigate(this.props.account, this.props.navigation);
+      //new Notifications(this.onRegister.bind(this));
   }
 
-  saveDeviceToken(token, userRefecrence) {
-      firebase
-          .firestore()
-          .collection("deviceToken")
-          .add({
-              value: token,
-              user: userRefecrence
-          })
-          .then(() => {
-          })
-          .catch(error => {
-          });
-  }
+    saveDeviceToken(token, userRefecrence) {
+        firebase
+            .firestore()
+            .collection("deviceToken")
+            .add({
+                value: token,
+                user: userRefecrence
+            })
+            .then(() => {
+            })
+            .catch(error => {
+            });
+    }
 
     onRegister(token) {
         if (!this.state.tokenCreated) {
@@ -76,10 +65,15 @@ export default class Loading extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
-});
+const mapStateToProps = (state) => {
+  return {
+    account: state.accountStore,
+  };
+};
+
+Loading.propTypes = {
+  account: PropTypes.object,
+  navigation: PropTypes.object,
+};
+
+export default connect(mapStateToProps, null)(Loading);

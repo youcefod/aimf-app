@@ -1,198 +1,179 @@
 import React, { Component } from "react";
 import { Text, View, TextInput, ScrollView } from "react-native";
-import firebase from "react-native-firebase";
-import {Icon, Input, Item, Label} from "native-base";
+import { Icon, Input, Item, Label } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
-import {styles} from "./PostScreen/css";
-import {DRAFT_ANNONCE_ID} from "../Utils/Constants";
+import { connect } from "react-redux";
+import * as PropTypes from "prop-types";
+import styles from "./PostScreen/css";
 import ErrorModal from "../Components/ErrorModal";
-export default class PostScreen extends React.Component {
+import { dispatchErrorMessage } from "../store/reducers/errorMessageRedux";
+import Loader from "../Components/Loader";
+import { savePost, getDraftArticle } from "../store/reducers/articlesRedux";
+import { DRAFT_ARTICLE_STATUS, PUBLISHED_ARTICLE_STATUS } from "../Utils/Constants";
+
+class PostScreen extends Component {
   static navigationOptions = {
-    header: null
+    header: null,
   };
+
   constructor(props) {
     super(props);
-      _isMounted = false;
-      this.state = {
-          title: '',
-          text: '',
-          saveSpinner: false,
-          sendSpinner: false,
-          modalVisible: false,
-          errorMessage: ''
-      };
-      this.setModalVisible = this.setModalVisible.bind(this);
+    this.state = {
+      title: "",
+      description: "",
+    };
   }
-    componentDidMount() {
-      if (!this._isMounted) {
-        this.setDraftAnnouncement();
+
+  componentDidMount() {
+    this.props.getDraftArticle();
+    if (this.props.draftArticle && this.props.draftArticle.title) {
+      const { title, description } = this.props.draftArticle;
+      this.setState({ title, description });
+    }
+  }
+
+  componentWillReceiveProps(nextProps): void {
+    if (this.props.loading && !nextProps.loading && !nextProps.errorMessage) {
+      let title = null;
+      let description = null;
+      if (nextProps.draftArticle && nextProps.draftArticle.title) {
+        title = nextProps.draftArticle.title;
+        description = nextProps.draftArticle.description;
       }
-        this._isMounted = true;
+      this.setState({ title, description });
     }
+  }
 
-    componentWillUnmount() {
-        this._isMounted = false;
+  disabledButtons = () => {
+    return !(this.state.title.trim() && this.state.description.trim());
+  };
+
+  savePost = (status) => {
+    const { description, title } = this.state;
+
+    if (!title.trim() || !description.trim()) {
+      this.props.dispatchErrorMessage(
+        "Le titre et le messagde de l'annonce doivent êtres renseignés"
+      );
+      return;
     }
+    this.props.savePost({
+      status,
+      description: description.trim(),
+      title: title.trim(),
+    });
+  };
 
-    setModalVisible(visible) {
-        this.setState({modalVisible: visible});
-    }
-    setDraftAnnouncement = () => {
-        const that = this;
-        firebase.firestore().collection("announcements")
-            .doc(DRAFT_ANNONCE_ID)
-            .get()
-            .then(doc => {
-                if (doc.data()) {
-                    that.setState({text: doc.data().text, title: doc.data().title})
-                }
-            });
-    };
-
-    disabledButtons = () => {
-        return !(this.state.title.trim() && this.state.text.trim());
-    };
-
-    sendPost = () => {
-        const {text, title} = this.state;
-
-        if (!title.trim() || !text.trim()) {
-            this.setState({errorMessage: 'Le titre et le messagde de l\'annonce doivent êtres renseignés',
-                           modalVisible: true});
-            return;
-        }
-
-        if (text && title) {
-            this.setState({sendSpinner: true});
-            firebase
-                .firestore()
-                .collection("announcements")
-                .add({
-                    enable: true,
-                    text: text,
-                    title: title.trim(),
-                    date: new Date(),
-                    user: '/users/' + firebase.auth().currentUser.uid
-                })
-                .then(() => {
-                    if (this._isMounted) {
-                        this.notif.localNotif();
-                        this.setState({sendSpinner: false});
-                        this.setState({title: '', text: ''});
-                        this.savePost(false);
-                    }
-                })
-                .catch(error => {
-                    if (this._isMounted) {
-                        this.setState({sendSpinner: false});
-                    }
-                });
-        }
-    };
-
-    savePost = (saveSpinner = true) => {
-        const {text, title} = this.state;
-
-        if (text && title) {
-            this.setState({saveSpinner: saveSpinner});
-            firebase
-                .firestore()
-                .collection("announcements")
-                .doc(DRAFT_ANNONCE_ID)
-                .set({
-                    enable: false,
-                    text: text,
-                    title: title.trim(),
-                    date: new Date(),
-                    user: '/users/' + firebase.auth().currentUser.uid
-                })
-                .then(() => {
-                    if (this._isMounted) {
-                        this.setState({saveSpinner: false});
-                    }
-                })
-                .catch(error => {
-                    if (this._isMounted) {
-                        this.setState({saveSpinner: false});
-                    }
-                });
-        }
-    };
   render() {
-  const {text, title, saveSpinner, sendSpinner} = this.state;
-      const viewOpacity = this.state.modalVisible ? 0.5 : 1;
-    return <>
-            <ScrollView style={{...styles.view, opacity: viewOpacity}}>
-        <Label
-            style={styles.label}
-        >Titre*</Label>
-        <Item
-            rounded
-            style={styles.inputItem}
+    const { description, title } = this.state;
+    return (
+      <>
+        <ScrollView
+          style={{
+            ...styles.view,
+            opacity: this.props.loading || this.props.errorMessage ? 0.6 : 1,
+          }}
         >
-
+          <Label style={styles.label}>Titre*</Label>
+          <Item rounded style={styles.inputItem}>
             <Input
-                style={styles.input}
-                autoCapitalize="characters"
-                keyboardType="default"
-                onChangeText={title => this.setState({title})}
-                value={title}
+              style={styles.input}
+              autoCapitalize="characters"
+              keyboardType="default"
+              onChangeText={(value) => this.setState({ title: value })}
+              value={title}
             />
-
-        </Item>
-        <Label
-            style={styles.label}
-        >Message*</Label>
-        <Item rounded
-              style={styles.textItem}
-        >
+          </Item>
+          <Label style={styles.label}>Message*</Label>
+          <Item rounded style={styles.textItem}>
             <TextInput
-                style={styles.textInput}
-                textAlignVertical="top"
-                autoCapitalize="characters"
-                keyboardType="default"
-                multiline
-                numberOfLines={10}
-                onChangeText={text => this.setState({text})}
-                value={text}
+              style={styles.textInput}
+              textAlignVertical="top"
+              autoCapitalize="characters"
+              keyboardType="default"
+              multiline
+              numberOfLines={10}
+              onChangeText={(value) => this.setState({ description: value })}
+              value={description}
             />
+          </Item>
 
-        </Item>
-
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginBottom: 70,
+            }}
+          >
             <SpinnerButton
-                buttonStyle={{...styles.spinnerButton, marginRight: 20, backgroundColor: "#f3aa2329"}}
-                isLoading={saveSpinner}
-                onPress={this.savePost}
-                indicatorCount={10}
-                spinnerType="SkypeIndicator"
-                disabled={this.disabledButtons}
+              buttonStyle={{
+                ...styles.spinnerButton,
+                marginRight: 20,
+                backgroundColor: "#f6a351",
+              }}
+              onPress={() => this.savePost(DRAFT_ARTICLE_STATUS)}
+              indicatorCount={10}
+              spinnerType="SkypeIndicator"
+              disabled={this.disabledButtons}
             >
-                 <Text style={styles.buttonText}>
-                     <Icon style={styles.buttonIcon}
-                     name="save" type="Foundation"/>
-                     {'   '}Enregistrer</Text>
+              <Text style={styles.buttonText}>
+                <Icon style={styles.buttonIcon} name="save" type="Foundation" />
+                {"   "}Enregistrer
+              </Text>
             </SpinnerButton>
             <SpinnerButton
-                buttonStyle={{...styles.spinnerButton, backgroundColor: "#FFD792"}}
-                isLoading={sendSpinner}
-                onPress={this.sendPost}
-                indicatorCount={10}
-                spinnerType="SkypeIndicator"
-                disabled={this.disabledButtons}
+              buttonStyle={{
+                ...styles.spinnerButton,
+                backgroundColor: "#cb8347",
+              }}
+              onPress={() => this.savePost(PUBLISHED_ARTICLE_STATUS)}
+              indicatorCount={10}
+              spinnerType="SkypeIndicator"
+              disabled={this.disabledButtons}
             >
-                <Text style={styles.buttonText}>
-                    <Icon style={styles.buttonIcon}
-                          name="send"/>
-                    {'   '}Poster</Text>
+              <Text style={styles.buttonText}>
+                <Icon style={styles.buttonIcon} name="send" />
+                {"   "}Poster
+              </Text>
             </SpinnerButton>
-            </View>
-    </ScrollView>
-        <ErrorModal
-            visible={this.state.modalVisible}
-            setVisible={this.setModalVisible}
-            message={this.state.errorMessage}/>
-           </>;
+          </View>
+        </ScrollView>
+        {this.props.errorMessage && (
+          <ErrorModal visible message={this.props.errorMessage} />
+        )}
+        <Loader visible={!!this.props.loading} />
+      </>
+    );
   }
 }
+
+const mapStateToProps = (state) => {
+  const { errorMessage } = state.errorMessageStore;
+  const { loading, draftArticle } = state.articleStore;
+  const { user } = state.accountStore;
+  return {
+    errorMessage,
+    loading,
+    user,
+    draftArticle,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    dispatchErrorMessage: (errorMessage) =>
+      dispatch(dispatchErrorMessage(errorMessage)),
+    savePost: (data) => dispatch(savePost(data)),
+    getDraftArticle: () => dispatch(getDraftArticle()),
+  };
+};
+PostScreen.propTypes = {
+  errorMessage: PropTypes.string,
+  dispatchErrorMessage: PropTypes.func,
+  loading: PropTypes.bool,
+  draftArticle: PropTypes.object,
+  savePost: PropTypes.func,
+  getDraftArticle: PropTypes.func,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostScreen);
