@@ -168,7 +168,6 @@ class Khatma extends Component {
   render() {
     const { toggleUserToReadList, toggleUserReadList, isOpen } = this.state;
     const { koranStore, khatma, userToReadList, account } = this.props;
-    const date = getFormatedDate(khatma.beginAt);
     const numberOfToRead = userToReadList.length;
     const koranListe = koranStore.koranListe.data;
 
@@ -185,7 +184,7 @@ class Khatma extends Component {
         <Container>
           <CostumHeader
             title="Khatmat"
-            subtile={date}
+            subtile={getFormatedDate(khatma.beginAt)}
             isHome={false}
             navigation={this.props.navigation}
             validate={this.validateUserChoise}

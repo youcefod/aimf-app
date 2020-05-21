@@ -112,7 +112,12 @@ class KoranScreen extends Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: loading ? "#f7f7f7" : gray3 }}>
-        <NavigationEvents onDidFocus={() => dispatch(ayncReceiveKhatma())} />
+        <NavigationEvents
+          onDidFocus={() => {
+            dispatch(ayncReceiveKhatma());
+            dispatch(asyncReceiveUserKhatma());
+          }}
+        />
         <Container>
           <CostumHeader title="Mon Espace Khatma" isHome />
           <ScrollView scrollEventThrottle={16}>
@@ -120,7 +125,7 @@ class KoranScreen extends Component {
               <Text style={styles.textHeader}>Mes Prochaines Khatma</Text>
             </View>
             {loading && (
-              <View style={{ flex: 1, justifyContent: "center" }}>
+              <View style={{ flex: 1, justifyContent: "center", marginTop: 5 }}>
                 <ActivityIndicator animating size="small" />
               </View>
             )}
@@ -187,7 +192,7 @@ function mapStateToProps(state) {
 
   const khatmaHistory = Object.values(state.khatmaStore.userKhatma).filter(
     (khatma) => {
-      return !khatma.isOpen;
+      return !khatma.isOpen && khatma.userTakharoubts.length > 0;
     }
   );
 

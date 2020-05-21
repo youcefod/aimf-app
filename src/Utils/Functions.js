@@ -1,3 +1,28 @@
+const MONTHS = [
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+];
+
+const DAYS = [
+  "Dimanche",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+];
+
 export const isCorrectName = (name) => {
   return !!(
     !name ||
@@ -51,43 +76,17 @@ export const getApiDate = (dateMillseconde) => {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
-export const getFormatedDate = (dateMillseconde) => {
-  const d = new Date(dateMillseconde);
-  const year = d.getFullYear(); // 2019
-  const date = d.getDate(); // 23
+export const getFormatedDate = (apiDate) => {
+  let date = null;
+  if (typeof apiDate === "number") {
+    date = new Date(apiDate);
+  } else {
+    date = new Date(`${apiDate.substring(0, 10)}T${apiDate.substring(11, 20)}`);
+  }
 
-  const months = [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ];
-
-  const days = [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi",
-  ];
-
-  const monthIndex = d.getMonth();
-  const monthName = months[monthIndex];
-
-  const dayIndex = d.getDay();
-  const dayName = days[dayIndex];
-
-  return `${dayName} ${date} ${monthName} ${year}`;
+  return `${DAYS[date.getDay()]} ${date.getDate()} ${
+    MONTHS[date.getMonth()]
+  } ${date.getFullYear()}`;
 };
 
 export const getDateFromFr = (frDate) => {
