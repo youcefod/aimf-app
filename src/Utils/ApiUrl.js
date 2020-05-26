@@ -9,3 +9,4 @@ export const GET_SECURITY_QUESTIONS_URI = `${API_URL}auth/security-questions`;
 export const GET_USERS_URI = `${API_URL}user`;
 export const GET_ARTICLES_URI = `${API_URL}article`;
 export const GET_DRAFT_ARTICLE_URI = `${API_URL}article/draft`;
+export const GET_LIVE_VIDEO_URI = `${API_URL}youtube/live-video`;
