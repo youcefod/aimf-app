@@ -45,59 +45,49 @@ const styles = StyleSheet.create({
 
 const CustomIcon = createIconSetFromIcoMoon(icoMoonConfig);
 
-// eslint-disable-next-line react/prefer-stateless-function
-class HistoryItem extends Component {
-  render() {
-    const {
-      title,
-      numberOfPicks,
-      numberOfRead,
-      navigate,
-      loading,
-    } = this.props;
-
-    return (
-      <View style={styles.cardConatiner}>
-        <TouchableOpacity onPress={navigate} disabled={loading}>
-          <View
-            style={{
-              height: 60,
-              borderWidth: 0.5,
-              borderColor: "#dddddd",
-              borderRadius: 0.5,
-              backgroundColor: loading ? "#f7f7f7" : white,
-            }}
-          >
-            <View style={styles.row}>
-              <CustomIcon
-                style={styles.iconContainer}
-                name="coranOpen"
-                size={45}
-                color={black}
-              />
-              <View style={{ flex: 3 }}>
-                <Text style={styles.textHeader}>{title}</Text>
-                <Text style={styles.textDetails}>
-                  Vous avez dans cette Khatma
+export default function HistoryItem(props) {
+  const { title, numberOfPicks, numberOfRead, navigate, loading } = props;
+  return (
+    <View style={styles.cardConatiner}>
+      <TouchableOpacity onPress={navigate} disabled={loading}>
+        <View
+          style={{
+            height: 60,
+            borderWidth: 0.5,
+            borderColor: "#dddddd",
+            borderRadius: 0.5,
+            backgroundColor: loading ? "#f7f7f7" : white,
+          }}
+        >
+          <View style={styles.row}>
+            <CustomIcon
+              style={styles.iconContainer}
+              name="coranOpen"
+              size={45}
+              color={black}
+            />
+            <View style={{ flex: 3 }}>
+              <Text style={styles.textHeader}>{title}</Text>
+              <Text style={styles.textDetails}>
+                Vous avez dans cette Khatma
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.textInfo}>
+                  Sélectionné: {numberOfPicks}
                 </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={styles.textInfo}>
-                    Sélectionné: {numberOfPicks}
-                  </Text>
-                  <Text style={styles.textInfo}>Lu: {numberOfRead}</Text>
-                </View>
+                <Text style={styles.textInfo}>Lu: {numberOfRead}</Text>
               </View>
             </View>
           </View>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 HistoryItem.propTypes = {
@@ -107,5 +97,3 @@ HistoryItem.propTypes = {
   loading: PropTypes.bool,
   navigate: PropTypes.func,
 };
-
-export default HistoryItem;

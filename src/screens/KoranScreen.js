@@ -4,16 +4,15 @@ import { connect } from "react-redux";
 import {
   View,
   FlatList,
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
+  RefreshControl,
 } from "react-native";
-import { NavigationEvents } from "react-navigation";
 import { Container, Fab, Icon } from "native-base";
 import PropTypes from "prop-types";
 import CostumHeader from "../Components/KoranScreen/CostumHeader";
-import { getFormatedDate } from "../Utils/Functions";
+import { formatDateWithDayAndMonthName } from "../Utils/Functions";
 import KoranItem from "../Components/KoranScreen/KoranItem";
 import {
   ayncReceiveKhatma,
@@ -47,6 +46,12 @@ class KoranScreen extends Component {
     this.state = { active: false };
   }
 
+  onRefresh = () => {
+    const { dispatch } = this.props;
+    dispatch(ayncReceiveKhatma());
+    dispatch(asyncReceiveUserKhatma());
+  };
+
   componentDidMount = () => {
     const { dispatch } = this.props;
     dispatch(ayncReceiveKhatma());
@@ -56,7 +61,7 @@ class KoranScreen extends Component {
 
   renderKoranItem = ({ item }) => {
     const { navigation, loading } = this.props;
-    const date = getFormatedDate(item.beginAt);
+    const date = formatDateWithDayAndMonthName(item.beginAt);
     let numberofPartDispo = 0;
 
     // eslint-disable-next-line array-callback-return
@@ -79,7 +84,7 @@ class KoranScreen extends Component {
 
   renderHistoryItem = ({ item }) => {
     const { navigation, loading } = this.props;
-    const date = getFormatedDate(item.beginAt);
+    const date = formatDateWithDayAndMonthName(item.beginAt);
     const numberOfPicks = item.userTakharoubts.length;
     let numberOfRead = 0;
 
@@ -102,33 +107,25 @@ class KoranScreen extends Component {
   };
 
   render() {
-    const {
-      khatmaHistory,
-      openKhatma,
-      loading,
-      account,
-      dispatch,
-    } = this.props;
+    const { khatmaHistory, openKhatma, loading, account } = this.props;
 
     return (
       <View style={{ flex: 1, backgroundColor: loading ? "#f7f7f7" : gray3 }}>
-        <NavigationEvents
-          onDidFocus={() => {
-            dispatch(ayncReceiveKhatma());
-            dispatch(asyncReceiveUserKhatma());
-          }}
-        />
         <Container>
           <CostumHeader title="Mon Espace Khatma" isHome />
-          <ScrollView scrollEventThrottle={16}>
+          <ScrollView
+            scrollEventThrottle={16}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={this.onRefresh}
+                title="Chargement..."
+              />
+            }
+          >
             <View style={{ marginTop: 10, paddingHorizontal: 10 }}>
               <Text style={styles.textHeader}>Mes Prochaines Khatma</Text>
             </View>
-            {loading && (
-              <View style={{ flex: 1, justifyContent: "center", marginTop: 5 }}>
-                <ActivityIndicator animating size="small" />
-              </View>
-            )}
             <View style={{ flex: 1 }}>
               {openKhatma.length === 0 && (
                 <View style={{ marginTop: 10, paddingHorizontal: 15 }}>

@@ -40,3 +40,127 @@ export const FEMALE_GENDER = "female";
 
 export const SERVER_ERROR_MESSAGE =
   "Une erreur est survenue, merci de réessayer ultérieurement";
+
+export const MONTHS = [
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+];
+
+export const DAYS = [
+  "Dimanche",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+];
+
+export const THAKHAROUBTS = [
+  {
+    id: 1,
+    name: "El Bakara",
+    order: 1,
+    pickedTimes: 0,
+  },
+  {
+    id: 2,
+    name: "Al Imraan - Ennisaa",
+    order: 2,
+    pickedTimes: 0,
+  },
+  {
+    id: 3,
+    name: "El Maida - El Anaam",
+    order: 3,
+    pickedTimes: 0,
+  },
+  {
+    id: 4,
+    name: "El aaraf - El anfal",
+    order: 4,
+    pickedTimes: 0,
+  },
+  {
+    id: 5,
+    name: "Et attawba - Houd",
+    order: 5,
+    pickedTimes: 0,
+  },
+  {
+    id: 6,
+    name: "Youcef - El hIdjr",
+    order: 6,
+    pickedTimes: 0,
+  },
+  {
+    id: 7,
+    name: "El nahl - El Kahf",
+    order: 7,
+    pickedTimes: 0,
+  },
+  {
+    id: 8,
+    name: "Maryem - El hadj",
+    order: 8,
+    pickedTimes: 0,
+  },
+  {
+    id: 9,
+    name: "El mouminoun - Echouaraa",
+    order: 9,
+    pickedTimes: 0,
+  },
+  {
+    id: 10,
+    name: "Enaml - Essajda",
+    order: 10,
+    pickedTimes: 0,
+  },
+  {
+    id: 11,
+    name: "El hazab - Essafat",
+    order: 11,
+    pickedTimes: 0,
+  },
+  {
+    id: 12,
+    name: "Saad - Foussilat",
+    order: 12,
+    pickedTimes: 0,
+  },
+  {
+    id: 13,
+    name: "Echouraa - El kital",
+    order: 13,
+    pickedTimes: 0,
+  },
+  {
+    id: 14,
+    name: "El fatah - El kamar",
+    order: 14,
+    pickedTimes: 0,
+  },
+  {
+    id: 15,
+    name: "Errahman - Ettahrim",
+    order: 15,
+    pickedTimes: 0,
+  },
+  {
+    id: 16,
+    name: "El moulk - El khatima",
+    order: 16,
+    pickedTimes: 0,
+  },
+];

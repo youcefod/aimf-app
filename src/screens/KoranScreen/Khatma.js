@@ -19,7 +19,7 @@ import {
   saveUserReads,
   updateKhatma,
 } from "../../store/reducers/khatmaRedux";
-import { getFormatedDate } from "../../Utils/Functions";
+import { formatDateWithDayAndMonthName } from "../../Utils/Functions";
 import { gray3, black } from "../../Utils/colors";
 import { isAdmin } from "../../Utils/Account";
 
@@ -184,7 +184,7 @@ class Khatma extends Component {
         <Container>
           <CostumHeader
             title="Khatmat"
-            subtile={getFormatedDate(khatma.beginAt)}
+            subtile={formatDateWithDayAndMonthName(khatma.beginAt)}
             isHome={false}
             navigation={this.props.navigation}
             validate={this.validateUserChoise}

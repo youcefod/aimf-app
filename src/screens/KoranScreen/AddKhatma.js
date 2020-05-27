@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import CostumHeader from "../../Components/KoranScreen/CostumHeader";
 import { gray3, black, white } from "../../Utils/colors";
 import { ayncSaveKhatma } from "../../store/reducers/khatmaRedux";
-import { getFormatedDate } from "../../Utils/Functions";
+import { formatDateWithDayAndMonthName } from "../../Utils/Functions";
 
 const styles = StyleSheet.compose({
   container: {
@@ -29,12 +29,12 @@ const styles = StyleSheet.compose({
 class AddKhatma extends Component {
   constructor(props) {
     super(props);
-    this.state = { chosenDate: null };
+    this.state = { chosenDate: 0 };
     this.setDate = this.setDate.bind(this);
   }
 
   setDate(newDate) {
-    this.setState({ chosenDate: Date.parse(newDate) });
+    this.setState({ chosenDate: newDate });
   }
 
   addKhatma = () => {
@@ -47,7 +47,7 @@ class AddKhatma extends Component {
   alertAddKhetma = (event) => {
     event.preventDefault();
     const { chosenDate } = this.state;
-    const date = chosenDate ? getFormatedDate(chosenDate) : null;
+    const date = chosenDate ? formatDateWithDayAndMonthName(chosenDate) : null;
 
     // eslint-disable-next-line no-unused-expressions
     chosenDate

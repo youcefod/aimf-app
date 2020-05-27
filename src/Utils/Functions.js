@@ -1,27 +1,4 @@
-const MONTHS = [
-  "Janvier",
-  "Février",
-  "Mars",
-  "Avril",
-  "Mai",
-  "Juin",
-  "Juillet",
-  "Août",
-  "Septembre",
-  "Octobre",
-  "Novembre",
-  "Décembre",
-];
-
-const DAYS = [
-  "Dimanche",
-  "Lundi",
-  "Mardi",
-  "Mercredi",
-  "Jeudi",
-  "Vendredi",
-  "Samedi",
-];
+import { DAYS, MONTHS, THAKHAROUBTS } from "./Constants";
 
 export const isCorrectName = (name) => {
   return !!(
@@ -65,7 +42,7 @@ export const getIsoDate = (date) => {
   return date;
 };
 
-export const getApiDate = (dateMillseconde) => {
+export const formatDateAsApiDate = (dateMillseconde) => {
   const d = new Date(dateMillseconde);
   const year = d.getFullYear(); // 2019
   const month = `${parseInt(d.getMonth().toString(), 10) + 1}`.padStart(2, "0"); // 12
@@ -76,9 +53,9 @@ export const getApiDate = (dateMillseconde) => {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
-export const getFormatedDate = (apiDate) => {
+export const formatDateWithDayAndMonthName = (apiDate) => {
   let date = null;
-  if (typeof apiDate === "number") {
+  if (typeof apiDate === "number" || typeof apiDate === "object") {
     date = new Date(apiDate);
   } else {
     date = new Date(`${apiDate.substring(0, 10)}T${apiDate.substring(11, 20)}`);
@@ -107,108 +84,11 @@ export const formatKhatma = (id, beginAt, isOpen) => {
     id,
     beginAt,
     isOpen,
-    takharoubts: [
-      {
-        id: 1,
-        name: "El Bakara",
-        order: 1,
-        pickedTimes: 0,
-      },
-      {
-        id: 2,
-        name: "Al Imraan - Ennisaa",
-        order: 2,
-        pickedTimes: 0,
-      },
-      {
-        id: 3,
-        name: "El Maida - El Anaam",
-        order: 3,
-        pickedTimes: 0,
-      },
-      {
-        id: 4,
-        name: "El aaraf - El anfal",
-        order: 4,
-        pickedTimes: 0,
-      },
-      {
-        id: 5,
-        name: "Et attawba - Houd",
-        order: 5,
-        pickedTimes: 0,
-      },
-      {
-        id: 6,
-        name: "Youcef - El hIdjr",
-        order: 6,
-        pickedTimes: 0,
-      },
-      {
-        id: 7,
-        name: "El nahl - El Kahf",
-        order: 7,
-        pickedTimes: 0,
-      },
-      {
-        id: 8,
-        name: "Maryem - El hadj",
-        order: 8,
-        pickedTimes: 0,
-      },
-      {
-        id: 9,
-        name: "El mouminoun - Echouaraa",
-        order: 9,
-        pickedTimes: 0,
-      },
-      {
-        id: 10,
-        name: "Enaml - Essajda",
-        order: 10,
-        pickedTimes: 0,
-      },
-      {
-        id: 11,
-        name: "El hazab - Essafat",
-        order: 11,
-        pickedTimes: 0,
-      },
-      {
-        id: 12,
-        name: "Saad - Foussilat",
-        order: 12,
-        pickedTimes: 0,
-      },
-      {
-        id: 13,
-        name: "Echouraa - El kital",
-        order: 13,
-        pickedTimes: 0,
-      },
-      {
-        id: 14,
-        name: "El fatah - El kamar",
-        order: 14,
-        pickedTimes: 0,
-      },
-      {
-        id: 15,
-        name: "Errahman - Ettahrim",
-        order: 15,
-        pickedTimes: 0,
-      },
-      {
-        id: 16,
-        name: "El moulk - El khatima",
-        order: 16,
-        pickedTimes: 0,
-      },
-    ],
+    takharoubts: THAKHAROUBTS,
   };
 };
 
-export const updateArray = (arr, newElement) => {
+export const replaceElement = (arr, newElement) => {
   const newArr = Object.values(arr).filter((element) => {
     return element.id !== newElement.id;
   });

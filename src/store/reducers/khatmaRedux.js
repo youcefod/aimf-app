@@ -10,7 +10,11 @@ import {
 import getAxiosInstance from "../../Utils/axios";
 import { dispatchError } from "./errorMessageRedux";
 
-import { formatKhatma, getApiDate, updateArray } from "../../Utils/Functions";
+import {
+  formatKhatma,
+  formatDateAsApiDate,
+  replaceElement,
+} from "../../Utils/Functions";
 
 const MAX_DATE = "2035-12-31 00:00:00";
 //
@@ -156,7 +160,7 @@ export const ayncSaveKhatma = (date) => {
     dispatch(loadingKhatmaData());
     getAxiosInstance()
       .post(POST_ADD_KHATMA_URI, {
-        beginAt: getApiDate(date),
+        beginAt: formatDateAsApiDate(date),
         isOpen: true,
       })
       .then((response) => {
@@ -326,7 +330,7 @@ export const updateKhatma = (khatmaId, status) => {
     getAxiosInstance()
       .patch(`${PATCH_KHATMA_URI + khatmaId}?with_takharoubts=1`, {
         isOpen: status,
-        endAt: status ? MAX_DATE : getApiDate(Date.now()),
+        endAt: status ? MAX_DATE : formatDateAsApiDate(Date.now()),
       })
       .then((response) => {
         getAxiosInstance()
@@ -400,8 +404,8 @@ export const khatmaReducer = (state = initState, action) => {
       return {
         ...state,
         loading: action.payload.loading,
-        khatma: updateArray(state.khatma, action.payload.khatma),
-        userKhatma: updateArray(
+        khatma: replaceElement(state.khatma, action.payload.khatma),
+        userKhatma: replaceElement(
           state.userKhatma,
           action.payload.userTakharoubts
         ),

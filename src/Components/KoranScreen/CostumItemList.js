@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import { Body, Right, ListItem, Switch, Badge } from "native-base";
@@ -24,44 +24,41 @@ const styles = StyleSheet.create({
   },
 });
 
-// eslint-disable-next-line react/prefer-stateless-function
-export default class CostumItemList extends Component {
-  render() {
-    const {
-      colorText,
-      text,
-      value,
-      onChangeToggle,
-      id,
-      numberOfReader,
-      badge,
-    } = this.props;
+export default function CostumItemList(props) {
+  const {
+    colorText,
+    text,
+    value,
+    onChangeToggle,
+    id,
+    numberOfReader,
+    badge,
+  } = props;
 
-    return (
-      <ListItem>
-        <Body style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={colorText ? styles.blackText : styles.grayText}>
-            {text}
-          </Text>
-          {badge && (
-            <Badge
-              primary
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                alignSelf: "flex-end",
-              }}
-            >
-              <Text style={styles.badgeText}>{numberOfReader}</Text>
-            </Badge>
-          )}
-        </Body>
-        <Right>
-          <Switch value={value} onValueChange={() => onChangeToggle(id)} />
-        </Right>
-      </ListItem>
-    );
-  }
+  return (
+    <ListItem>
+      <Body style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Text style={colorText ? styles.blackText : styles.grayText}>
+          {text}
+        </Text>
+        {badge && (
+          <Badge
+            primary
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              alignSelf: "flex-end",
+            }}
+          >
+            <Text style={styles.badgeText}>{numberOfReader}</Text>
+          </Badge>
+        )}
+      </Body>
+      <Right>
+        <Switch value={value} onValueChange={() => onChangeToggle(id)} />
+      </Right>
+    </ListItem>
+  );
 }
 
 CostumItemList.propTypes = {
