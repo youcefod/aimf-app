@@ -1,137 +1,86 @@
 import React, { Component } from "react";
 import { Text, View, TextInput, ScrollView } from "react-native";
-import firebase from "react-native-firebase";
 import { Icon, Input, Item, Label } from "native-base";
 import SpinnerButton from "react-native-spinner-button";
-import { styles } from "./PostScreen/css";
-import { DRAFT_ANNONCE_ID } from "../Utils/Constants";
+import { connect } from "react-redux";
+import * as PropTypes from "prop-types";
+import styles from "./PostScreen/css";
 import ErrorModal from "../Components/ErrorModal";
+import { dispatchErrorMessage } from "../store/reducers/errorMessageRedux";
+import Loader from "../Components/Loader";
+import { savePost, getDraftArticle } from "../store/reducers/articlesRedux";
+import { DRAFT_ARTICLE_STATUS, PUBLISHED_ARTICLE_STATUS } from "../Utils/Constants";
 
-export default class PostScreen extends Component {
+class PostScreen extends Component {
   static navigationOptions = {
     header: null,
   };
 
   constructor(props) {
     super(props);
-    _isMounted = false;
     this.state = {
       title: "",
-      text: "",
-      saveSpinner: false,
-      sendSpinner: false,
-      errorMessage: "",
+      description: "",
     };
   }
 
   componentDidMount() {
-    if (!this._isMounted) {
-      this.setDraftAnnouncement();
+    this.props.getDraftArticle();
+    if (this.props.draftArticle && this.props.draftArticle.title) {
+      const { title, description } = this.props.draftArticle;
+      this.setState({ title, description });
     }
-    this._isMounted = true;
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
+  componentWillReceiveProps(nextProps): void {
+    if (this.props.loading && !nextProps.loading && !nextProps.errorMessage) {
+      let title = null;
+      let description = null;
+      if (nextProps.draftArticle && nextProps.draftArticle.title) {
+        title = nextProps.draftArticle.title;
+        description = nextProps.draftArticle.description;
+      }
+      this.setState({ title, description });
+    }
   }
-
-  setDraftAnnouncement = () => {
-    const that = this;
-    firebase
-      .firestore()
-      .collection("announcements")
-      .doc(DRAFT_ANNONCE_ID)
-      .get()
-      .then((doc) => {
-        if (doc.data()) {
-          that.setState({ text: doc.data().text, title: doc.data().title });
-        }
-      });
-  };
 
   disabledButtons = () => {
-    return !(this.state.title.trim() && this.state.text.trim());
+    return !(this.state.title.trim() && this.state.description.trim());
   };
 
-  sendPost = () => {
-    const { text, title } = this.state;
+  savePost = (status) => {
+    const { description, title } = this.state;
 
-    if (!title.trim() || !text.trim()) {
-      this.setState({
-        errorMessage:
-          "Le titre et le messagde de l'annonce doivent êtres renseignés",
-      });
+    if (!title.trim() || !description.trim()) {
+      this.props.dispatchErrorMessage(
+        "Le titre et le messagde de l'annonce doivent êtres renseignés"
+      );
       return;
     }
-
-    if (text && title) {
-      this.setState({ sendSpinner: true });
-      firebase
-        .firestore()
-        .collection("announcements")
-        .add({
-          enable: true,
-          text,
-          title: title.trim(),
-          date: new Date(),
-          usder: `/users/${firebase.auth().currentUser.uid}`,
-        })
-        .then(() => {
-          if (this._isMounted) {
-            this.setState({ sendSpinner: false });
-            this.setState({ title: "", text: "" });
-            this.savePost(false);
-          }
-        })
-        .catch((error) => {
-          if (this._isMounted) {
-            this.setState({ sendSpinner: false });
-          }
-        });
-    }
-  };
-
-  savePost = (saveSpinner = true) => {
-    const { text, title } = this.state;
-
-    if (text && title) {
-      this.setState({ saveSpinner });
-      firebase
-        .firestore()
-        .collection("announcements")
-        .doc(DRAFT_ANNONCE_ID)
-        .set({
-          enable: false,
-          text,
-          title: title.trim(),
-          date: new Date(),
-          usder: `/users/${firebase.auth().currentUser.uid}`,
-        })
-        .then(() => {
-          if (this._isMounted) {
-            this.setState({ saveSpinner: false });
-          }
-        })
-        .catch((error) => {
-          if (this._isMounted) {
-            this.setState({ saveSpinner: false });
-          }
-        });
-    }
+    this.props.savePost({
+      status,
+      description: description.trim(),
+      title: title.trim(),
+    });
   };
 
   render() {
-    const { text, title, saveSpinner, sendSpinner } = this.state;
+    const { description, title } = this.state;
     return (
       <>
-        <ScrollView style={{ ...styles.view }}>
+        <ScrollView
+          style={{
+            ...styles.view,
+            opacity: this.props.loading || this.props.errorMessage ? 0.6 : 1,
+          }}
+        >
           <Label style={styles.label}>Titre*</Label>
           <Item rounded style={styles.inputItem}>
             <Input
               style={styles.input}
               autoCapitalize="characters"
               keyboardType="default"
-              onChangeText={(title) => this.setState({ title })}
+              onChangeText={(value) => this.setState({ title: value })}
               value={title}
             />
           </Item>
@@ -144,20 +93,25 @@ export default class PostScreen extends Component {
               keyboardType="default"
               multiline
               numberOfLines={10}
-              onChangeText={(text) => this.setState({ text })}
-              value={text}
+              onChangeText={(value) => this.setState({ description: value })}
+              value={description}
             />
           </Item>
 
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginBottom: 70,
+            }}
+          >
             <SpinnerButton
               buttonStyle={{
                 ...styles.spinnerButton,
                 marginRight: 20,
                 backgroundColor: "#f6a351",
               }}
-              isLoading={saveSpinner}
-              onPress={this.savePost}
+              onPress={() => this.savePost(DRAFT_ARTICLE_STATUS)}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
               disabled={this.disabledButtons}
@@ -172,8 +126,7 @@ export default class PostScreen extends Component {
                 ...styles.spinnerButton,
                 backgroundColor: "#cb8347",
               }}
-              isLoading={sendSpinner}
-              onPress={this.sendPost}
+              onPress={() => this.savePost(PUBLISHED_ARTICLE_STATUS)}
               indicatorCount={10}
               spinnerType="SkypeIndicator"
               disabled={this.disabledButtons}
@@ -185,11 +138,42 @@ export default class PostScreen extends Component {
             </SpinnerButton>
           </View>
         </ScrollView>
-        <ErrorModal
-          visible={false}
-          message={this.state.errorMessage}
-        />
+        {this.props.errorMessage && (
+          <ErrorModal visible message={this.props.errorMessage} />
+        )}
+        <Loader visible={!!this.props.loading} />
       </>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  const { errorMessage } = state.errorMessageStore;
+  const { loading, draftArticle } = state.articleStore;
+  const { user } = state.accountStore;
+  return {
+    errorMessage,
+    loading,
+    user,
+    draftArticle,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    dispatchErrorMessage: (errorMessage) =>
+      dispatch(dispatchErrorMessage(errorMessage)),
+    savePost: (data) => dispatch(savePost(data)),
+    getDraftArticle: () => dispatch(getDraftArticle()),
+  };
+};
+PostScreen.propTypes = {
+  errorMessage: PropTypes.string,
+  dispatchErrorMessage: PropTypes.func,
+  loading: PropTypes.bool,
+  draftArticle: PropTypes.object,
+  savePost: PropTypes.func,
+  getDraftArticle: PropTypes.func,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostScreen);

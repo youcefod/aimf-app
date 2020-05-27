@@ -13,3 +13,6 @@ export const PATCH_USER_TAKHAROUBT_URI = `${API_URL}user-takharoubt/`;
 export const GET_LIST_KHATMA_URI = `${API_URL}khatma`;
 export const GET_KHATMA_URI = `${API_URL}khatma/`;
 export const GET_USER_KHATMA_URI = `${API_URL}user-takharoubt`;
+export const GET_USERS_URI = `${API_URL}user`;
+export const GET_ARTICLES_URI = `${API_URL}article`;
+export const GET_DRAFT_ARTICLE_URI = `${API_URL}article/draft`;

@@ -26,11 +26,21 @@ export const isCorrectPhoneNumber = (phone) => {
 };
 
 export const getFrDate = (date, time = false) => {
-  return `${date.getDate().toString().padStart(2, "0")}/${`${
-    parseInt(date.getMonth().toString(), 10) + 1
-  }`.padStart(2, "0")}/${date.getFullYear()}${
-    time ? ` ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}` : ""
-  }`;
+  if (date instanceof Date) {
+    return `${date.getDate().toString().padStart(2, "0")}/${`${
+      parseInt(date.getMonth().toString(), 10) + 1
+    }`.padStart(2, "0")}/${date.getFullYear()}${
+      time ? date.toLocaleTimeString("fr") : ""
+    }`;
+  }
+  return date;
+};
+
+export const isoDateToFr = (isoDate: string) => {
+  const fullDate = isoDate.split(" ");
+  const date = fullDate[0].split("-");
+  const time = fullDate.length === 2 ? fullDate[1] : "";
+  return `${date[2]}/${date[1]}/${date[0]} ${time}`;
 };
 
 export const getIsoDate = (date) => {
@@ -66,9 +76,19 @@ export const formatDateWithDayAndMonthName = (apiDate) => {
   } ${date.getFullYear()}`;
 };
 
-export const getDateFromFr = (frDate) => {
-  const date = frDate.split("/");
-  return new Date(`${date[2]}-${date[1]}-${date[0]}`);
+export const getDateFromIso = (isoDate: string) => {
+  const fullDate = isoDate.split(" ");
+  const date = fullDate[0].split("-");
+  const time =
+    fullDate.length === 2 ? fullDate[1].split(":") : ["00", "00", "00"];
+  return new Date(
+    date[0],
+    parseInt(date[1], 10) - 1,
+    date[2],
+    time[0],
+    time[1],
+    time[2]
+  );
 };
 
 export const getFullName = ({ lastName, firstName }) => {

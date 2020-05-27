@@ -10,44 +10,35 @@ import {
   Body,
 } from "native-base";
 import { View } from "react-native";
+import * as PropTypes from "prop-types";
 import { FEMALE_GENDER } from "../../Utils/Constants";
 import { getFullName } from "../../Utils/Functions";
+import { isAdmin, isAuthorized, isSuperAdmin } from "../../Utils/Account";
 
-export default class UserCard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      informationModalVisible: false,
-      confirmUpdateVisible: false,
-      isAuthorized: props.data.isAuthorized,
-      isAdmin: props.data.isAdmin,
-      confirmMessage: "",
-      updateUserLoadding: false,
-    };
-  }
-
+class UserCard extends Component {
   render() {
     let logo = require("../../../assets/images/men.png");
-    if (this.props.data.gender == FEMALE_GENDER) {
+    if (this.props.data.gender === FEMALE_GENDER) {
       logo = require("../../../assets/images/women.png");
     }
-
     return (
       <Card transparent>
         <CardItem>
           <Left>
             <Thumbnail source={logo} />
             <Body>
-              <Text style={{ fontSize: 11 }}>
+              <Text style={{ fontSize: 13 }}>
                 {getFullName(this.props.data)}
               </Text>
-              <Text style={{ fontSize: 8 }}>{this.props.data.phoneNumber}</Text>
+              <Text style={{ fontSize: 11 }}>
+                {this.props.data.phoneNumber}
+              </Text>
             </Body>
           </Left>
           <Right style={{ height: 58 }}>
             <View style={{ flexDirection: "row" }}>
               <View style={{ flexDirection: "row" }}>
-                {this.state.isAuthorized && (
+                {isAuthorized(this.props.data) && (
                   <Text style={{ marginTop: 20, marginRight: 30 }}>
                     <Icon
                       type="AntDesign"
@@ -56,18 +47,24 @@ export default class UserCard extends Component {
                     />
                   </Text>
                 )}
-                {this.state.isAdmin && (
-                  <Text style={{ marginTop: 20, marginRight: 30 }}>
-                    <Icon
-                      type="FontAwesome5"
-                      name="user-cog"
-                      style={{ fontSize: 17, color: "#000" }}
-                    />
-                  </Text>
-                )}
+                {isSuperAdmin(this.props.data) ||
+                  (isAdmin(this.props.data) && (
+                    <Text style={{ marginTop: 20, marginRight: 30 }}>
+                      <Icon
+                        type="FontAwesome5"
+                        name="user-cog"
+                        style={{ fontSize: 17, color: "#000" }}
+                      />
+                    </Text>
+                  ))}
               </View>
               <Text
-                onPress={() => this.props.showUser(this.props.data)}
+                onPress={() =>
+                  this.props.showUser(
+                    this.props.data,
+                    this.props.currentUserIndex
+                  )
+                }
                 style={{ fontSize: 17 }}
               >
                 ...
@@ -79,3 +76,11 @@ export default class UserCard extends Component {
     );
   }
 }
+
+UserCard.propTypes = {
+  data: PropTypes.object,
+  showUser: PropTypes.func,
+  currentUserIndex: PropTypes.number,
+};
+
+export default UserCard;

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as PropTypes from "prop-types";
+import NavigationService from "./Utils/NavigationService";
 import { navigate } from "./Utils/Account";
 
 const styles = StyleSheet.create({
@@ -14,6 +15,7 @@ const styles = StyleSheet.create({
 
 class Loading extends React.Component {
   componentDidMount() {
+    NavigationService.setInstance(this.props.navigation);
     navigate(this.props.account, this.props.navigation);
   }
 
