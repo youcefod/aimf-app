@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest",
     "android": "npx react-native run-android",
     "ios": "npx react-native run-ios",
     "postinstall": "jetifier -r",
-    "refresh:env": "rm -rf node_modules && rm -rf android/.gradle && rm -rf android/app/build && yarn install"
+    "refresh:env": "rm -rf node_modules && rm -rf android/.gradle && rm -rf android/app/build && yarn install && npx jetify",
+    "test": "jest"
   },
   "rnpm": {
     "assets": [
@@ -37,6 +37,7 @@
     "react-native-spinner-button": "^1.0.3",
     "react-native-vector-icons": "^6.6.0",
     "react-native-wheel-pick": "^1.1.0",
+    "react-native-youtube": "^2.0.1",
     "react-navigation": "^3.9.1",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",

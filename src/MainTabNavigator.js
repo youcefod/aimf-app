@@ -16,6 +16,7 @@ import Khatma from "./screens/KoranScreen/Khatma"
 import ProfileScreen from "./screens/ProfileScreen";
 import UserScreen from "./screens/UserScreen";
 import UnaccessibleScreen from "./screens/UnaccessibleScreen";
+import YouTubeScreen from "./screens/YouTubeSceen";
 
 const CustomIcon = createIconSetFromIcoMoon(icoMoonConfig);
 // ----------------------------------------------HomeScreen-----------------------------------------------------
@@ -102,6 +103,39 @@ disableKoranStack.navigationOptions = {
   ),
 };
 
+// ----------------------------------------------YouTubeScreen-----------------------------------------------------
+const YouTubeStack = createStackNavigator({
+  YouTube: YouTubeScreen,
+});
+
+YouTubeStack.navigationOptions = {
+  tabBarLabel: "Youtube",
+  tabBarIcon: ({ focused }) => (
+    <Icon
+      type="SimpleLineIcons"
+      name="social-youtube"
+      style={{ fontSize: 30, marginBottom: -3 }}
+      color={focused ? "#2f95dc" : "#ccc"}
+    />
+  ),
+};
+
+const disableYouTubeStack = createStackNavigator({
+  Youtube: UnaccessibleScreen,
+});
+
+disableYouTubeStack.navigationOptions = {
+  tabBarLabel: "Youtube",
+  tabBarIcon: ({ focused }) => (
+    <Icon
+      type="SimpleLineIcons"
+      name="social-youtube"
+      style={{ opacity: 0.5 }}
+      color="#000"
+    />
+  ),
+};
+
 // ----------------------------------------------ProfileScreen-----------------------------------------------------
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
@@ -136,16 +170,13 @@ UserStack.navigationOptions = {
   ),
 };
 
-export const bottomActiveUserTabNavigator = createBottomTabNavigator({
-  HomeStack,
-  KoranStack,
-  ProfileStack,
-});
+// ----------------------------------------------Tab navigators-----------------------------------------------------
 
-export const bottomUnActiveUserTabNavigator = createBottomTabNavigator(
+export const unActiveUserTabNavigator = createBottomTabNavigator(
   {
     disableHomeStack,
     disableKoranStack,
+    disableYouTubeStack,
     ProfileStack,
   },
   {
@@ -153,7 +184,8 @@ export const bottomUnActiveUserTabNavigator = createBottomTabNavigator(
       tabBarOnPress: ({ navigation, defaultHandler }) => {
         if (
           navigation.state.routeName === "disableHomeStack" ||
-          navigation.state.routeName === "disableKoranStack"
+          navigation.state.routeName === "disableKoranStack" ||
+          navigation.state.routeName === "disableYouTubeStack"
         ) {
           return null;
         }
@@ -164,10 +196,47 @@ export const bottomUnActiveUserTabNavigator = createBottomTabNavigator(
   }
 );
 
-export const bottomAdminUserTabNavigator = createBottomTabNavigator({
+export const activeUserWithYoutubeLiveTabNavigator = createBottomTabNavigator({
+  HomeStack,
+  KoranStack,
+  YouTubeStack,
+  ProfileStack,
+});
+
+export const activeUserTabNavigator = createBottomTabNavigator({
+  HomeStack,
+  KoranStack,
+  YouTubeStack,
+  ProfileStack,
+});
+
+export const adminUserTabNavigator = createBottomTabNavigator(
+  {
+    HomeStack,
+    KoranStack,
+    PostWorkflowStack,
+    disableYouTubeStack,
+    UserStack,
+    ProfileStack,
+  },
+  {
+    defaultNavigationOptions: {
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        if (navigation.state.routeName === "disableYouTubeStack") {
+          return null;
+        }
+        defaultHandler();
+      },
+    },
+    initialRouteName: "HomeStack",
+  }
+);
+
+export const adminUserWithYoutubeLiveTabNavigator = createBottomTabNavigator({
   HomeStack,
   KoranStack,
   PostWorkflowStack,
+  YouTubeStack,
   UserStack,
   ProfileStack,
 });

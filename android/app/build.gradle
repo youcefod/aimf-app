@@ -150,10 +150,11 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
+    implementation project(':react-native-youtube')
     implementation project(':appcenter-crashes')
     implementation project(':appcenter-analytics')
     implementation project(':appcenter')
-    implementation project(':react-native-firebase')
     implementation project(':react-native-wheel-pick')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-gesture-handler')

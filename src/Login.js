@@ -54,7 +54,14 @@ class Login extends React.Component {
   }
 
   componentDidUpdate() {
-    navigate(this.props.account, this.props.navigation);
+    if (this.props.loadingLiveVideo === false) {
+      navigate(
+        this.props.account,
+        this.props.navigation,
+        "Login",
+        !!this.props.video
+      );
+    }
   }
 
   handleLogin = () => {
@@ -121,9 +128,12 @@ class Login extends React.Component {
 const mapStateToProps = (state) => {
   const { errorMessage } = state.errorMessageStore;
   const { loading } = state.authenticationStore;
+  const { loading: loadingLiveVideo, video } = state.liveVideoStore;
   return {
     errorMessage,
     loading,
+    loadingLiveVideo,
+    video,
     account: state.accountStore,
   };
 };
@@ -143,6 +153,8 @@ Login.propTypes = {
   navigation: PropTypes.object,
   loading: PropTypes.bool,
   account: PropTypes.object,
+  loadingLiveVideo: PropTypes.bool,
+  video: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,4 +1,5 @@
 import { batchActions } from "redux-batched-actions";
+import axios from "axios";
 import {
   GET_SECURITY_QUESTIONS_URI,
   POST_LOGIN_URI,
@@ -8,6 +9,7 @@ import getAxiosInstance from "../../Utils/axios";
 import { dispatchError } from "./errorMessageRedux";
 import { storeAccount } from "./accountRedux";
 import getRandomQuestionIndex from "../../Components/ProfileForm/Functions";
+import { getLiveVideo } from "./liveVideoRedux";
 
 const POST_REQUEST = "POST_REQUEST";
 const POST_LOGIN_SUCCESS = "POST_LOGIN_SUCCESS";
@@ -88,6 +90,8 @@ export const login = (email, password) => {
               POST_BATCH_LOGIN_SUCCESS
             )
           );
+          axios.defaults.headers.Authorization = `Bearer ${response.data.access_token}`;
+          dispatch(getLiveVideo());
         }, 500);
       })
       .catch(function (error) {
