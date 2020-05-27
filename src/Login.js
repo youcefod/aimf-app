@@ -9,7 +9,6 @@ import { CREDENTIALS_EMPTY_ERROR } from "./Utils/Constants";
 import { dispatchErrorMessage } from "./store/reducers/errorMessageRedux";
 import { login } from "./store/reducers/authenticationRedux";
 import { navigate } from "./Utils/Account";
-import NavigationService from "./Utils/NavigationService";
 
 const styles = StyleSheet.create({
   bodyWrapper: {

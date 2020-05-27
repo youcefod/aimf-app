@@ -11,6 +11,8 @@ import icoMoonConfig from "../config/icons/selection.json";
 import HomeScreen from "./screens/HomeScreen";
 import PostScreen from "./screens/PostScreen";
 import KoranScreen from "./screens/KoranScreen";
+import AddKhatma from "./screens/KoranScreen/AddKhatma"
+import Khatma from "./screens/KoranScreen/Khatma"
 import ProfileScreen from "./screens/ProfileScreen";
 import UserScreen from "./screens/UserScreen";
 import UnaccessibleScreen from "./screens/UnaccessibleScreen";
@@ -62,9 +64,25 @@ PostWorkflowStack.navigationOptions = {
 };
 
 // ----------------------------------------------KoranScreen-----------------------------------------------------
-const KoranStack = createStackNavigator({
-  Koran: KoranScreen,
+const navOptionHandler = (nafigation) => ({
+  header: null,
 });
+
+const KoranStack = createStackNavigator({
+  KoranTimeLine: {
+    screen: KoranScreen,
+    navigationOptions: navOptionHandler,
+  },
+  AddKhatma: {
+    screen: AddKhatma,
+    navigationOptions: navOptionHandler,
+  },
+  Khatma: {
+    screen: Khatma,
+    navigationOptions: navOptionHandler,
+  },
+});
+
 
 KoranStack.navigationOptions = {
   tabBarLabel: "Coran",

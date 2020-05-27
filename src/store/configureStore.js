@@ -1,4 +1,5 @@
-/* eslint-disable no-undef */
+
+
 import { AsyncStorage } from "react-native";
 import { createStore, combineReducers, compose, applyMiddleware } from "redux";
 import { enableBatching } from "redux-batched-actions";
@@ -15,8 +16,8 @@ import {
 } from "./reducers/authenticationRedux";
 import { accountReducer } from "./reducers/accountRedux";
 import { profileReducer } from "./reducers/profileRedux";
-import NavigationService from "../Utils/NavigationService";
-import { articleReducer } from "./reducers/articlesRedux";
+import { koranReducer } from "./reducers/koranRedux";
+import { khatmaReducer } from "./reducers/khatmaRedux";
 
 const persistConfig = {
   key: "root",
@@ -24,6 +25,8 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  koranStore: koranReducer,
+  khatmaStore: khatmaReducer,
   userStore: userReducer,
   errorMessageStore: errorMessageReducer,
   authenticationStore: authenticationReducer,
