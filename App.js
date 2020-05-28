@@ -9,9 +9,11 @@ import Loading from "./src/Loading";
 import SignUp from "./src/SignUp";
 import Login from "./src/Login";
 import {
-  bottomActiveUserTabNavigator,
-  bottomUnActiveUserTabNavigator,
-  bottomAdminUserTabNavigator,
+  activeUserWithYoutubeLiveTabNavigator,
+  unActiveUserTabNavigator,
+  adminUserTabNavigator,
+  adminUserWithYoutubeLiveTabNavigator,
+  activeUserTabNavigator,
 } from "./src/MainTabNavigator";
 import { store, persistor } from "./src/store/configureStore";
 // create our app's navigation stack
@@ -20,9 +22,11 @@ const switchNavigator = createSwitchNavigator(
     Loading,
     SignUp,
     Login,
-    bottomActiveUserTabNavigator,
-    bottomUnActiveUserTabNavigator,
-    bottomAdminUserTabNavigator,
+    activeUserWithYoutubeLiveTabNavigator,
+    unActiveUserTabNavigator,
+    adminUserTabNavigator,
+    adminUserWithYoutubeLiveTabNavigator,
+    activeUserTabNavigator,
   },
   {
     initialRouteName: "Loading",
@@ -31,6 +35,7 @@ const switchNavigator = createSwitchNavigator(
 
 const AppContainer = createAppContainer(switchNavigator);
 
+// eslint-disable-next-line react/prefer-stateless-function
 class App extends Component {
   render() {
     return (
