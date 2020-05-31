@@ -75,6 +75,16 @@
                ReferencedContainer = "container:AIMF_APP.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "928A70292481A61000C6C7EF"
+               BuildableName = "AimfUITests.xctest"
+               BlueprintName = "AimfUITests"
+               ReferencedContainer = "container:AIMF_APP.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

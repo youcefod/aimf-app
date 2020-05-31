@@ -5,14 +5,19 @@ target 'AIMF_APP' do
   pod 'AppCenter/Crashes', '~> 3.0.0'
   pod 'AppCenter/Analytics', '~> 3.0.0'
   pod 'AppCenterReactNativeShared', '~> 3.0.0'
-  # Comment the next line if you don't want to use dynamic frameworks
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
   pod 'Firebase/Firestore'
+  pod 'YoutubePlayer-in-WKWebView', :git => 'https://github.com/hmhv/YoutubePlayer-in-WKWebView'
 
   # Pods for AIMF_APP
 
+end
+
+target 'AIMF_APPTests' do
+  inherit! :search_paths
+  # Pods for testing
 end
 
 target 'AIMF_APP-tvOS' do
