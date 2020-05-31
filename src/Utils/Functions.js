@@ -68,7 +68,7 @@ export const formatDateWithDayAndMonthName = (apiDate) => {
   if (typeof apiDate === "number" || typeof apiDate === "object") {
     date = new Date(apiDate);
   } else {
-    date = new Date(`${apiDate.substring(0, 10)}T${apiDate.substring(11, 20)}`);
+    date = new Date(`${apiDate.substring(0, 10)}T${apiDate.substring(11, 19)}`);
   }
 
   return `${DAYS[date.getDay()]} ${date.getDate()} ${
