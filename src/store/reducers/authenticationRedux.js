@@ -73,7 +73,7 @@ const getQuestionsSuccess = (data) => {
   };
 };
 
-export const login = (email, password) => {
+export const login = (email, password, deviceToken) => {
   return (dispatch) => {
     dispatch(postRequest());
 
@@ -81,6 +81,7 @@ export const login = (email, password) => {
       .post(POST_LOGIN_URI, {
         email,
         password,
+        deviceToken,
       })
       .then(function (response) {
         setTimeout(() => {

@@ -9,7 +9,7 @@ import {
   MARRIED,
   SCHOOL_LEVELS,
 } from "../../Utils/Constants";
-import { styles } from "./css";
+import styles from "./css";
 
 class ChildrenInformation extends Component {
   renderPicker = (index) => {
